@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="semi_transparent_black">#76000000</color> <!-- 60% opacity black -->
+    <color name="gray_white">#D3D3D3</color> <!-- 灰白色 -->
+
+    <color name="blue">#FF42A5F5</color>
+    <color name="purple">#C6B2C8</color>
+
+    <color name="borderColorDefault">#CCCCCC</color> <!-- 默认边框颜色 -->
+    <color name="borderColorFocused">#FF42A5F5</color> <!-- 选中边框颜色 -->
+    <color name="borderColorError">#FF0000</color> <!-- 选中边框颜色 -->
+
+    <color name="color_white_10">#19FFFFFF</color>
+</resources>

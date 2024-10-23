@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="300dp"
+    android:layout_height="394dp"
+    android:id="@+id/rlContent"
+    android:background="@drawable/floating_layout_bg_shape">
+
+    <ImageView
+        android:id="@+id/close_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_close"
+        android:padding="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_alignParentEnd="true"/>
+
+    <TextView
+        android:id="@+id/safety_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="安全开关："
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:layout_marginTop="32dp"
+        android:layout_marginLeft="16dp"/>
+
+    <Button
+        android:id="@+id/safety_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="开"
+        android:layout_toRightOf="@id/safety_title"
+        android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:id="@+id/put_line_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:text="当前放线长度：0m"
+        android:layout_below="@+id/safety_button"
+        android:layout_marginLeft="16dp"/>
+
+    <TextView
+        android:id="@+id/location_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:text="当前位置：未到限位"
+        android:layout_marginTop="4dp"
+        android:layout_below="@+id/put_line_tv"
+        android:layout_marginLeft="16dp"/>
+
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/location_tv"
+        android:layout_marginLeft="16dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/radio_button_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:buttonTint="@drawable/radio_button_color"
+                android:text="按速度  "/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/audioContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColorHint="@color/gray_white"
+                app:boxStrokeColor="@drawable/border_color_state_list"
+                app:boxStrokeWidth="1dp"
+                app:hintTextColor="@color/white"
+                app:cursorColor="@color/blue">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/audioInputContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:textColor="@color/white"
+                    android:text="10"
+                    android:maxLines="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="m/min (0~20)"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/radio_button_length"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:buttonTint="@drawable/radio_button_color"
+                android:text="按长度 目标长度："/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/speedContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColorHint="@color/gray_white"
+                app:boxStrokeColor="@drawable/border_color_state_list"
+                app:boxStrokeWidth="1dp"
+                app:hintTextColor="@color/white"
+                app:cursorColor="@color/blue">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/speedInputContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:textColor="@color/white"
+                    android:text="10"
+                    android:maxLines="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" m/ (0~30)"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+    </RadioGroup>
+
+    <Button
+        android:layout_below="@+id/radio_group"
+        android:id="@+id/up_action"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:text="上升"/>
+
+     <Button
+         android:id="@+id/down_action"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignTop="@+id/up_action"
+         android:layout_toRightOf="@+id/up_action"
+         android:layout_marginLeft="4dp"
+         android:text="下降"/>
+
+     <Button
+         android:id="@+id/stop_action"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignTop="@+id/up_action"
+         android:layout_toRightOf="@+id/down_action"
+         android:layout_marginLeft="4dp"
+         android:text="停止"/>
+
+    <Button
+        android:id="@+id/braking_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/up_action"
+        android:layout_marginTop="4dp"
+        android:text="紧急制动"
+        android:layout_marginLeft="16dp"/>
+
+    <Button
+        android:id="@+id/circuit_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/braking_tv"
+        android:layout_toRightOf="@+id/braking_tv"
+        android:layout_marginLeft="4dp"
+        android:text="紧急熔断"/>
+
+    <Button
+        android:id="@+id/relieve_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/circuit_tv"
+        android:layout_marginLeft="16dp"
+        android:text="解除"/>
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_centerVertical="true"-->
+<!--        android:orientation="horizontal">-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/left_rotation"-->
+<!--            android:layout_width="48dp"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:src="@drawable/ic_chevron_left"/>-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/right_rotation"-->
+<!--            android:layout_width="48dp"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:src="@drawable/ic_chevron_right"/>-->
+
+<!--        <View-->
+<!--            android:layout_weight="1"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"/>-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/center"-->
+<!--            android:padding="4dp"-->
+<!--            android:layout_width="48dp"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:src="@drawable/ic_recenter"-->
+<!--            android:layout_marginRight="24dp"/>-->
+
+<!--    </LinearLayout>-->
+
+    <com.lzf.easyfloat.example.widget.ScaleImage
+        android:id="@+id/ivScale"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:padding="8dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:src="@drawable/icon_scale" />
+
+</RelativeLayout>

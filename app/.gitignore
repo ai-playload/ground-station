@@ -1,0 +1,8 @@
+/build
+.externalNativeBuild/
+#assets/
+gst-android-build/
+src/org/
+release/
+debug/
+/../../iflytekAikit/

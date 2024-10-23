@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/audio_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/floating_bg_shape"
+        android:rotation="90"
+        android:padding="8dp"
+        android:src="@drawable/ic_wifi"/>
+
+    <ImageView
+        android:id="@+id/text_to_speech_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/floating_bg_shape"
+        android:padding="8dp"
+        android:layout_marginLeft="12dp"
+        android:src="@drawable/ic_text_to_speech"/>
+
+    <ImageView
+        android:id="@+id/audio_file_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/floating_bg_shape"
+        android:padding="8dp"
+        android:layout_marginLeft="12dp"
+        android:src="@drawable/ic_audio_file"/>
+
+    <ImageView
+        android:id="@+id/light_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/floating_bg_shape"
+        android:padding="8dp"
+        android:layout_marginLeft="12dp"
+        android:src="@drawable/ic_lightbulb"/>
+
+    <ImageView
+        android:id="@+id/detector_alarm_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/floating_bg_shape"
+        android:padding="8dp"
+        android:layout_marginLeft="12dp"
+        android:src="@drawable/ic_detector_alarm"/>
+
+    <ImageView
+        android:id="@+id/tv_options_input_settings_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/floating_bg_shape"
+        android:padding="8dp"
+        android:layout_marginLeft="12dp"
+        android:src="@drawable/ic_hook"/>
+
+</LinearLayout>

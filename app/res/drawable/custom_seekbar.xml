@@ -1,0 +1,25 @@
+<!-- res/drawable/custom_seekbar.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 未有进度的部分背景 -->
+    <item android:id="@android:id/background">
+        <shape>
+            <gradient
+                android:startColor="#80FFFFFF"
+            android:endColor="#80FFFFFF" />
+<!--            <corners android:radius="5dp" />-->
+        </shape>
+    </item>
+
+    <!-- 已有进度的部分背景 -->
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape>
+                <gradient
+                    android:startColor="#FFFFFFFF"
+                android:endColor="#FFFFFFFF" />
+<!--                <corners android:radius="5dp" />-->
+            </shape>
+        </clip>
+    </item>
+</layer-list>
