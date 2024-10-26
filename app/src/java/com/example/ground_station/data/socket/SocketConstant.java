@@ -31,6 +31,12 @@ public class SocketConstant {
     public static final byte AMPLIFIER = (byte) 0x9a;
     public static final byte STREAMER = (byte) 0x9b;
 
+    public static final byte PLAY_RECORD_Bp = (byte) 0x9c;               // 网络循环播放
+
+    public static final byte GET_TTS_LIST = (byte) 0x9d;           // 获取文字转语音 语音文件列表
+    public static final byte PLAY_TTS_Bp = (byte) 0x9d;           // 获取文字转语音 语音文件循环播放
+
+
     // 新增的命令
     public static final byte REBOOT_DEVICE = (byte) 0x35;             // 设备重启
     public static final byte BOMB_STATUS = (byte) 0x36;               // 炸弹状态

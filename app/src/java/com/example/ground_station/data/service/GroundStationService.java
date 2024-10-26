@@ -309,4 +309,8 @@ public class GroundStationService extends Service implements AbilityCallback {
     public void onAbilityEnd() {
 
     }
+    public void send(byte msgId2, int... payload) {
+//        socketClientManager.sendRemoteAudioCommand(msgId2, payload);
+    }
+
 }

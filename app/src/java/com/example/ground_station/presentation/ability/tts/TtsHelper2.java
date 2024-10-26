@@ -42,6 +42,7 @@ public class TtsHelper2 implements SynthesisCallback {
     private Handler fileHandler;
     private File recordFile;
     private AudioFileGenerationCallback audioFileGenerationCallback;
+    int fileNameIndex = 0;
 
     private static final String TAG = TtsHelper.class.getSimpleName();
 
@@ -120,7 +121,10 @@ public class TtsHelper2 implements SynthesisCallback {
     }
 
     public File getRecordFile() {
-        return recordFile;
+        String name = createFileName();
+        String saveFolder = "/sdcard/Music";
+        recordFile = new File(saveFolder, name);
+        return recordFile ;
     }
 
     public void setVCN(String vcn) {
@@ -256,7 +260,8 @@ public class TtsHelper2 implements SynthesisCallback {
     }
 
     @Override
-    public void error() {}
+    public void error() {
+    }
 
     @Override
     public void error(int errorCode) {
@@ -290,21 +295,34 @@ public class TtsHelper2 implements SynthesisCallback {
                 Log.d(TAG, "无法创建目录: " + saveFolder);
             }
         }
+// TODO: 2024/10/26  
+//        String name =
 
-        recordFile = new File(
-                saveFolder,
-                System.currentTimeMillis() + ".mp3");
 
 //        recordFile = new File(
 //                saveFolder,
 //                "001.wav"
 //        );
 
+        if (recordFile == null) {
+            getRecordFile();
+        }
+
         try {
             PcmUtil.changeWavHead(recordFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private @NonNull String createFileName() {
+        int index = fileNameIndex++;
+        if (index > 3) {
+            index = fileNameIndex = 0;
+        }
+
+        String name = "t" + String.valueOf(index) + ".mp3";
+        return name;
     }
 
     private final void writeToFile(byte[] data) {

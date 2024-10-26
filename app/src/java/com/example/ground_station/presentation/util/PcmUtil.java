@@ -128,6 +128,9 @@ public class PcmUtil {
      * 给wav文件修改文件头
      */
     public static void changeWavHead(File file, int channelCount, int sampleRateInHz, int bits) throws IOException {
+        if (file.exists()) {
+            file.delete();
+        }
         RandomAccessFile randomFile = new RandomAccessFile(file, "rw");
         FileChannel fileChannel = randomFile.getChannel();
         fileChannel.position(0);

@@ -1,5 +1,7 @@
 package java.com.example.ground_station.data.socket;
 
+import android.util.Log;
+
 import java.com.example.ground_station.presentation.callback.UploadProgressListener;
 import java.com.example.ground_station.presentation.util.CRC8Maxim;
 import java.io.File;
@@ -277,8 +279,9 @@ public class SocketClient {
 
         // 3. 发送文件名和文件大小
         String fileName = file.getName();
-        sendFileMetadata(fileName, fileSize);
-
+        sendFileMetadata(fileName, fileSize, "/data/play/");
+        String response = receiveResponse();
+        Log.d("uploadAudioFile", " 接收字符串：" +response  );
         // 4. 逐块读取并发送文件内容，同时计算进度
         while ((bytesRead = fileInputStream.read(buffer)) != -1) {
             totalBytesRead += bytesRead; // 累加已读取的字节数
@@ -307,9 +310,9 @@ public class SocketClient {
      * @param fileSize 文件大小
      * @throws IOException 如果发送过程中发生 I/O 错误
      */
-    private void sendFileMetadata(String fileName, long fileSize) throws IOException {
+    private void sendFileMetadata(String fileName, long fileSize, String parentPath) throws IOException {
         // 构造文件元数据：文件名 + 文件大小
-        String metadata = fileName + "|" + fileSize;
+        String metadata = parentPath + "|" + fileName + "|" + fileSize;
         byte[] metadataBytes = metadata.getBytes(StandardCharsets.UTF_8);
 
         // 发送文件元数据
@@ -347,6 +350,18 @@ public class SocketClient {
             return null;
         }
         byte[] buffer = new byte[1024];
+        int bytesRead = inputStream.read(buffer);
+        if (bytesRead == -1) {
+            return null;
+        }
+        return new String(buffer, 0, bytesRead, StandardCharsets.UTF_8);
+    }
+
+    public String receiveResponse(int size) throws IOException {
+        if (inputStream == null) {
+            return null;
+        }
+        byte[] buffer = new byte[size];
         int bytesRead = inputStream.read(buffer);
         if (bytesRead == -1) {
             return null;
