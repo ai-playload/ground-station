@@ -67,6 +67,10 @@ public class GroundStationService extends Service implements AbilityCallback {
         return binder;
     }
 
+    public TtsHelper2 getTtsHelper() {
+        return aiSoundHelper;
+    }
+
     public class LocalBinder extends Binder {
         public GroundStationService getService() {
             return GroundStationService.this;

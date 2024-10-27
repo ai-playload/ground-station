@@ -42,6 +42,7 @@ import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 import java.com.example.ground_station.presentation.ability.AudioFileGenerationCallback;
+import java.com.example.ground_station.presentation.ability.tts.TtsHelper2;
 import java.com.example.ground_station.presentation.util.DisplayUtils;
 import java.com.example.ground_station.presentation.util.GsonParser;
 import java.com.example.ground_station.presentation.util.TCPFileUploader;
@@ -58,6 +59,7 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
     private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable delayedTask;
     private CheckBox checkBox;
+    int fileNameFlag = 0;
 
     public void showFloatingTextToSpeech(Context context, CloseCallback closeCallback) {
         startGroundStationService(context, new IServiceConnection() {
@@ -250,6 +252,18 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                                                 Log.d(TAG, "onAudioFileGenerationEnd " + filePath + " duration: " + duration);
                                             }
                                         });
+                                        groundStationService.getTtsHelper().setFileName(fileNameFlag++);
+                                        String fileName = groundStationService.getTtsHelper().getFileName();
+                                        groundStationService.getTtsHelper().setFileWriteListener(new TtsHelper2.IFileWriteListener() {
+                                            @Override
+                                            public void onSuccess(File file) {
+                                                boolean equals = StringUtils.equals(file.getName(), fileName);
+                                                if (equals) {
+                                                    playGstreamerMusic();
+                                                }
+                                            }
+                                        });
+
 
                                         // 创建一个新的任务并安排执行
                                         delayedTask = new Runnable() {
@@ -261,11 +275,11 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
 //
 //                                                groundStationService.sendSocketCommand(SocketConstant.STREAMER, 1);
 //                                                groundStationService.sendSocketCommand(SocketConstant.START_TALK, 0);
-                                        playGstreamerMusic();
+//                                        playGstreamerMusic();
                                             }
                                         };
 
-                                        handler.postDelayed(delayedTask, 700 * editText.getText().toString().length());
+//                                        handler.postDelayed(delayedTask, 700 * editText.getText().toString().length());
                                     } else {
                                         Toast.makeText(context, "请输入要播放的内容", Toast.LENGTH_SHORT).show();
                                     }

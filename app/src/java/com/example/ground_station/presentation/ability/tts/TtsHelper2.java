@@ -45,6 +45,9 @@ public class TtsHelper2 implements SynthesisCallback {
     int fileNameIndex = 0;
 
     private static final String TAG = TtsHelper.class.getSimpleName();
+    private String fileName = "";
+    private int flag = 0;
+    private long length;
 
     public TtsHelper2() {
         textQueue = new ConcurrentLinkedQueue<>();
@@ -111,6 +114,26 @@ public class TtsHelper2 implements SynthesisCallback {
         });
     }
 
+    private IFileWriteListener fileWriteListener;
+
+    public void setFileWriteListener(IFileWriteListener fileWriteListener) {
+        this.fileWriteListener = fileWriteListener;
+    }
+
+    public interface IFileWriteListener {
+        void onSuccess(File file);
+    }
+
+    public void setFileName(int flag) {
+        this.flag = flag;
+        int tag = flag % 10;
+        this.fileName = "t" + tag + ".mp3";
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
     public void onCreate(String engineId, AbilityCallback callBack) {
         this.engineId = engineId;
         if (ttsEngine == null) {
@@ -120,11 +143,11 @@ public class TtsHelper2 implements SynthesisCallback {
         this.callBack = callBack;
     }
 
+    public static final String saveFolder = "/sdcard/Music";
+
     public File getRecordFile() {
-        String name = createFileName();
-        String saveFolder = "/sdcard/Music";
-        recordFile = new File(saveFolder, name);
-        return recordFile ;
+//        recordFile = new File(saveFolder,  this.fileName);
+        return recordFile;
     }
 
     public void setVCN(String vcn) {
@@ -305,34 +328,28 @@ public class TtsHelper2 implements SynthesisCallback {
 //        );
 
         if (recordFile == null) {
-            getRecordFile();
         }
-
+        getRecordFile();
+        recordFile = new File(saveFolder,  this.fileName);
         try {
             PcmUtil.changeWavHead(recordFile);
+            length = recordFile.length();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private @NonNull String createFileName() {
-        int index = fileNameIndex++;
-        if (index > 3) {
-            index = fileNameIndex = 0;
-        }
-
-        String name = "t" + String.valueOf(index) + ".mp3";
-        return name;
-    }
-
     private final void writeToFile(byte[] data) {
         try {
             File file = this.recordFile;
-            if (file != null) {
+            if (file != null && file.length() <= length) {
                 FileOutputStream fos = new FileOutputStream(file, true);
                 fos.write(data);
                 fos.flush();
                 fos.close();
+                if (fileWriteListener != null) {
+                    fileWriteListener.onSuccess(file);
+                }
             }
         } catch (Exception var6) {
             var6.printStackTrace();
