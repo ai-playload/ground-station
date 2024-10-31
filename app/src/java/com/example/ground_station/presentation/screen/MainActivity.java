@@ -107,6 +107,9 @@ public class MainActivity extends AppCompatActivity {
 //            requestFloatingPermissionsAndShow();
 //            checkInputsAndProceed();
         });
+        findViewById(R.id.rfcBtn).setOnClickListener(view -> {
+            showFloatingWindow();
+        });
     }
 
     private void getSpValueToEditText() {
