@@ -257,12 +257,20 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                                         groundStationService.getTtsHelper().setFileWriteListener(new TtsHelper2.IFileWriteListener() {
                                             @Override
                                             public void onSuccess(File file) {
+                                                Log.d("TtsEngine", "onSuccess 回调 file" + file.getName());
                                                 boolean equals = StringUtils.equals(file.getName(), fileName);
                                                 if (equals) {
                                                     playGstreamerMusic();
                                                 }
+                                                speakButton.post(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        speakButton.setEnabled(true);
+                                                    }
+                                                });
                                             }
                                         });
+                                        speakButton.setEnabled(false);
 
 
                                         // 创建一个新的任务并安排执行

@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class TtsHelper2 implements SynthesisCallback {
+public class TtsHelper2 implements SynthesisCallback, IAudioDataCallback {
 
     private TtsSpeechPrams ttsParams = new TtsSpeechPrams();
     private ExecutorService executorService;
@@ -108,6 +108,12 @@ public class TtsHelper2 implements SynthesisCallback {
                     }
                     byte[] data = audioBytes;
                     writeToFile(data);
+                    Log.d("TtsEngine", "fileHandler  writeToFile..."  );
+                } else if (what == 2) {
+                    if (fileWriteListener != null) {
+                        Log.d("TtsEngine", "fileHandler == 2"  );
+                        fileWriteListener.onSuccess(TtsHelper2.this.recordFile);
+                    }
                 }
                 return true;
             }
@@ -118,6 +124,14 @@ public class TtsHelper2 implements SynthesisCallback {
 
     public void setFileWriteListener(IFileWriteListener fileWriteListener) {
         this.fileWriteListener = fileWriteListener;
+    }
+
+    @Override
+    public void end() {
+        if (fileHandler != null) {
+            fileHandler.obtainMessage(2).sendToTarget();
+            Log.d("TtsEngine", "helper2end  fileHandler.obtainMessage(2).sendToTarget();"  );
+        }
     }
 
     public interface IFileWriteListener {
@@ -330,7 +344,7 @@ public class TtsHelper2 implements SynthesisCallback {
         if (recordFile == null) {
         }
         getRecordFile();
-        recordFile = new File(saveFolder,  this.fileName);
+        recordFile = new File(saveFolder, this.fileName);
         try {
             PcmUtil.changeWavHead(recordFile);
             length = recordFile.length();
@@ -342,14 +356,11 @@ public class TtsHelper2 implements SynthesisCallback {
     private final void writeToFile(byte[] data) {
         try {
             File file = this.recordFile;
-            if (file != null && file.length() <= length) {
+            if (file != null) {
                 FileOutputStream fos = new FileOutputStream(file, true);
                 fos.write(data);
                 fos.flush();
                 fos.close();
-                if (fileWriteListener != null) {
-                    fileWriteListener.onSuccess(file);
-                }
             }
         } catch (Exception var6) {
             var6.printStackTrace();

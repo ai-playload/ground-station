@@ -25,6 +25,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 /**
  * @Desc: 合成播放引擎简单封装
  * @Author leon
@@ -33,7 +34,7 @@ import java.util.concurrent.Executors;
  */
 public class TtsEngine implements AiListener {
 
-
+    public final static byte[] Audio2End = "end".getBytes();
     private static final String TAG = "TtsEngine";
 
     private SynthesisCallback mCallback;
@@ -66,8 +67,14 @@ public class TtsEngine implements AiListener {
                         SynthesisCallback synthesisCallback;
                         if (data != null) {
                             synthesisCallback = TtsEngine.this.mCallback;
-                            if (synthesisCallback != null) {
-                                synthesisCallback.audioAvailable(data, 0, data.length);
+                            if (data == TtsEngine.Audio2End) {
+                                if (synthesisCallback instanceof IAudioDataCallback) {
+                                    ((IAudioDataCallback) synthesisCallback).end();
+                                }
+                            } else {
+                                if (synthesisCallback != null) {
+                                    synthesisCallback.audioAvailable(data, 0, data.length);
+                                }
                             }
                             Log.d(TAG, "合成播放 audioTrack available");
                         } else if (TtsEngine.this.isSpeaking) {
@@ -168,19 +175,21 @@ public class TtsEngine implements AiListener {
 
 
     /**
-     * @see AiStatus
      * @param handleID
      * @param responseData
      * @param usrContext
+     * @see AiStatus
      */
     @Override
     public void onResult(int handleID, @Nullable List<AiResponse> responseData, @Nullable Object usrContext) {
 //        if (!isSpeaking) return;
         Log.d(TAG, "引擎下发数据回调");
-        if (responseData == null || responseData.isEmpty()){
+        Log.d("TtsEngine", "onResult  引擎下发数据回调."  );
+        if (responseData == null || responseData.isEmpty()) {
             Log.d(TAG, "引擎下发的数据为null");
             return;
-        };
+        }
+        ;
         for (AiResponse aiResponse : responseData) {
             byte[] value = aiResponse.getValue();
             if (value == null) {
@@ -195,22 +204,22 @@ public class TtsEngine implements AiListener {
     @Override
     public void onEvent(int handleID, int event, @Nullable List eventData, @Nullable Object usrContext) {
         SynthesisCallback callback;
+        callback = this.mCallback;
+        if (callback == null) {
+            return;
+        }
         if (event == AiEvent.EVENT_START.getValue()) {
-            callback = this.mCallback;
-            if (callback != null) {
-                callback.start(-1, AudioFormat.ENCODING_PCM_16BIT, 1);
-            }
+            callback.start(-1, AudioFormat.ENCODING_PCM_16BIT, 1);
             Log.d(TAG, "引擎计算开始");
         } else if (event == AiEvent.EVENT_PROGRESS.getValue()) {
             Log.d(TAG, "引擎计算中");
         } else if (event == AiEvent.EVENT_END.getValue()) {
             Log.d(TAG, "引擎计算结束" + Thread.currentThread().getName());
 //            this.loop = false;
+            Log.d("TtsEngine", "onEvent   byteQueue.offer(Audio2End)..."  );
+            byteQueue.offer(Audio2End);
         } else if (event == AiEvent.EVENT_TIMEOUT.getValue()) {
-            callback = this.mCallback;
-            if (callback != null) {
-                callback.error(TextToSpeech.ERROR_NETWORK_TIMEOUT);
-            }
+            callback.error(TextToSpeech.ERROR_NETWORK_TIMEOUT);
         }
     }
 
