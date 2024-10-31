@@ -26,16 +26,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.blankj.utilcode.util.NetworkUtils;
 import com.example.ground_station.R;
 import com.google.android.material.textfield.TextInputLayout;
 import com.iflytek.aikitdemo.tool.SPUtil;
 import com.lzf.easyfloat.EasyFloat;
 
+import java.com.example.ground_station.data.model.CommonConstants;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.service.GroundStationService;
 import java.com.example.ground_station.data.socket.ConnectionCallback;
 import java.com.example.ground_station.presentation.ability.IFlytekAbilityManager;
-import java.com.example.ground_station.presentation.floating.FloatingAudioFileHelper;
 import java.com.example.ground_station.presentation.util.AssetCopierUtil;
 import java.com.example.ground_station.presentation.util.FilePathUtils;
 import java.com.example.ground_station.presentation.util.TCPFileUploader;
@@ -90,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
         @SuppressLint({"MissingInflatedId", "LocalSuppress"}) ImageView imageView = findViewById(R.id.start_up_btn);
         TextView versionTv = findViewById(R.id.version_tv);
-        versionTv.setText("version: " + getVersionName());
+        versionTv.setText("version: " + getVersionName() + "\r\n" + "IP: " + NetworkUtils.getIPAddress(true));
 
         shoutIpEditText = ((TextInputLayout) findViewById(R.id.shout_ip_input)).getEditText();
         shoutPortEditText = ((TextInputLayout) findViewById(R.id.shout_port_input)).getEditText();
@@ -136,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
             cloudLightPortEditText.setText(savedCloudLightPort);
         }
     }
+
     private String getVersionName() {
         String versionName = "";
         int versionCode = 0;
@@ -152,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        return  versionName;
+        return versionName;
     }
 
     private void checkInputsAndProceed() {
@@ -293,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == FloatingAudioFileHelper.AUDIO_REQUEST_CODE && resultCode == RESULT_OK) {
+        if (requestCode == CommonConstants.AUDIO_REQUEST_CODE && resultCode == RESULT_OK) {
             try {
                 Uri uri = data.getData();
                 String filePath = FilePathUtils.getPath(this, uri);

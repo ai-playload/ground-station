@@ -273,5 +273,35 @@ public class SocketClientManager {
     public void shutdown() {
         executorService.shutdown();
     }
+
+
+    public void sendInstruct(byte msgId2, int... payload) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    socketClient.sendInstruct(msgId2, payload);
+                    Log.d("SocketClientManager", "msgId2: " + msgId2 + " Command sent: " + payload);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void sendInstruct(String msgId2, String... ps) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    socketClient.sendInstruct(msgId2, ps);
+                    Log.d("SocketClientManager", "msgId2: " + msgId2 + " Command sent: " + ps.toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.d("SocketClientManager", "IOException e " + e);
+                }
+            }
+        });
+    }
 }
 

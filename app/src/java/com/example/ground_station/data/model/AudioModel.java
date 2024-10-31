@@ -4,6 +4,7 @@ public class AudioModel {
     private String audioFileName;
     private String audioFilePath;
     private boolean isPlaying;
+    public boolean selected;
 
     public AudioModel(String audioFileName, String audioFilePath, boolean isPlaying) {
         this.audioFileName = audioFileName;

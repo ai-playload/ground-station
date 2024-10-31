@@ -31,6 +31,7 @@ public class BaseFloatingHelper {
             if (iServiceConnection != null) {
                 iServiceConnection.onServiceConnected();
             }
+            onSuccessConnected();
             Log.d("BaseFloatingHelper", "Service connected");
         }
 
@@ -44,6 +45,9 @@ public class BaseFloatingHelper {
             Log.d("BaseFloatingHelper", "Service disconnected");
         }
     };
+
+    public void onSuccessConnected() {
+    }
 
     public void startGroundStationService(Context context, IServiceConnection iServiceConnection) {
         Intent serviceIntent = new Intent(context, GroundStationService.class);

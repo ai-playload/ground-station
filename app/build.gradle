@@ -115,6 +115,7 @@ dependencies {
     implementation 'org.bouncycastle:bcprov-jdk15on:1.68'
 
     implementation 'com.blankj:utilcodex:1.31.1'
+    implementation 'org.greenrobot:eventbus:3.1.1'
 
 //    implementation "com.github.recruit-lifestyle:FloatingView:2.4.4"
 }

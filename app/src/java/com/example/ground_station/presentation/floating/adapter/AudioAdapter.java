@@ -20,7 +20,7 @@ import java.com.example.ground_station.data.model.AudioModel;
 public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioViewHolder> {
 
     private OnItemClickListener onItemClickListener;
-    private int currentPlayingPosition = RecyclerView.NO_POSITION;
+    public int currentPlayingPosition = RecyclerView.NO_POSITION;
     private int currentPosition = -1;
 
     public interface OnItemClickListener {
@@ -33,8 +33,16 @@ public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioView
         this.onItemDeleteListener = onItemDeleteListener;
     }
 
+    public AudioAdapter() {
+        super(DIFF_CALLBACK);
+    }
+
     public AudioAdapter(OnItemClickListener onItemClickListener) {
         super(DIFF_CALLBACK);
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -88,6 +96,26 @@ public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioView
         }
     }
 
+    public void other(int position) {
+        updatePlayingPosition(position);
+        if (onItemClickListener != null) {
+            onItemClickListener.onItemClick(getItem(position), false, false, position);
+        }
+    }
+
+    public void pause() {
+        if (currentPlayingPosition >= 0 && currentPlayingPosition < getCurrentList().size()) {
+            AudioModel audioModel = getItem(currentPlayingPosition);
+            if (audioModel.isPlaying()) {
+                audioModel.setPlaying(false);
+                notifyDataSetChanged();
+                if (onItemClickListener != null) {
+                    onItemClickListener.onItemClick(audioModel, false, true, currentPlayingPosition);
+                }
+            }
+        }
+    }
+
     class AudioViewHolder extends RecyclerView.ViewHolder {
         private final TextView audioContent;
         private final ImageView playBtn;
@@ -131,6 +159,7 @@ public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioView
             audioContent.setText(audioModel.getAudioFileName());
             // Update play button state if necessary
             playBtn.setImageResource(audioModel.isPlaying() ? R.drawable.ic_pause_circle : R.drawable.ic_play_circle);
+            playBtn.setVisibility(audioModel.selected ? View.GONE : View.VISIBLE);
         }
     }
 

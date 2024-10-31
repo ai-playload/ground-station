@@ -1,6 +1,16 @@
 package java.com.example.ground_station.data.socket;
 
 public class SocketConstant {
+
+
+    public static class PM {
+        public static final byte PLAY_BUNCH_START = (byte) 0x01;               // -开始播放
+        public static final byte PLAY_BUNCH_STOP = (byte) 0x02;               // -停止
+        public static final byte PLAY_BUNCH_DELETE = (byte) 0x03;               // -删除
+        public static final byte PLAY_BUNCH_PAUSE = (byte) 0x04;               // -暂停
+        public static final byte PLAY_BUNCH_RECOVER_PLAY = (byte) 0x05;               // -暂停后恢复
+    }
+
     // Header
     public static final byte HEADER = (byte) 0x8d;
 

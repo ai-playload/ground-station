@@ -18,6 +18,7 @@ import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.socket.ConnectionCallback;
 import java.com.example.ground_station.data.socket.ResponseCallback;
 import java.com.example.ground_station.data.socket.SocketClientManager;
+import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.data.socket.UdpSocketClientManager;
 import java.com.example.ground_station.presentation.ability.AbilityCallback;
 import java.com.example.ground_station.presentation.ability.AbilityConstant;
@@ -313,8 +314,37 @@ public class GroundStationService extends Service implements AbilityCallback {
     public void onAbilityEnd() {
 
     }
-    public void send(byte msgId2, int... payload) {
-//        socketClientManager.sendRemoteAudioCommand(msgId2, payload);
+
+    /**
+     * 网络点播控制-开始播放
+     */
+    public void netBpStart() {
+        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, SocketConstant.PM.PLAY_BUNCH_START);
+    }
+
+    /**
+     * 网络点播控制-停止
+     */
+    public void netBpStop() {
+        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, SocketConstant.PM.PLAY_BUNCH_STOP);
+    }
+
+    /**
+     * 网络点播控制-暂停
+     */
+    public void netBpPause() {
+        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, SocketConstant.PM.PLAY_BUNCH_PAUSE);
+    }
+
+    /**
+     * 网络点播控制-暂停后恢复
+     */
+    public void netBpRecoverPlay() {
+        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, SocketConstant.PM.PLAY_BUNCH_RECOVER_PLAY);
+    }
+
+    public void sendInstruct(byte msgId2, int... payload) {
+        socketClientManager.sendInstruct(msgId2, payload);
     }
 
 }

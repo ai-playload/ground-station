@@ -183,9 +183,8 @@ public class TtsEngine implements AiListener {
     @Override
     public void onResult(int handleID, @Nullable List<AiResponse> responseData, @Nullable Object usrContext) {
 //        if (!isSpeaking) return;
-        Log.d(TAG, "引擎下发数据回调");
-        Log.d("TtsEngine", "onResult  引擎下发数据回调."  );
-        if (responseData == null || responseData.isEmpty()) {
+        Log.d(TAG, "引擎下发数据回调" + "  handleID" + handleID + "  responseData" + responseData);
+        if (responseData == null || responseData.isEmpty()){
             Log.d(TAG, "引擎下发的数据为null");
             return;
         }

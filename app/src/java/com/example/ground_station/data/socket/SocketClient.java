@@ -2,6 +2,7 @@ package java.com.example.ground_station.data.socket;
 
 import android.util.Log;
 
+import java.com.example.ground_station.data.utils.SendUtils;
 import java.com.example.ground_station.presentation.callback.UploadProgressListener;
 import java.com.example.ground_station.presentation.util.CRC8Maxim;
 import java.io.File;
@@ -380,6 +381,24 @@ public class SocketClient {
 
     public Socket getSocket() {
         return socket;
+    }
+
+    /**
+     * 发送指令
+     * @param msgId2
+     * @param payload
+     * @throws IOException
+     */
+    public void sendInstruct(byte msgId2, int... payload) throws IOException {
+        byte[] data = SendUtils.toData(msgId2, payload);
+        // 8. 发送完整消息
+        send(data);
+    }
+
+    public void sendInstruct(String msgId2, String... payload) throws IOException {
+        byte[] data = SendUtils.toData(msgId2, payload);
+        // 8. 发送完整消息
+        send(data);
     }
 }
 
