@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Queue;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -42,6 +44,11 @@ public class TtsHelper2 implements SynthesisCallback {
     private Handler fileHandler;
     private File recordFile;
     private AudioFileGenerationCallback audioFileGenerationCallback;
+
+    private long lastWriteTime = 0;
+    private Timer timer;
+    private static final long WRITE_INTERVAL = 500; // 500毫秒
+
 
     private static final String TAG = TtsHelper.class.getSimpleName();
 
