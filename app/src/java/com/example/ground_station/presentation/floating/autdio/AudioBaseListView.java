@@ -19,12 +19,11 @@ import java.com.example.ground_station.data.service.GroundStationService;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.floating.BaseFloatingHelper;
 import java.com.example.ground_station.presentation.floating.adapter.AudioAdapter;
+import java.com.example.ground_station.presentation.listener.ConnectStateListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AudioBaseListView extends LinearLayout {
-
-    protected Boolean isAudioPlayEnding = null;
+public class AudioBaseListView extends LinearLayout implements ConnectStateListener {
 
     protected AudioAdapter adapter;
     BaseFloatingHelper helper;
@@ -33,7 +32,6 @@ public class AudioBaseListView extends LinearLayout {
     protected List<AudioModel> list = new ArrayList<>();
     protected int type = CommonConstants.TYPE_LOAD;
     protected AudioSelectedListView selectedListView;
-
 
     public AudioBaseListView(Context context) {
         this(context, null);
@@ -77,7 +75,14 @@ public class AudioBaseListView extends LinearLayout {
                 } else {
                     selectedListView.setVisibility(GONE);
                     //先暂停
-                    send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, SocketConstant.PM.PLAY_BUNCH_STOP);
+                    int p = adapter.currentPlayingPosition;
+                    p = Math.max(p, 0);
+                    if (type == CommonConstants.TYPE_LOAD) {
+                        send(SocketConstant.STREAMER, SocketConstant.PM.PLAY_BUNCH_STOP);
+                    } else {
+                        send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, p, SocketConstant.PM.PLAY_BUNCH_STOP);
+                    }
+
                     if (PlayerStates.normal == tag) {
 
                     } else if (PlayerStates.pause == tag) {
@@ -91,9 +96,13 @@ public class AudioBaseListView extends LinearLayout {
     }
 
     public void initRecyclerView(RecyclerView recyclerView) {
-        adapter = new AudioAdapter();
+        adapter = new AudioAdapter(this, type);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         recyclerView.setAdapter(adapter);
+    }
+
+    public boolean isConnectedSocket() {
+        return groundStationService != null && groundStationService.isConnectedSocket();
     }
 
     protected void send(byte msgId2, int... payload) {

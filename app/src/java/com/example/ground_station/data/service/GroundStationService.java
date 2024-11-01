@@ -14,6 +14,7 @@ import com.lzf.easyfloat.EasyFloat;
 
 import org.freedesktop.gstreamer.GStreamer;
 
+import java.com.example.ground_station.data.model.AudioModel;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.socket.ConnectionCallback;
 import java.com.example.ground_station.data.socket.ResponseCallback;
@@ -25,7 +26,10 @@ import java.com.example.ground_station.presentation.ability.AbilityConstant;
 import java.com.example.ground_station.presentation.ability.AudioFileGenerationCallback;
 import java.com.example.ground_station.presentation.ability.tts.TtsHelper2;
 import java.com.example.ground_station.presentation.floating.FloatingWindowHelper;
+import java.com.example.ground_station.presentation.util.GsonParser;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
@@ -72,6 +76,11 @@ public class GroundStationService extends Service implements AbilityCallback {
         return aiSoundHelper;
     }
 
+    public boolean isConnectedSocket() {
+        SocketClientManager manager = getSocketClientManager();
+        return manager != null && manager.isConnected;
+    }
+
     public class LocalBinder extends Binder {
         public GroundStationService getService() {
             return GroundStationService.this;
@@ -82,6 +91,14 @@ public class GroundStationService extends Service implements AbilityCallback {
         System.loadLibrary("gstreamer_android");
         System.loadLibrary("ground-station");
         nativeClassInit();
+    }
+
+    public SocketClientManager getSocketClientManager() {
+        return socketClientManager;
+    }
+
+    public UdpSocketClientManager getUdpSocketClientManager() {
+        return udpSocketClientManager;
     }
 
     public void setShoutcasterConfig(ShoutcasterConfig config, ConnectionCallback callback) {
@@ -244,6 +261,53 @@ public class GroundStationService extends Service implements AbilityCallback {
         socketClientManager.sendSocketThanReceiveCommand(msgId2, payload, callback);
     }
 
+    public void getAudioListInfo(ResultCallBack<List<AudioModel>> callBack) {
+        requestAudioListInfo(callBack, 0);
+    }
+
+    private void requestAudioListInfo(ResultCallBack<List<AudioModel>> callBack, final int num) {
+        sendSocketThanReceiveCommand(SocketConstant.GET_RECORD_LIST, 0, () -> {
+            receiveResponse(response -> {
+                if (response != null && response.length() > 1 && !response.startsWith("1")) {//gson
+                    Log.d(TAG, "ttkx Received response: " + response);
+
+                    // 查找最后一个 ']' 的位置，并截取到该位置为止
+                    int lastIndex = response.lastIndexOf("]");
+                    if (lastIndex != -1) {
+                        response = response.substring(0, lastIndex + 1);  // 保留到最后的 ']'
+                    }
+                    Log.d(TAG, "Received response after modification: " + response);
+
+                    try {
+                        GsonParser gsonParser = new GsonParser();
+                        List<AudioModel> audioModelList = getAllRemoteAudioToAudioModel(gsonParser.parseAudioFileList(response));
+                        Log.d(TAG, "Received response: " + response);
+                        callBack.result(audioModelList);
+                    } catch (Exception e) {
+                        Log.e(TAG, " error: " + e);
+                        callBack.result(null);
+                    }
+                } else {
+                    int newNum = num + 1;
+                    if (newNum >= 3) {
+                        callBack.result(null);
+                    } else {
+                        requestAudioListInfo(callBack, newNum);
+                    }
+                }
+            });
+        });
+    }
+
+    private List<AudioModel> getAllRemoteAudioToAudioModel(List<String> filePaths) {
+        List<AudioModel> audioModelList = new ArrayList<>();
+        for (String filePath : filePaths) {
+            String fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
+            audioModelList.add(new AudioModel(fileName, filePath, false));
+        }
+        return audioModelList;
+    }
+
     public void receiveResponse(ResponseCallback callback) {
         socketClientManager.receiveResponse(callback);
     }
@@ -318,32 +382,36 @@ public class GroundStationService extends Service implements AbilityCallback {
     /**
      * 网络点播控制-开始播放
      */
-    public void netBpStart() {
-        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, SocketConstant.PM.PLAY_BUNCH_START);
+    public void netBpStart(int fileIndex) {
+        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, fileIndex, SocketConstant.PM.PLAY_BUNCH_START);
     }
 
     /**
      * 网络点播控制-停止
      */
-    public void netBpStop() {
-        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, SocketConstant.PM.PLAY_BUNCH_STOP);
+    public void netBpStop(int fileIndex) {
+        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, fileIndex, SocketConstant.PM.PLAY_BUNCH_STOP);
     }
 
     /**
      * 网络点播控制-暂停
      */
-    public void netBpPause() {
-        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, SocketConstant.PM.PLAY_BUNCH_PAUSE);
+    public void netBpPause(int fileIndex) {
+        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, fileIndex, SocketConstant.PM.PLAY_BUNCH_PAUSE);
     }
 
     /**
      * 网络点播控制-暂停后恢复
      */
-    public void netBpRecoverPlay() {
-        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, SocketConstant.PM.PLAY_BUNCH_RECOVER_PLAY);
+    public void netBpRecoverPlay(int fileIndex) {
+        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, fileIndex, SocketConstant.PM.PLAY_BUNCH_RECOVER_PLAY);
     }
 
     public void sendInstruct(byte msgId2, int... payload) {
+        socketClientManager.sendInstruct(msgId2, payload);
+    }
+
+    public void sendInstruct(String msgId2, String... payload) {
         socketClientManager.sendInstruct(msgId2, payload);
     }
 

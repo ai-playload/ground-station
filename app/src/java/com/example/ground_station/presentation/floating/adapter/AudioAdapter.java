@@ -12,16 +12,24 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.example.ground_station.R;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.com.example.ground_station.data.model.AudioModel;
+import java.com.example.ground_station.data.model.CommonConstants;
+import java.com.example.ground_station.presentation.listener.ConnectStateListener;
 
 public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioViewHolder> {
 
     private OnItemClickListener onItemClickListener;
     public int currentPlayingPosition = RecyclerView.NO_POSITION;
     private int currentPosition = -1;
+    protected ConnectStateListener connectStateListener;
+    private int type;
+
+    public void setParentViewType(int type) {
+        this.type = type;
+    }
 
     public interface OnItemClickListener {
         void onItemClick(AudioModel audioModel, boolean isPlaying, boolean isPlayingPosition, int position);
@@ -29,17 +37,23 @@ public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioView
 
     private OnItemDeleteListener onItemDeleteListener;
 
-    public void setOnItemDeleteListener(OnItemDeleteListener onItemDeleteListener) {
-        this.onItemDeleteListener = onItemDeleteListener;
-    }
-
-    public AudioAdapter() {
+    public AudioAdapter(ConnectStateListener listener, int parentType) {
         super(DIFF_CALLBACK);
+        setConnectStateListener(listener);
+        setParentViewType(parentType);
     }
 
     public AudioAdapter(OnItemClickListener onItemClickListener) {
         super(DIFF_CALLBACK);
         this.onItemClickListener = onItemClickListener;
+    }
+
+    public void setConnectStateListener(ConnectStateListener connectStateListener) {
+        this.connectStateListener = connectStateListener;
+    }
+
+    public void setOnItemDeleteListener(OnItemDeleteListener onItemDeleteListener) {
+        this.onItemDeleteListener = onItemDeleteListener;
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -116,6 +130,13 @@ public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioView
         }
     }
 
+    public void stopPlay(int fileIndex) {
+        AudioModel audioModel = getItem(fileIndex);
+        audioModel.setPlaying(false);
+        currentPlayingPosition = RecyclerView.NO_POSITION;
+        notifyDataSetChanged();
+    }
+
     class AudioViewHolder extends RecyclerView.ViewHolder {
         private final TextView audioContent;
         private final ImageView playBtn;
@@ -128,6 +149,10 @@ public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioView
             deleteBtn = itemView.findViewById(R.id.delete_btn);
 
             itemView.setOnClickListener(view -> {
+                if (connectStateListener != null && !connectStateListener.isConnectedSocket()) {
+                    ToastUtils.showShort("未成功连接");
+                    return;
+                }
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
                     if (currentPlayingPosition == position) {
@@ -159,7 +184,8 @@ public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioView
             audioContent.setText(audioModel.getAudioFileName());
             // Update play button state if necessary
             playBtn.setImageResource(audioModel.isPlaying() ? R.drawable.ic_pause_circle : R.drawable.ic_play_circle);
-            playBtn.setVisibility(audioModel.selected ? View.GONE : View.VISIBLE);
+            playBtn.setVisibility(audioModel.selected && type == CommonConstants.TYPE_BP ? View.GONE : View.VISIBLE);
+            deleteBtn.setVisibility(audioModel.selected ? View.GONE : View.VISIBLE);
         }
     }
 

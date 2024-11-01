@@ -57,7 +57,10 @@ public class AudioLoadListView extends AudioBaseListView {
                 adapter.submitList(selectedList);
                 adapter.notifyDataSetChanged();
                 if (selectedList != null && selectedList.size() > 0) {
-                  adapter.other(0);//开始循环播放第一首
+                //停止本地和网络所有
+                send(SocketConstant.STREAMER, SocketConstant.PM.PLAY_BUNCH_STOP);
+                send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, 0, SocketConstant.PM.PLAY_BUNCH_STOP);
+                    adapter.other(0);//开始循环播放第一首
                 }
             }
         });
@@ -87,24 +90,24 @@ public class AudioLoadListView extends AudioBaseListView {
 
     protected void itemClickLoad(boolean isPlaying, boolean isPlayingPosition, int fileIndex, AudioModel audioModel) {
         groundStationService.setPlaybackCallback(() -> {
-            if (isAudioPlayEnding != null) {
-                if (isAudioPlayEnding == true) {
-                    //开始被点播
-                    isAudioPlayEnding = false;
-                } else {
-                    //播放结束,且如果是循环播放，则播放下一首
-                    if (bfFlag == PlayerStates.xh) {
-                        if (adapter.getCurrentList() != null && adapter.getCurrentList().size() > 0) {
-                            int size = adapter.getCurrentList().size();
-                            int p = adapter.currentPlayingPosition + 1;//下一首
-                            if (p >= size) {
-                                p = 0;
-                            }
-                            p = MathUtils.clamp(p, 0, size - 1);
-                            adapter.other(p);
-                        }
+            if (bfFlag == PlayerStates.xh) {
+                if (adapter.getCurrentList() != null && adapter.getCurrentList().size() > 0) {
+                    int size = adapter.getCurrentList().size();
+                    int p = adapter.currentPlayingPosition + 1;//下一首
+                    if (p >= size) {
+                        p = 0;
                     }
+                    p = MathUtils.clamp(p, 0, size - 1);
+                    int finalP = p;
+                    postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.other(finalP);
+                        }
+                    }, 100);
                 }
+            } else {
+                adapter.stopPlay(fileIndex);//暂停这个
             }
         });
 
@@ -114,19 +117,18 @@ public class AudioLoadListView extends AudioBaseListView {
             String command = String.format(GstreamerCommandConstant.TEXT_TO_SPEECH_COMMAND, filePath, shouter.getIp(), shouter.getPort());
             groundStationService.sendInstruct(SocketConstant.STREAMER, SocketConstant.PM.PLAY_BUNCH_START);
             groundStationService.sendMusicCommand(command);
-            isAudioPlayEnding = true;
         } else if (!isPlaying) {
             groundStationService.sendInstruct(SocketConstant.STREAMER, SocketConstant.PM.PLAY_BUNCH_PAUSE);
             groundStationService.pause();
         } else if (isPlayingPosition) {
-            groundStationService.sendInstruct(SocketConstant.STREAMER, SocketConstant.PM.PLAY_BUNCH_STOP);// TODO: 2024/10/24 暂停后恢复播放指令未实现
+            groundStationService.sendInstruct(SocketConstant.STREAMER, SocketConstant.PM.PLAY_BUNCH_RECOVER_PLAY);// TODO: 2024/10/24 暂停后恢复播放指令未实现
             groundStationService.play();
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void receive(MediaEvent event){
-        if (event.PM == SocketConstant.PM.PLAY_BUNCH_STOP ||  event.PM == SocketConstant.PM.PLAY_BUNCH_PAUSE) {
+    public void receive(MediaEvent event) {
+        if (event.PM == SocketConstant.PM.PLAY_BUNCH_STOP || event.PM == SocketConstant.PM.PLAY_BUNCH_PAUSE) {
             //暂停
             adapter.pause();
         }

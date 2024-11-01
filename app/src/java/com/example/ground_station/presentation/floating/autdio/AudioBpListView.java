@@ -37,11 +37,14 @@ public class AudioBpListView extends AudioBaseListView {
                 adapter.submitList(selectedList);
                 adapter.notifyDataSetChanged();
                 if (selectedList != null && list != null) {
+                    //停止本地和网络所有
+                    send(SocketConstant.STREAMER, SocketConstant.PM.PLAY_BUNCH_STOP);
+                    send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, 0, SocketConstant.PM.PLAY_BUNCH_STOP);
                     int[] ps = new int[selectedList.size()];
                     for (int i = 0; i < selectedList.size(); i++) {
                         ps[i] = list.indexOf(selectedList.get(i));
                     }
-                    send(SocketConstant.PLAY_RECORD, ps);
+                    send(SocketConstant.PLAY_RECORD_Bp, ps);//循环播放
                 }
             }
         });
@@ -54,7 +57,7 @@ public class AudioBpListView extends AudioBaseListView {
             }
         });
         adapter.setOnItemDeleteListener((audioModel, position) -> {
-            groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 3);
+            groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, SocketConstant.PM.PLAY_BUNCH_DELETE);
         });
     }
 
@@ -64,12 +67,12 @@ public class AudioBpListView extends AudioBaseListView {
         EventBus.getDefault().post(event);
         if (!isPlaying && !isPlayingPosition) {
             //groundStationService.sendMusicCommand(command);
-            groundStationService.netBpStart();
+            groundStationService.netBpStart(fileIndex);
         } else if (!isPlaying) {
-            groundStationService.netBpPause();
+            groundStationService.netBpPause(fileIndex);
         } else if (isPlayingPosition) {
             // TODO: 2024/10/22
-            groundStationService.netBpStart();
+            groundStationService.netBpStart(fileIndex);
             //groundStationService.netBpRecoverPlay();
         }
     }

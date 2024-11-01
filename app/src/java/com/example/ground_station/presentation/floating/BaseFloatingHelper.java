@@ -58,11 +58,13 @@ public class BaseFloatingHelper {
     }
 
     public void initFloatingView(View view, String tag, CloseCallback closeCallback) {
-        view.findViewById(R.id.close_btn).setOnClickListener(v -> {
-            if (closeCallback != null) {
-                closeCallback.onClose();
-            }
-            EasyFloat.dismiss(tag);
-        });
+        if (view != null) {
+            view.findViewById(R.id.close_btn).setOnClickListener(v -> {
+                if (closeCallback != null) {
+                    closeCallback.onClose();
+                }
+                EasyFloat.dismiss(tag);
+            });
+        }
     }
 }

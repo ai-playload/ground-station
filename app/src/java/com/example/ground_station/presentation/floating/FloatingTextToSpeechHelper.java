@@ -25,6 +25,7 @@ import androidx.appcompat.widget.AppCompatSeekBar;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.GsonUtils;
 import com.blankj.utilcode.util.StringUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.example.ground_station.R;
 import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.google.android.material.textfield.TextInputLayout;
@@ -39,6 +40,7 @@ import com.lzf.easyfloat.utils.InputMethodUtils;
 
 import java.com.example.ground_station.data.model.AudioModel;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
+import java.com.example.ground_station.data.service.ResultCallBack;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 import java.com.example.ground_station.presentation.ability.AudioFileGenerationCallback;
@@ -323,71 +325,35 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
             uploader.uploadFile(ActivityUtils.getTopActivity(), filePath, (progress -> {
                 Log.d("uploadAudioFile", "文件：" + filePath + "  progress: " + progress);
                 if (progress == 100) {
-                    if (checkBox.isChecked()) {
-                        playBpFile(file);
-                    }
+                    ToastUtils.showShort("文件上传成功   文件名：" + file.getName());
+                    playBpFile(file);
                 }
             }));
         }
     }
 
     private void playBpFile(File file) {
-        groundStationService.sendSocketThanReceiveCommand(SocketConstant.GET_RECORD_LIST, 0, () -> {
-            ThreadExtKt.mainThread(500, () -> {
-                groundStationService.receiveResponse(response -> {
-                    Log.d(TAG, "Received response before: " + response);
-
-                    if (response != null && response.length() > 1) {
-                        // 查找第一个 '[' 和最后一个 ']' 的位置
-                        int firstIndex = response.indexOf("[");
-                        int lastIndex = response.lastIndexOf("]");
-
-                        // 如果 '[' 和 ']' 都存在，且顺序正确
-                        if (firstIndex != -1 && lastIndex != -1 && firstIndex < lastIndex) {
-                            // 截取从 '[' 到 ']' 之间的内容
-                            response = response.substring(firstIndex, lastIndex + 1);  // 保留到最后的 ']'
-                        }
-
-                        Log.d(TAG, "Received response after modification: " + response);
-
-                        try {
-                            GsonParser gsonParser = new GsonParser();
-                            List<AudioModel> audioModelList = getAllRemoteAudioToAudioModel(gsonParser.parseAudioFileList(response));
-                            String name = file.getName();
-                            String json = GsonUtils.getGson().toJson(audioModelList);
-                            Log.d(TAG, "Received response after modification: json " + json);
-                            if (audioModelList != null) {
-                                for (int i = 0; i < audioModelList.size(); i++) {
-                                    AudioModel audioModel = audioModelList.get(i);
-                                    String audioFileName = audioModel.getAudioFileName();
-                                    if (StringUtils.equals(audioFileName, name)) {
-                                        int fileIndex = i;
-                                        groundStationService.sendSocketCommand(SocketConstant.PLAY_RECORD_Bp, fileIndex);
-                                        Log.d("uploadAudioFile", "文件：" + name + "  循环播放指令fileIndex: " + fileIndex);
-                                        break;
-                                    }
-                                }
-                            }
-                        } catch (Exception e) {
-                            Log.e(TAG, " error: " + e);
+        groundStationService.getAudioListInfo(new ResultCallBack<List<AudioModel>>() {
+            @Override
+            public void result(List<AudioModel> audioModelList) {
+                if (audioModelList != null) {
+                    ToastUtils.showShort("获取文件列表成功   文件数量：" + audioModelList.size());
+                    String name = file.getName();
+                    for (int i = 0; i < audioModelList.size(); i++) {
+                        AudioModel audioModel = audioModelList.get(i);
+                        String audioFileName = audioModel.getAudioFileName();
+                        if (StringUtils.equals(audioFileName, name)) {
+                            int fileIndex = i;
+                            groundStationService.sendSocketCommand(SocketConstant.PLAY_RECORD_Bp, fileIndex);
+                            Log.d("uploadAudioFile", "文件：" + name + "  循环播放指令fileIndex: " + fileIndex);
+                            break;
                         }
                     }
-                });
-
-                return Unit.INSTANCE;
-            });
+                }else {
+                    ToastUtils.showShort("获取文件列表成功失败");
+                }
+            }
         });
     }
-
-    private List<AudioModel> getAllRemoteAudioToAudioModel(List<String> filePaths) {
-        List<AudioModel> audioModelList = new ArrayList<>();
-
-        for (String filePath : filePaths) {
-            String fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
-            audioModelList.add(new AudioModel(fileName, filePath, false));
-        }
-        return audioModelList;
-    }
-
 
 }

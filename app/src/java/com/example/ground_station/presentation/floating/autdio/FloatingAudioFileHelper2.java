@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -28,6 +29,7 @@ import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
 import java.com.example.ground_station.data.model.AudioModel;
 import java.com.example.ground_station.data.model.CommonConstants;
+import java.com.example.ground_station.data.service.ResultCallBack;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.floating.BaseFloatingHelper;
 import java.com.example.ground_station.presentation.floating.CloseCallback;
@@ -53,6 +55,7 @@ public class FloatingAudioFileHelper2 extends BaseFloatingHelper {
     public void showFloatingAudioFile(AppCompatActivity activity, CloseCallback closeCallback) {
         startGroundStationService(activity, null);
         this.activity = activity;
+        LayoutInflater.from(activity).inflate(R.layout.floating_audio_file2, null);
         EasyFloat.with(activity)
                 .setShowPattern(ShowPattern.ALL_TIME)
                 .setSidePattern(SidePattern.DEFAULT)
@@ -74,8 +77,6 @@ public class FloatingAudioFileHelper2 extends BaseFloatingHelper {
                             EasyFloat.updateFloat(TAG, params.width, params.height);
                         }
                     });
-
-                    initView(view, activity);
                 })
                 .registerCallbacks(new OnFloatCallbacks() {
                     @Override
@@ -113,7 +114,10 @@ public class FloatingAudioFileHelper2 extends BaseFloatingHelper {
 
                     @Override
                     public void createdResult(boolean b, @Nullable String s, @Nullable View view) {
-                        initFloatingView(view, tag, closeCallback);
+                        if (view != null) {
+                            initView(view);
+                            initFloatingView(view, tag, closeCallback);
+                        }
 
                     }
                 })
@@ -122,15 +126,21 @@ public class FloatingAudioFileHelper2 extends BaseFloatingHelper {
 
     @Override
     public void onSuccessConnected() {
-        c0.setObj(groundStationService);
-        c1.setObj(groundStationService);
-        List data = c1.getAdapter().getCurrentList();
-        if (data == null || data.size() == 0) {
-            getOriAudioData(c1);
+        initParams();
+    }
+
+    private void initParams() {
+        if (c0 != null && groundStationService != null) {
+            c0.setObj(groundStationService);
+            c1.setObj(groundStationService);
+            List data = c1.getAdapter().getCurrentList();
+            if (data == null || data.size() == 0) {
+                getOriAudioData(c1);
+            }
         }
     }
 
-    private void initView(View view, AppCompatActivity activity) {
+    private void initView(View view) {
         tabLayout = view.findViewById(R.id.tab_layout);
         // 添加两个选项
         tabLayout.addTab(tabLayout.newTab().setText("本地音频"));
@@ -165,7 +175,7 @@ public class FloatingAudioFileHelper2 extends BaseFloatingHelper {
         });
 
         view.findViewById(R.id.button).setOnClickListener(v -> {
-            selectAudioFileFromFloatingWindow(activity);
+            selectAudioFileFromFloatingWindow();
         });
         //音量调整
         AppCompatSeekBar seekBar = view.findViewById(R.id.seek_bar);
@@ -190,37 +200,15 @@ public class FloatingAudioFileHelper2 extends BaseFloatingHelper {
                 Log.d(TAG, "volume value: " + volume);
             }
         });
+        initParams();
     }
 
     private void getOriAudioData(AudioBaseListView audioListView) {
-        groundStationService.sendSocketThanReceiveCommand(SocketConstant.GET_RECORD_LIST, 0, () -> {
-            groundStationService.receiveResponse(response -> {
-                if (response != null && response.length() > 1) {
-                    Log.d(TAG, "ttkx Received response: " + response);
-
-                    // 查找最后一个 ']' 的位置，并截取到该位置为止
-                    int lastIndex = response.lastIndexOf("]");
-                    if (lastIndex != -1) {
-                        response = response.substring(0, lastIndex + 1);  // 保留到最后的 ']'
-                    }
-
-                    Log.d(TAG, "Received response after modification: " + response);
-
-                    try {
-                        GsonParser gsonParser = new GsonParser();
-                        List<AudioModel> audioModelList = getAllRemoteAudioToAudioModel(gsonParser.parseAudioFileList(response));
-                        Log.d(TAG, "Received response: " + response);
-                        audioListView.submitList(audioModelList);
-
-                    } catch (Exception e) {
-                        Log.e(TAG, " error: " + e);
-                    }
-
-                    ThreadExtKt.mainThread(() -> {
-                        return Unit.INSTANCE;
-                    });
-                }
-            });
+        groundStationService.getAudioListInfo(new ResultCallBack<List<AudioModel>>() {
+            @Override
+            public void result(List<AudioModel> audioModelList) {
+                audioListView.submitList(audioModelList);
+            }
         });
     }
 
@@ -274,7 +262,7 @@ public class FloatingAudioFileHelper2 extends BaseFloatingHelper {
         return audioModelList;
     }
 
-    private void selectAudioFileFromFloatingWindow(AppCompatActivity activity) {
+    private void selectAudioFileFromFloatingWindow() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("audio/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
