@@ -30,9 +30,15 @@ import com.blankj.utilcode.util.NetworkUtils;
 import com.example.ground_station.R;
 import com.google.android.material.textfield.TextInputLayout;
 import com.iflytek.aikitdemo.tool.SPUtil;
+import com.lzf.easyfloat.BuildConfig;
 import com.lzf.easyfloat.EasyFloat;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.com.example.ground_station.data.model.CommonConstants;
+import java.com.example.ground_station.data.model.SendFunctionProvider;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.service.GroundStationService;
 import java.com.example.ground_station.data.socket.ConnectionCallback;
@@ -78,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main_1);
 
@@ -110,6 +117,12 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.rfcBtn).setOnClickListener(view -> {
             showFloatingWindow();
         });
+        findViewById(R.id.testBtn).setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, TestInstructActivity.class));
+        });
+        if (BuildConfig.DEBUG) {
+
+        }
     }
 
     private void getSpValueToEditText() {
@@ -395,6 +408,13 @@ public class MainActivity extends AppCompatActivity {
         }
         Intent serviceIntent = new Intent(this, GroundStationService.class);
         stopService(serviceIntent);
+        EventBus.getDefault().unregister(this);
         Log.d(TAG, "Service stopped and unbound");
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receive(SendFunctionProvider event) {
+        groundStationService.sendInstruct(event.msgId2, event.ps);
+
     }
 }

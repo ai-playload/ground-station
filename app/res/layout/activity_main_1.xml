@@ -15,17 +15,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:paddingTop="48dp"
-            android:paddingBottom="32dp"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingTop="48dp"
+            android:paddingBottom="32dp">
 
             <LinearLayout
                 android:id="@+id/shout_input_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/shout_ip_input"
@@ -33,42 +33,42 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
                     android:hint="喊话器IP"
-                    app:boxStrokeColor="@color/black"
-                    app:boxStrokeWidth="1dp"
-                    app:boxCornerRadiusTopStart="4dp"
-                    app:boxCornerRadiusTopEnd="4dp"
+                    app:boxCornerRadiusBottomEnd="4dp"
                     app:boxCornerRadiusBottomStart="4dp"
-                    app:boxCornerRadiusBottomEnd="4dp">
+                    app:boxCornerRadiusTopEnd="4dp"
+                    app:boxCornerRadiusTopStart="4dp"
+                    app:boxStrokeColor="@color/black"
+                    app:boxStrokeWidth="1dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="192.168.1.3"
+                        android:inputType="textMultiLine"
                         android:maxLines="1"
-                        android:inputType="textMultiLine"/>
+                        android:text="192.168.1.3" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/shout_port_input"
-                    android:layout_marginLeft="24dp"
-                    android:layout_marginRight="16dp"
                     android:layout_width="132dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginRight="16dp"
                     android:hint="port"
-                    app:boxStrokeColor="@color/black"
-                    app:boxStrokeWidth="1dp"
-                    app:boxCornerRadiusTopStart="4dp"
-                    app:boxCornerRadiusTopEnd="4dp"
+                    app:boxCornerRadiusBottomEnd="4dp"
                     app:boxCornerRadiusBottomStart="4dp"
-                    app:boxCornerRadiusBottomEnd="4dp">
+                    app:boxCornerRadiusTopEnd="4dp"
+                    app:boxCornerRadiusTopStart="4dp"
+                    app:boxStrokeColor="@color/black"
+                    app:boxStrokeWidth="1dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="number"
                         android:maxLines="1"
-                        android:text="8520"
-                        android:inputType="number"/>
+                        android:text="8520" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -78,8 +78,8 @@
                 android:id="@+id/controller_input_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/controller_ip_input"
@@ -87,42 +87,42 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
                     android:hint="控制器IP"
-                    app:boxStrokeColor="@color/black"
-                    app:boxStrokeWidth="1dp"
-                    app:boxCornerRadiusTopStart="4dp"
-                    app:boxCornerRadiusTopEnd="4dp"
+                    app:boxCornerRadiusBottomEnd="4dp"
                     app:boxCornerRadiusBottomStart="4dp"
-                    app:boxCornerRadiusBottomEnd="4dp">
+                    app:boxCornerRadiusTopEnd="4dp"
+                    app:boxCornerRadiusTopStart="4dp"
+                    app:boxStrokeColor="@color/black"
+                    app:boxStrokeWidth="1dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="textMultiLine"
                         android:maxLines="1"
-                        android:text="192.168.1.3"
-                        android:inputType="textMultiLine"/>
+                        android:text="192.168.1.3" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/controller_port_input"
-                    android:layout_marginLeft="24dp"
-                    android:layout_marginRight="16dp"
                     android:layout_width="132dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginRight="16dp"
                     android:hint="port"
-                    app:boxStrokeColor="@color/black"
-                    app:boxStrokeWidth="1dp"
-                    app:boxCornerRadiusTopStart="4dp"
-                    app:boxCornerRadiusTopEnd="4dp"
+                    app:boxCornerRadiusBottomEnd="4dp"
                     app:boxCornerRadiusBottomStart="4dp"
-                    app:boxCornerRadiusBottomEnd="4dp">
+                    app:boxCornerRadiusTopEnd="4dp"
+                    app:boxCornerRadiusTopStart="4dp"
+                    app:boxStrokeColor="@color/black"
+                    app:boxStrokeWidth="1dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="number"
                         android:maxLines="1"
-                        android:text="8519"
-                        android:inputType="number"/>
+                        android:text="8519" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -132,8 +132,8 @@
                 android:id="@+id/cloud_light_input_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="32dp">
+                android:layout_marginBottom="32dp"
+                android:orientation="horizontal">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/cloud_light_ip_input"
@@ -141,69 +141,84 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
                     android:hint="云台灯 IP"
-                    app:boxStrokeColor="@color/black"
-                    app:boxStrokeWidth="1dp"
-                    app:boxCornerRadiusTopStart="4dp"
-                    app:boxCornerRadiusTopEnd="4dp"
+                    app:boxCornerRadiusBottomEnd="4dp"
                     app:boxCornerRadiusBottomStart="4dp"
-                    app:boxCornerRadiusBottomEnd="4dp">
+                    app:boxCornerRadiusTopEnd="4dp"
+                    app:boxCornerRadiusTopStart="4dp"
+                    app:boxStrokeColor="@color/black"
+                    app:boxStrokeWidth="1dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="textMultiLine"
                         android:maxLines="1"
-                        android:text="192.168.1.3"
-                        android:inputType="textMultiLine"/>
+                        android:text="192.168.1.3" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/cloud_light_port_input"
-                    android:layout_marginLeft="24dp"
-                    android:layout_marginRight="16dp"
                     android:layout_width="132dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginRight="16dp"
                     android:hint="port"
-                    app:boxStrokeColor="@color/black"
-                    app:boxStrokeWidth="1dp"
-                    app:boxCornerRadiusTopStart="4dp"
-                    app:boxCornerRadiusTopEnd="4dp"
+                    app:boxCornerRadiusBottomEnd="4dp"
                     app:boxCornerRadiusBottomStart="4dp"
-                    app:boxCornerRadiusBottomEnd="4dp">
+                    app:boxCornerRadiusTopEnd="4dp"
+                    app:boxCornerRadiusTopStart="4dp"
+                    app:boxStrokeColor="@color/black"
+                    app:boxStrokeWidth="1dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="number"
                         android:maxLines="1"
-                        android:text="8519"
-                        android:inputType="number"/>
+                        android:text="8519" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/rfcBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#98a"
+                    android:padding="5dp"
+                    android:text="打开悬浮窗" />
+
+                <TextView
+                    android:id="@+id/testBtn"
+                    android:layout_marginLeft="22dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#98a"
+                    android:padding="5dp"
+                    android:text="进入测试指令界面" />
+            </LinearLayout>
 
             <ImageView
                 android:id="@+id/start_up_btn"
                 android:layout_width="84dp"
                 android:layout_height="84dp"
-                android:src="@mipmap/ic_img211"
-                android:background="@drawable/shape_startup_bg"
                 android:layout_gravity="center"
                 android:layout_marginTop="44dp"
+                android:background="@drawable/shape_startup_bg"
                 android:padding="16dp"
+                android:src="@mipmap/ic_img211"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/rfcBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="#98a"
-                android:layout_marginTop="11dp"
-                android:padding="5dp"
-                android:text="打开悬浮窗"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="MissingConstraints" />
+
         </LinearLayout>
 
     </ScrollView>
@@ -211,10 +226,10 @@
     <TextView
         android:id="@+id/version_tv"
         android:layout_width="wrap_content"
-        android:gravity="right"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_marginTop="64dp"
-        android:layout_marginRight="16dp"/>
+        android:layout_marginRight="16dp"
+        android:gravity="right" />
 
 </RelativeLayout>

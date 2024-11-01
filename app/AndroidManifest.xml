@@ -44,6 +44,7 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="java.com.example.ground_station.presentation.screen.TestInstructActivity"/>
         <service
             android:name="java.com.example.ground_station.data.service.GroundStationService"
             android:enabled="true"
