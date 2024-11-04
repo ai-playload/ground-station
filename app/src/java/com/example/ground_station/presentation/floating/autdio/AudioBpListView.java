@@ -6,11 +6,15 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.blankj.utilcode.util.StringUtils;
+import com.blankj.utilcode.util.ToastUtils;
+
 import org.greenrobot.eventbus.EventBus;
 
 import java.com.example.ground_station.data.model.AudioModel;
 import java.com.example.ground_station.data.model.CommonConstants;
 import java.com.example.ground_station.data.model.MediaEvent;
+import java.com.example.ground_station.data.service.ResultCallBack;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.util.List;
 
@@ -39,7 +43,7 @@ public class AudioBpListView extends AudioBaseListView {
                 if (selectedList != null && list != null) {
                     //停止本地和网络所有
                     send(SocketConstant.STREAMER, SocketConstant.PM.PLAY_BUNCH_STOP);
-                    send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, 0, SocketConstant.PM.PLAY_BUNCH_STOP);
+//                    send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, 0, SocketConstant.PM.PLAY_BUNCH_STOP);
                     int[] ps = new int[selectedList.size()];
                     for (int i = 0; i < selectedList.size(); i++) {
                         ps[i] = list.indexOf(selectedList.get(i));
@@ -57,7 +61,39 @@ public class AudioBpListView extends AudioBaseListView {
             }
         });
         adapter.setOnItemDeleteListener((audioModel, position) -> {
-            groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, SocketConstant.PM.PLAY_BUNCH_DELETE);
+            if (!audioModel.isDeleteLoading()) {
+                audioModel.setDeleteLoading(true);
+                groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, SocketConstant.PM.PLAY_BUNCH_DELETE);
+                groundStationService.getAudioListInfoDelayed(new ResultCallBack<List<AudioModel>>() {
+                    @Override
+                    public void result(List<AudioModel> audioModelList) {
+                        adapter.submitList(audioModelList);
+                        adapter.notifyDataSetChanged();
+                    }
+                }, adapter.getCurrentList().size(), 500);
+
+//                postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        groundStationService.getAudioListInfo(new ResultCallBack<List<AudioModel>>() {
+//                            @Override
+//                            public void result(List<AudioModel> audioModelList) {
+//                                if (audioModelList != null) {
+//                                    adapter.submitList(audioModelList);
+//                                    post(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+//                                            adapter.notifyDataSetChanged();
+//                                        }
+//                                    });
+//                                }else {
+//                                    audioModel.setDeleteLoading(false);
+//                                }
+//                            }
+//                        });
+//                    }
+//                }, 5500);
+            }
         });
     }
 

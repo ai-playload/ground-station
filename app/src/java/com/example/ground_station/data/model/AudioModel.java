@@ -5,6 +5,7 @@ public class AudioModel {
     private String audioFilePath;
     private boolean isPlaying;
     public boolean selected;
+    private boolean deleteLoading;
 
     public AudioModel(String audioFileName, String audioFilePath, boolean isPlaying) {
         this.audioFileName = audioFileName;
@@ -34,6 +35,14 @@ public class AudioModel {
 
     public void setPlaying(boolean playing) {
         isPlaying = playing;
+    }
+
+    public void setDeleteLoading(boolean deleteLoading) {
+        this.deleteLoading = deleteLoading;
+    }
+
+    public boolean isDeleteLoading() {
+        return deleteLoading;
     }
 }
 

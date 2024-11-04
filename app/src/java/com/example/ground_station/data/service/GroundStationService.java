@@ -9,6 +9,10 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.blankj.utilcode.util.ThreadUtils;
+import com.blankj.utilcode.util.TimeUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.iflytek.aikitdemo.tool.ThreadExtKt;
 import com.lzf.easyfloat.EasyFloat;
 
@@ -18,6 +22,7 @@ import java.com.example.ground_station.data.model.AudioModel;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.socket.ConnectionCallback;
 import java.com.example.ground_station.data.socket.ResponseCallback;
+import java.com.example.ground_station.data.socket.SocketClient;
 import java.com.example.ground_station.data.socket.SocketClientManager;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.data.socket.UdpSocketClientManager;
@@ -29,7 +34,9 @@ import java.com.example.ground_station.presentation.floating.FloatingWindowHelpe
 import java.com.example.ground_station.presentation.util.GsonParser;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
@@ -261,6 +268,40 @@ public class GroundStationService extends Service implements AbilityCallback {
         socketClientManager.sendSocketThanReceiveCommand(msgId2, payload, callback);
     }
 
+    public void getAudioListInfoDelayed(ResultCallBack<List<AudioModel>> callBack, int size, long delayed) {
+        Log.d(TAG, "ttkx getAudioListInfoDelayed: " + TimeUtils.getNowString());
+
+        requestAudioListInfo(callBack, size, delayed, 0);
+    }
+
+    private void requestAudioListInfo(ResultCallBack<List<AudioModel>> callBack, int size, long delayed, int num) {
+        ThreadUtils.executeByIoWithDelay(new ThreadUtils.SimpleTask<List<AudioModel>>() {
+            @Override
+            public List<AudioModel> doInBackground() throws Throwable {
+                SocketClient socketClient = socketClientManager.getSocketClient();
+                socketClient.sendInstruct(SocketConstant.GET_RECORD_LIST, 0);
+                String response = socketClient.receiveResponse(2048);
+                List<AudioModel> audioModels = formartAudioModel(response);
+                return audioModels;
+            }
+
+            @Override
+            public void onSuccess(List<AudioModel> audioModels) {
+                Log.d(TAG, "ttkx getAudioListInfoDelayed:  结果 audioModels:" + (audioModels == null ? "null" : String.valueOf(audioModels.size())));
+                if (audioModels != null && audioModels.size() != size) {
+                    callBack.result(audioModels);
+                } else {
+                    int newNum = num + 1;
+                    if (newNum >= 4) {
+                        callBack.result(null);
+                    } else {
+                        getAudioListInfoDelayed(callBack, size, delayed);
+                    }
+                }
+            }
+        }, delayed, TimeUnit.MILLISECONDS);
+    }
+
     public void getAudioListInfo(ResultCallBack<List<AudioModel>> callBack) {
         requestAudioListInfo(callBack, 0);
     }
@@ -268,28 +309,13 @@ public class GroundStationService extends Service implements AbilityCallback {
     private void requestAudioListInfo(ResultCallBack<List<AudioModel>> callBack, final int num) {
         sendSocketThanReceiveCommand(SocketConstant.GET_RECORD_LIST, 0, () -> {
             receiveResponse(response -> {
-                if (response != null && response.length() > 1 && !response.startsWith("1")) {//gson
-                    Log.d(TAG, "ttkx Received response: " + response);
-
-                    // 查找最后一个 ']' 的位置，并截取到该位置为止
-                    int lastIndex = response.lastIndexOf("]");
-                    if (lastIndex != -1) {
-                        response = response.substring(0, lastIndex + 1);  // 保留到最后的 ']'
-                    }
-                    Log.d(TAG, "Received response after modification: " + response);
-
-                    try {
-                        GsonParser gsonParser = new GsonParser();
-                        List<AudioModel> audioModelList = getAllRemoteAudioToAudioModel(gsonParser.parseAudioFileList(response));
-                        Log.d(TAG, "Received response: " + response);
-                        callBack.result(audioModelList);
-                    } catch (Exception e) {
-                        Log.e(TAG, " error: " + e);
-                        callBack.result(null);
-                    }
+                List<AudioModel> audioModels = formartAudioModel(response);
+                if (audioModels != null) {
+                    callBack.result(audioModels);
                 } else {
                     int newNum = num + 1;
                     if (newNum >= 3) {
+                        ToastUtils.showShort("获取文件列表成功失败");
                         callBack.result(null);
                     } else {
                         requestAudioListInfo(callBack, newNum);
@@ -297,6 +323,40 @@ public class GroundStationService extends Service implements AbilityCallback {
                 }
             });
         });
+    }
+
+    private List<AudioModel> formartAudioModel(String response) {
+        List<AudioModel> audioModelList = null;
+        if (response != null && response.length() > 1 && !response.startsWith("1")) {//gson
+            Log.d(TAG, "ttkx Received response: " + response);
+
+            // 查找最后一个 ']' 的位置，并截取到该位置为止
+            int lastIndex = response.lastIndexOf("]");
+            if (lastIndex != -1) {
+                response = response.substring(0, lastIndex + 1);  // 保留到最后的 ']'
+            }
+            Log.d(TAG, "Received response after modification: " + response);
+
+            try {
+                GsonParser gsonParser = new GsonParser();
+                audioModelList = getAllRemoteAudioToAudioModel(gsonParser.parseAudioFileList(response));
+                Log.d(TAG, "Received response: " + response);
+//                callBack.result(audioModelList);
+                ToastUtils.showShort("获取文件列表成功   文件数量：" + audioModelList.size());
+            } catch (Exception e) {
+                Log.e(TAG, " error: " + e);
+//                ToastUtils.showShort("获取文件列表成功失败");
+            }
+        } else {
+//            return null;
+//            int newNum = num + 1;
+//            if (newNum >= 3) {
+//                ToastUtils.showShort("获取文件列表成功失败");
+//            } else {
+//                requestAudioListInfo(callBack, newNum);
+//            }
+        }
+        return audioModelList;
     }
 
     private List<AudioModel> getAllRemoteAudioToAudioModel(List<String> filePaths) {
@@ -405,6 +465,13 @@ public class GroundStationService extends Service implements AbilityCallback {
      */
     public void netBpRecoverPlay(int fileIndex) {
         this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, fileIndex, SocketConstant.PM.PLAY_BUNCH_RECOVER_PLAY);
+    }
+
+    /**
+     * @param position
+     */
+    public void sendDeleteFileInstruct(int position) {
+        socketClientManager.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, SocketConstant.PM.PLAY_BUNCH_DELETE);
     }
 
     public void sendInstruct(byte msgId2, int... payload) {

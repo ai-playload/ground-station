@@ -61,7 +61,7 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
     private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable delayedTask;
     private CheckBox checkBox;
-    int fileNameFlag = 0;
+    private static int fileNameFlag = 0;
 
     public void showFloatingTextToSpeech(Context context, CloseCallback closeCallback) {
         startGroundStationService(context, new IServiceConnection() {
@@ -232,6 +232,8 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                             speakButton.setOnClickListener(v -> {
                                 if (isBound) {
                                     if (!editText.getText().toString().trim().isEmpty()) {
+                                        groundStationService.getTtsHelper().setFileName(fileNameFlag++);
+                                        String fileName = groundStationService.getTtsHelper().getFileName();
                                         groundStationService.generateAudioFile(editText.getText().toString(), new AudioFileGenerationCallback() {
                                             long startTime = 0;
                                             long endTime = 0;
@@ -254,8 +256,6 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                                                 Log.d(TAG, "onAudioFileGenerationEnd " + filePath + " duration: " + duration);
                                             }
                                         });
-                                        groundStationService.getTtsHelper().setFileName(fileNameFlag++);
-                                        String fileName = groundStationService.getTtsHelper().getFileName();
                                         groundStationService.getTtsHelper().setFileWriteListener(new TtsHelper2.IFileWriteListener() {
                                             @Override
                                             public void onSuccess(File file) {
@@ -337,7 +337,6 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
             @Override
             public void result(List<AudioModel> audioModelList) {
                 if (audioModelList != null) {
-                    ToastUtils.showShort("获取文件列表成功   文件数量：" + audioModelList.size());
                     String name = file.getName();
                     for (int i = 0; i < audioModelList.size(); i++) {
                         AudioModel audioModel = audioModelList.get(i);
@@ -346,11 +345,13 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                             int fileIndex = i;
                             groundStationService.sendSocketCommand(SocketConstant.PLAY_RECORD_Bp, fileIndex);
                             Log.d("uploadAudioFile", "文件：" + name + "  循环播放指令fileIndex: " + fileIndex);
-                            break;
+                            return;
                         }
+
                     }
-                }else {
-                    ToastUtils.showShort("获取文件列表成功失败");
+                    Log.d("uploadAudioFile", "文件：" + name + "  循环播放指令fileIndex: " + -1);
+                } else {
+                    Log.d("uploadAudioFile", "文件：" + "null" + "  循环播放指令fileIndex: ");
                 }
             }
         });

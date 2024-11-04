@@ -167,6 +167,10 @@ public class SocketClientManager {
         });
     }
 
+    public SocketClient getSocketClient() {
+        return socketClient;
+    }
+
     public void sendSetVolumeCommand(int volume) {
         executorService.execute(new Runnable() {
             @Override
