@@ -7,6 +7,10 @@ android {
     namespace 'com.example.ground_station'
     compileSdk 34
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId "com.example.ground_station"
         minSdk 21
@@ -52,6 +56,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+            buildConfigField "boolean","DEBUG1","false"
 
             sourceSets {
                 main {
@@ -69,6 +74,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+            buildConfigField "boolean","DEBUG1","true"
 
             sourceSets {
                 main {

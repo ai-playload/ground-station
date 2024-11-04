@@ -281,6 +281,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         ActivityCompat.requestPermissions(this, permissionsList.toArray(new String[0]), 100);
+//        PermissionUtils.permission(permissionsList.toArray(new String[0])).request();
     }
 
     @Override

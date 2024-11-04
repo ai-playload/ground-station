@@ -6,6 +6,9 @@ import android.widget.Toast;
 
 import com.iflytek.aikitdemo.tool.SPUtil;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.com.example.ground_station.data.model.UploadFileEvent;
 import java.com.example.ground_station.data.socket.SocketClient;
 import java.com.example.ground_station.presentation.callback.UploadProgressListener;
 import java.io.File;
@@ -41,6 +44,7 @@ public class TCPFileUploader {
                 activity.runOnUiThread(()-> {
                     Toast.makeText(activity, "上传文件成功", Toast.LENGTH_SHORT).show();
                 });
+                EventBus.getDefault().post(new UploadFileEvent(true));
             } catch (IOException e) {
                 activity.runOnUiThread(()-> {
                     Toast.makeText(activity, "上传文件失败：" + e, Toast.LENGTH_SHORT).show();

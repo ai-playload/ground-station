@@ -27,10 +27,15 @@ import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.example.widget.ScaleImage;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.com.example.ground_station.data.model.AudioModel;
 import java.com.example.ground_station.data.model.CommonConstants;
+import java.com.example.ground_station.data.model.UploadFileEvent;
 import java.com.example.ground_station.data.service.ResultCallBack;
 import java.com.example.ground_station.data.socket.SocketConstant;
+import java.com.example.ground_station.data.utils.Bus;
 import java.com.example.ground_station.presentation.floating.BaseFloatingHelper;
 import java.com.example.ground_station.presentation.floating.CloseCallback;
 import java.com.example.ground_station.presentation.util.DisplayUtils;
@@ -77,21 +82,23 @@ public class FloatingAudioFileHelper2 extends BaseFloatingHelper {
                             EasyFloat.updateFloat(TAG, params.width, params.height);
                         }
                     });
+                    Bus.regsiter(FloatingAudioFileHelper2.this);
+                    Log.d(TAG, " life  setLayout ");
                 })
                 .registerCallbacks(new OnFloatCallbacks() {
                     @Override
                     public void dragEnd(@NonNull View view) {
-
+                        Log.d(TAG, " life  dragEnd ");
                     }
 
                     @Override
                     public void hide(@NonNull View view) {
-
+                        Log.d(TAG, " life  hide ");
                     }
 
                     @Override
                     public void show(@NonNull View view) {
-
+                        Log.d(TAG, " life  show ");
                     }
 
                     @Override
@@ -101,6 +108,8 @@ public class FloatingAudioFileHelper2 extends BaseFloatingHelper {
 
                     @Override
                     public void dismiss() {
+                        Log.d(TAG, " life  dismiss ");
+                        Bus.unRegsiter(FloatingAudioFileHelper2.this);
                         if (isBound) {
                             groundStationService.cancelGstreamerAudioCommand();
                             groundStationService.sendSocketCommand(SocketConstant.STOP_TALK, 0);
@@ -207,9 +216,19 @@ public class FloatingAudioFileHelper2 extends BaseFloatingHelper {
         groundStationService.getAudioListInfo(new ResultCallBack<List<AudioModel>>() {
             @Override
             public void result(List<AudioModel> audioModelList) {
-                audioListView.submitList(audioModelList);
+                if (audioListView != null) {
+                    Log.d(TAG, "uploadFile 文件已更新 : 文件数量：" + audioModelList.size());
+                    audioListView.submitList(audioModelList);
+                }
             }
         });
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receive(UploadFileEvent event) {
+        if (event.isSuccess()) {
+            getOriAudioData(c1);
+        }
     }
 
     private void handleTouchEvent(View view, MotionEvent motionEvent) {
