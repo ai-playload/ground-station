@@ -32,6 +32,7 @@ public class AudioBaseListView extends LinearLayout implements ConnectStateListe
     protected List<AudioModel> list = new ArrayList<>();
     protected int type = CommonConstants.TYPE_LOAD;
     protected AudioSelectedListView selectedListView;
+    protected RadioGroup btnParent;
 
     public AudioBaseListView(Context context) {
         this(context, null);
@@ -61,7 +62,7 @@ public class AudioBaseListView extends LinearLayout implements ConnectStateListe
         selectedListView.setVisibility(View.GONE);
 
         initRecyclerView(recyclerView);
-        RadioGroup btnParent = (RadioGroup) view.findViewById(R.id.nt1);
+        btnParent = (RadioGroup) view.findViewById(R.id.nt1);
         btnParent.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
 
             @Override

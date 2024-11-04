@@ -51,6 +51,7 @@ public class AudioLoadListView extends AudioBaseListView {
     protected void initView(Context context) {
         type = CommonConstants.TYPE_LOAD;
         super.initView(context);
+        btnParent.setVisibility(GONE);
         selectedListView.setSelectedDataCallback(new AudioDataProvider() {
             @Override
             public void provider(List<AudioModel> selectedList) {
