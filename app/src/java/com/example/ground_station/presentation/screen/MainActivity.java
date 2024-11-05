@@ -15,6 +15,8 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,16 +29,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.blankj.utilcode.util.NetworkUtils;
+import com.example.ground_station.BuildConfig;
 import com.example.ground_station.R;
 import com.google.android.material.textfield.TextInputLayout;
 import com.iflytek.aikitdemo.tool.SPUtil;
-import com.lzf.easyfloat.BuildConfig;
 import com.lzf.easyfloat.EasyFloat;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.com.example.ground_station.data.crash.CrashInfoListActivity;
 import java.com.example.ground_station.data.model.CommonConstants;
 import java.com.example.ground_station.data.model.SendFunctionProvider;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
@@ -117,12 +120,18 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.rfcBtn).setOnClickListener(view -> {
             showFloatingWindow();
         });
+        findViewById(R.id.crashLogView).setOnClickListener(view -> {
+            startActivity(new Intent(this, CrashInfoListActivity.class));
+        });
+        findViewById(R.id.createCrashTestView).setOnClickListener(view -> {
+            //创建崩溃日志
+            int i = 3 / 0;
+        });
+
         findViewById(R.id.testBtn).setOnClickListener(view -> {
             startActivity(new Intent(MainActivity.this, TestInstructActivity.class));
         });
-        if (BuildConfig.DEBUG) {
-
-        }
+        ((ViewGroup) findViewById(R.id.testParentView)).setVisibility(BuildConfig.DEBUG ? View.VISIBLE : View.GONE);
     }
 
     private void getSpValueToEditText() {
