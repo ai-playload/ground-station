@@ -346,10 +346,14 @@ public class SocketClient {
     }
 
     public String receiveResponse() throws IOException {
+        return receiveResponse(1024);
+    }
+
+    public String receiveResponse(int lenght) throws IOException {
         if (inputStream == null) {
             return null;
         }
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[lenght];
         int bytesRead = inputStream.read(buffer);
         if (bytesRead == -1) {
             return null;

@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,6 +41,7 @@ import com.lzf.easyfloat.utils.InputMethodUtils;
 
 import java.com.example.ground_station.data.model.AudioModel;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
+import java.com.example.ground_station.data.service.ResultCallBack;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 import java.com.example.ground_station.presentation.ability.AudioFileGenerationCallback;
@@ -93,24 +95,27 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                 .setDragEnable(true)
                 .hasEditText(true)
                 .setTag(tag)
-                .setLayout(R.layout.floating_text_to_speech, view -> {
-                    RelativeLayout content = view.findViewById(R.id.rlContent);
-                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) content.getLayoutParams();
-
-                    ScaleImage scaleImage = view.findViewById(R.id.ivScale);
-                    scaleImage.setOnScaledListener(new ScaleImage.OnScaledListener() {
-                        @Override
-                        public void onScaled(float x, float y, MotionEvent event) {
-                            params.width = Math.max(params.width + (int) x, DisplayUtils.dpToPx(164));
-                            params.height = Math.max(params.height + (int) y, DisplayUtils.dpToPx(320));
-                            // Update the size of the floating window
-                            content.setLayoutParams(params);
-                            // Force redraw the view
-//                            content.postInvalidate();
-
-                            EasyFloat.updateFloat(TAG, params.width, params.height);
-                        }
-                    });
+                .setLayout(R.layout.floating_new_text_to_speech, view -> {
+                    if (view == null) {
+                        return;
+                    }
+//                    RelativeLayout content = view.findViewById(R.id.rlContent);
+//                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) content.getLayoutParams();
+//
+//                    ScaleImage scaleImage = view.findViewById(R.id.ivScale);
+//                    scaleImage.setOnScaledListener(new ScaleImage.OnScaledListener() {
+//                        @Override
+//                        public void onScaled(float x, float y, MotionEvent event) {
+//                            params.width = Math.max(params.width + (int) x, DisplayUtils.dpToPx(164));
+//                            params.height = Math.max(params.height + (int) y, DisplayUtils.dpToPx(320));
+//                            // Update the size of the floating window
+//                            content.setLayoutParams(params);
+//                            // Force redraw the view
+////                            content.postInvalidate();
+//
+//                            EasyFloat.updateFloat(TAG, params.width, params.height);
+//                        }
+//                    });
                 })
                 .registerCallbacks(new OnFloatCallbacks() {
 
@@ -161,8 +166,8 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                             MaterialRadioButton maleRadioButton = view.findViewById(R.id.radio_button_male);
                             maleRadioButton.setChecked(true);
 
-                            Button speakButton = view.findViewById(R.id.speak_button);
-                            checkBox = view.findViewById(R.id.loop_check_box);
+                            TextView speakButton = view.findViewById(R.id.tts_play_btn);
+                            checkBox = view.findViewById(R.id.tts_loop_cb);
 
                             editText.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -171,29 +176,7 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                                 }
                             });
 
-                            AppCompatSeekBar seekBar = view.findViewById(R.id.seek_bar);
-                            int volume = SPUtil.INSTANCE.getInt("audio_volume", 100);
-
-                            seekBar.setProgress(volume);
-                            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                                @Override
-                                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                }
-
-                                @Override
-                                public void onStartTrackingTouch(SeekBar seekBar) {
-                                }
-
-                                @Override
-                                public void onStopTrackingTouch(SeekBar seekBar) {
-                                    int volume = seekBar.getProgress();
-                                    if (isBound) {
-                                        groundStationService.sendSetVolumeCommand(volume);
-                                        SPUtil.INSTANCE.putBase("audio_volume", volume);
-                                    }
-                                    Log.d(TAG, "volume value: " + volume);
-                                }
-                            });
+//                            yl(view);
 
                             editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                                 @Override
@@ -298,6 +281,31 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                     }
                 })
                 .show();
+    }
+
+    private void yl(@NonNull View view) {
+        AppCompatSeekBar seekBar = view.findViewById(R.id.seek_bar);
+        int volume = SPUtil.INSTANCE.getInt("audio_volume", 100);
+        seekBar.setProgress(volume);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                int volume = seekBar.getProgress();
+                if (isBound) {
+                    groundStationService.sendSetVolumeCommand(volume);
+                    SPUtil.INSTANCE.putBase("audio_volume", volume);
+                }
+                Log.d(TAG, "volume value: " + volume);
+            }
+        });
     }
 
     private void playGstreamerMusic() {
