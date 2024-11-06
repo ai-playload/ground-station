@@ -7,8 +7,13 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
+import android.widget.SeekBar;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatSeekBar;
 
 import com.example.ground_station.R;
+import com.iflytek.aikitdemo.tool.SPUtil;
 import com.lzf.easyfloat.EasyFloat;
 
 import java.com.example.ground_station.data.service.GroundStationService;
@@ -64,6 +69,34 @@ public class BaseFloatingHelper {
                     closeCallback.onClose();
                 }
                 EasyFloat.dismiss(tag);
+            });
+            settingAudioSize(view);
+        }
+    }
+
+    public void settingAudioSize(@NonNull View view) {
+        SeekBar seekBar = view.findViewById(R.id.seek_bar);
+        if (seekBar != null) {
+            int volume = SPUtil.INSTANCE.getInt("audio_volume", 100);
+            seekBar.setProgress(volume);
+            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    int volume = seekBar.getProgress();
+                    if (isBound) {
+                        groundStationService.sendSetVolumeCommand(volume);
+                        SPUtil.INSTANCE.putBase("audio_volume", volume);
+                    }
+                    Log.d("Audio setting", "volume value: " + volume);
+                }
             });
         }
     }

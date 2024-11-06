@@ -8,34 +8,26 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatSeekBar;
 
 import com.blankj.utilcode.util.ActivityUtils;
-import com.blankj.utilcode.util.GsonUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.example.ground_station.R;
 import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.iflytek.aikitdemo.tool.SPUtil;
-import com.iflytek.aikitdemo.tool.ThreadExtKt;
 import com.lzf.easyfloat.EasyFloat;
 import com.lzf.easyfloat.enums.ShowPattern;
 import com.lzf.easyfloat.enums.SidePattern;
-import com.lzf.easyfloat.example.widget.ScaleImage;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 import com.lzf.easyfloat.utils.InputMethodUtils;
 
@@ -46,14 +38,9 @@ import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 import java.com.example.ground_station.presentation.ability.AudioFileGenerationCallback;
 import java.com.example.ground_station.presentation.ability.tts.TtsHelper2;
-import java.com.example.ground_station.presentation.util.DisplayUtils;
-import java.com.example.ground_station.presentation.util.GsonParser;
 import java.com.example.ground_station.presentation.util.TCPFileUploader;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-
-import kotlin.Unit;
 
 public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
     private final String tag = "text_to_speech_tag";
@@ -176,8 +163,6 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                                 }
                             });
 
-//                            yl(view);
-
                             editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                                 @Override
                                 public void onFocusChange(View v, boolean hasFocus) {
@@ -281,31 +266,6 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                     }
                 })
                 .show();
-    }
-
-    private void yl(@NonNull View view) {
-        AppCompatSeekBar seekBar = view.findViewById(R.id.seek_bar);
-        int volume = SPUtil.INSTANCE.getInt("audio_volume", 100);
-        seekBar.setProgress(volume);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                int volume = seekBar.getProgress();
-                if (isBound) {
-                    groundStationService.sendSetVolumeCommand(volume);
-                    SPUtil.INSTANCE.putBase("audio_volume", volume);
-                }
-                Log.d(TAG, "volume value: " + volume);
-            }
-        });
     }
 
     private void playGstreamerMusic() {

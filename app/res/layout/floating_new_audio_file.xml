@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="314dp"
-    android:layout_height="304dp"
+    android:layout_height="334dp"
     android:background="@drawable/floating_new_audio_bg"
     android:orientation="vertical">
 
@@ -40,11 +40,17 @@
 
     </RelativeLayout>
 
+    <include layout="@layout/audio_size_layout"
+        style="@style/ActivityTranslucent"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="5dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="4dp"
         android:orientation="horizontal">
 
         <TextView
