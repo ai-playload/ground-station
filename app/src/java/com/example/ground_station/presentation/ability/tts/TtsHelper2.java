@@ -42,6 +42,11 @@ public class TtsHelper2 implements SynthesisCallback, IAudioDataCallback {
     private Handler fileHandler;
     private File recordFile;
     private AudioFileGenerationCallback audioFileGenerationCallback;
+    private String fileName = "";
+    private int flag = 0;
+    private long length;
+    int fileNameIndex = 0;
+
 
     private static final String TAG = TtsHelper.class.getSimpleName();
 

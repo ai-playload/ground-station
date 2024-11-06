@@ -138,7 +138,8 @@ public class FloatingWindowHelper {
                 changeCloseBackground();
             });
         } else if (selectedBtn == textToSpeechBtn) {
-            new FloatingNewTextToSpeechHelper().showFloatingTextToSpeech(selectedBtn.getContext(), () -> {
+            new FloatingTextToSpeechHelper().showFloatingTextToSpeech(selectedBtn.getContext(), () -> {
+//            new FloatingNewTextToSpeechHelper().showFloatingTextToSpeech(selectedBtn.getContext(), () -> {
                 changeCloseBackground();
             });
         } else if (selectedBtn == audioFileBtn) {

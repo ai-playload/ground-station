@@ -309,6 +309,53 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/testParentView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="31dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/rfcBtn"
+                android:layout_width="66dp"
+                android:layout_height="wrap_content"
+                android:background="#98a"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="打开悬浮窗" />
+
+            <TextView
+                android:id="@+id/testBtn"
+                android:layout_marginLeft="22dp"
+                android:layout_width="66dp"
+                android:layout_height="wrap_content"
+                android:background="#98a"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="测试指令界面" />
+
+            <TextView
+                android:id="@+id/crashLogView"
+                android:layout_marginLeft="22dp"
+                android:layout_width="66dp"
+                android:layout_height="wrap_content"
+                android:background="#98a"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="崩溃日志" />
+
+            <TextView
+                android:id="@+id/createCrashTestView"
+                android:layout_marginLeft="22dp"
+                android:layout_width="66dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:background="#98a"
+                android:padding="5dp"
+                android:text="创建崩溃日志" />
+        </LinearLayout>
     </LinearLayout>
 
     <TextView

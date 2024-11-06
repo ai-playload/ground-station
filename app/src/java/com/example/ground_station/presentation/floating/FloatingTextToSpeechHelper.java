@@ -40,6 +40,7 @@ import com.lzf.easyfloat.utils.InputMethodUtils;
 
 import java.com.example.ground_station.data.model.AudioModel;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
+import java.com.example.ground_station.data.service.ResultCallBack;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 import java.com.example.ground_station.presentation.ability.AudioFileGenerationCallback;
@@ -93,24 +94,27 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                 .setDragEnable(true)
                 .hasEditText(true)
                 .setTag(tag)
-                .setLayout(R.layout.floating_text_to_speech, view -> {
-                    RelativeLayout content = view.findViewById(R.id.rlContent);
-                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) content.getLayoutParams();
-
-                    ScaleImage scaleImage = view.findViewById(R.id.ivScale);
-                    scaleImage.setOnScaledListener(new ScaleImage.OnScaledListener() {
-                        @Override
-                        public void onScaled(float x, float y, MotionEvent event) {
-                            params.width = Math.max(params.width + (int) x, DisplayUtils.dpToPx(164));
-                            params.height = Math.max(params.height + (int) y, DisplayUtils.dpToPx(320));
-                            // Update the size of the floating window
-                            content.setLayoutParams(params);
-                            // Force redraw the view
-//                            content.postInvalidate();
-
-                            EasyFloat.updateFloat(TAG, params.width, params.height);
-                        }
-                    });
+                .setLayout(R.layout.floating_new_text_to_speech, view -> {
+                    if (view == null) {
+                        return;
+                    }
+//                    RelativeLayout content = view.findViewById(R.id.rlContent);
+//                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) content.getLayoutParams();
+//
+//                    ScaleImage scaleImage = view.findViewById(R.id.ivScale);
+//                    scaleImage.setOnScaledListener(new ScaleImage.OnScaledListener() {
+//                        @Override
+//                        public void onScaled(float x, float y, MotionEvent event) {
+//                            params.width = Math.max(params.width + (int) x, DisplayUtils.dpToPx(164));
+//                            params.height = Math.max(params.height + (int) y, DisplayUtils.dpToPx(320));
+//                            // Update the size of the floating window
+//                            content.setLayoutParams(params);
+//                            // Force redraw the view
+////                            content.postInvalidate();
+//
+//                            EasyFloat.updateFloat(TAG, params.width, params.height);
+//                        }
+//                    });
                 })
                 .registerCallbacks(new OnFloatCallbacks() {
 
