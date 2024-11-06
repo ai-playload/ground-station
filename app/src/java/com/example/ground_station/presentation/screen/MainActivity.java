@@ -15,6 +15,8 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,15 +24,24 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
+import com.blankj.utilcode.util.NetworkUtils;
+import com.example.ground_station.BuildConfig;
 import com.example.ground_station.R;
 import com.iflytek.aikitdemo.tool.SPUtil;
 import com.lzf.easyfloat.EasyFloat;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.com.example.ground_station.data.crash.CrashInfoListActivity;
+import java.com.example.ground_station.data.model.CommonConstants;
+import java.com.example.ground_station.data.model.SendFunctionProvider;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.service.GroundStationService;
 import java.com.example.ground_station.data.socket.ConnectionCallback;
 import java.com.example.ground_station.presentation.ability.IFlytekAbilityManager;
-import java.com.example.ground_station.presentation.floating.FloatingAudioFileHelper;
 import java.com.example.ground_station.presentation.util.AssetCopierUtil;
 import java.com.example.ground_station.presentation.util.FilePathUtils;
 import java.com.example.ground_station.presentation.util.TCPFileUploader;
@@ -70,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_new_main);
 
@@ -99,11 +111,30 @@ public class MainActivity extends AppCompatActivity {
 
         View.OnClickListener click = v -> {
             requestPermissions();
+//            requestFloatingPermissionsAndShow();
+//            checkInputsAndProceed();
         };
 
         shoutBtn.setOnClickListener(click);
         cloudBtn.setOnClickListener(click);
         controllerBtn.setOnClickListener(click);
+
+        findViewById(R.id.rfcBtn).setOnClickListener(view -> {
+            showFloatingWindow();
+        });
+        findViewById(R.id.crashLogView).setOnClickListener(view -> {
+            startActivity(new Intent(this, CrashInfoListActivity.class));
+        });
+        findViewById(R.id.createCrashTestView).setOnClickListener(view -> {
+            //创建崩溃日志
+            int i = 3 / 0;
+        });
+
+        findViewById(R.id.testBtn).setOnClickListener(view -> {
+            startActivity(new Intent(MainActivity.this, TestInstructActivity.class));
+        });
+        ((ViewGroup) findViewById(R.id.testParentView)).setVisibility(BuildConfig.DEBUG ? View.VISIBLE : View.GONE);
+
     }
 
     private void getSpValueToEditText() {
@@ -134,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
             cloudLightPortEditText.setText(savedCloudLightPort);
         }
     }
+
     private String getVersionName() {
         String versionName = "";
         int versionCode = 0;
@@ -150,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        return  versionName;
+        return versionName;
     }
 
     private void checkInputsAndProceed() {
@@ -261,6 +293,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         ActivityCompat.requestPermissions(this, permissionsList.toArray(new String[0]), 100);
+//        PermissionUtils.permission(permissionsList.toArray(new String[0])).request();
     }
 
     @Override
@@ -291,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == FloatingAudioFileHelper.AUDIO_REQUEST_CODE && resultCode == RESULT_OK) {
+        if (requestCode == CommonConstants.AUDIO_REQUEST_CODE && resultCode == RESULT_OK) {
             try {
                 Uri uri = data.getData();
                 String filePath = FilePathUtils.getPath(this, uri);
@@ -388,6 +421,13 @@ public class MainActivity extends AppCompatActivity {
         }
         Intent serviceIntent = new Intent(this, GroundStationService.class);
         stopService(serviceIntent);
+        EventBus.getDefault().unregister(this);
         Log.d(TAG, "Service stopped and unbound");
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receive(SendFunctionProvider event) {
+        groundStationService.sendInstruct(event.msgId2, event.ps);
+
     }
 }

@@ -19,6 +19,7 @@ import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
 import java.com.example.ground_station.presentation.screen.MainActivity;
+import java.com.example.ground_station.presentation.floating.autdio.FloatingAudioFileHelper2;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -142,6 +143,7 @@ public class FloatingWindowHelper {
             });
         } else if (selectedBtn == audioFileBtn) {
             new FloatingNewAudioFileHelper().showFloatingAudioFile(activity, () -> {
+//            new FloatingAudioFileHelper2().showFloatingAudioFile(activity, () -> {
                 changeCloseBackground();
             });
         } else if (selectedBtn == lightBtn) {

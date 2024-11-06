@@ -45,10 +45,14 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="java.com.example.ground_station.presentation.screen.TestInstructActivity"/>
         <service
             android:name="java.com.example.ground_station.data.service.GroundStationService"
             android:enabled="true"
             android:exported="false" />
+
+        <activity android:name="java.com.example.ground_station.data.crash.CrashInfoActivity"/>
+        <activity android:name="java.com.example.ground_station.data.crash.CrashInfoListActivity"/>
 
     </application>
 

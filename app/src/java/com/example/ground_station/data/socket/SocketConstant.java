@@ -1,6 +1,16 @@
 package java.com.example.ground_station.data.socket;
 
 public class SocketConstant {
+
+
+    public static class PM {
+        public static final byte PLAY_BUNCH_START = (byte) 0x01;               // -开始播放
+        public static final byte PLAY_BUNCH_STOP = (byte) 0x02;               // -停止
+        public static final byte PLAY_BUNCH_DELETE = (byte) 0x03;               // -删除
+        public static final byte PLAY_BUNCH_PAUSE = (byte) 0x04;               // -暂停
+        public static final byte PLAY_BUNCH_RECOVER_PLAY = (byte) 0x05;               // -暂停后恢复
+    }
+
     // Header
     public static final byte HEADER = (byte) 0x8d;
 
@@ -47,7 +57,7 @@ public class SocketConstant {
     public static final byte EXPLOSION_FLASH = (byte) 0x2b;           // 爆闪
     public static final byte RED_BLUE_FLASH = (byte) 0x2e;            // 红蓝爆闪
     public static final byte NOTIFY_RE_FILENAME = (byte) 0x15;          // 提示传文件成功
-    public static final byte PLAY_REMOTE_AUDIO_BY_INDEX = (byte) 0x99;  // 发送索引播放音频
+    public static final byte PLAY_REMOTE_AUDIO_BY_INDEX = (byte) 0x99;  //网络点播控制 发送索引播放音频
 
     public static final byte HEART_BEAT = (byte) 0x50;  // Heartbeat 心跳包
 

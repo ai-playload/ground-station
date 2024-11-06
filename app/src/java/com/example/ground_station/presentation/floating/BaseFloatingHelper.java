@@ -31,6 +31,7 @@ public class BaseFloatingHelper {
             if (iServiceConnection != null) {
                 iServiceConnection.onServiceConnected();
             }
+            onSuccessConnected();
             Log.d("BaseFloatingHelper", "Service connected");
         }
 
@@ -45,6 +46,9 @@ public class BaseFloatingHelper {
         }
     };
 
+    public void onSuccessConnected() {
+    }
+
     public void startGroundStationService(Context context, IServiceConnection iServiceConnection) {
         Intent serviceIntent = new Intent(context, GroundStationService.class);
         context.startService(serviceIntent);
@@ -54,11 +58,13 @@ public class BaseFloatingHelper {
     }
 
     public void initFloatingView(View view, String tag, CloseCallback closeCallback) {
-        view.findViewById(R.id.close_btn).setOnClickListener(v -> {
-            if (closeCallback != null) {
-                closeCallback.onClose();
-            }
-            EasyFloat.dismiss(tag);
-        });
+        if (view != null) {
+            view.findViewById(R.id.close_btn).setOnClickListener(v -> {
+                if (closeCallback != null) {
+                    closeCallback.onClose();
+                }
+                EasyFloat.dismiss(tag);
+            });
+        }
     }
 }

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="330dp"
+    android:layout_height="320dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/rlContent"
+        android:layout_width="330dp"
+        android:layout_height="320dp"
+        android:background="@drawable/floating_layout_bg_shape"
+        android:orientation="vertical">
+
+        <RadioGroup
+            android:id="@+id/nt1"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_below="@+id/tab_layout"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <RadioButton
+                android:id="@+id/dq"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/radio_button_a"
+                android:checked="true"
+                android:paddingRight="11dp"
+                android:tag="0"
+                android:text="普通播放" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1px"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:id="@+id/xh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/radio_button_a"
+                android:checked="false"
+                android:paddingRight="11dp"
+                android:tag="1"
+                android:text="循环播放" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1px"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:id="@+id/zt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/radio_button_a"
+                android:paddingRight="11dp"
+                android:tag="2"
+                android:text="暂停播放"
+                android:visibility="visible" />
+
+        </RadioGroup>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/tab_layout"
+            android:visibility="visible" />
+    </LinearLayout>
+
+    <java.com.example.ground_station.presentation.floating.autdio.AudioSelectedListView
+        android:id="@+id/selectedParent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#999" />
+</FrameLayout>

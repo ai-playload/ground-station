@@ -28,6 +28,7 @@ import com.lzf.easyfloat.example.widget.ScaleImage;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
 import java.com.example.ground_station.data.model.AudioModel;
+import java.com.example.ground_station.data.model.CommonConstants;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
@@ -41,7 +42,7 @@ import java.util.List;
 import kotlin.Unit;
 
 public class FloatingAudioFileHelper extends BaseFloatingHelper {
-    public static final int AUDIO_REQUEST_CODE = 9;
+
     private final String tag = "audio_file_tag";
     private final String TAG = "FloatingAudioFileHelper";
     private AudioAdapter adapter;
@@ -377,7 +378,7 @@ public class FloatingAudioFileHelper extends BaseFloatingHelper {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("audio/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        activity.startActivityForResult(Intent.createChooser(intent, "选择音频文件"), AUDIO_REQUEST_CODE);
+        activity.startActivityForResult(Intent.createChooser(intent, "选择音频文件"), CommonConstants.AUDIO_REQUEST_CODE);
     }
 
 }
