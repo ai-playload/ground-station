@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -165,8 +166,8 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                             MaterialRadioButton maleRadioButton = view.findViewById(R.id.radio_button_male);
                             maleRadioButton.setChecked(true);
 
-                            Button speakButton = view.findViewById(R.id.speak_button);
-                            checkBox = view.findViewById(R.id.loop_check_box);
+                            TextView speakButton = view.findViewById(R.id.tts_play_btn);
+                            checkBox = view.findViewById(R.id.tts_loop_cb);
 
                             editText.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -175,29 +176,7 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                                 }
                             });
 
-                            AppCompatSeekBar seekBar = view.findViewById(R.id.seek_bar);
-                            int volume = SPUtil.INSTANCE.getInt("audio_volume", 100);
-
-                            seekBar.setProgress(volume);
-                            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                                @Override
-                                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                }
-
-                                @Override
-                                public void onStartTrackingTouch(SeekBar seekBar) {
-                                }
-
-                                @Override
-                                public void onStopTrackingTouch(SeekBar seekBar) {
-                                    int volume = seekBar.getProgress();
-                                    if (isBound) {
-                                        groundStationService.sendSetVolumeCommand(volume);
-                                        SPUtil.INSTANCE.putBase("audio_volume", volume);
-                                    }
-                                    Log.d(TAG, "volume value: " + volume);
-                                }
-                            });
+//                            yl(view);
 
                             editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                                 @Override
@@ -302,6 +281,31 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                     }
                 })
                 .show();
+    }
+
+    private void yl(@NonNull View view) {
+        AppCompatSeekBar seekBar = view.findViewById(R.id.seek_bar);
+        int volume = SPUtil.INSTANCE.getInt("audio_volume", 100);
+        seekBar.setProgress(volume);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                int volume = seekBar.getProgress();
+                if (isBound) {
+                    groundStationService.sendSetVolumeCommand(volume);
+                    SPUtil.INSTANCE.putBase("audio_volume", volume);
+                }
+                Log.d(TAG, "volume value: " + volume);
+            }
+        });
     }
 
     private void playGstreamerMusic() {
