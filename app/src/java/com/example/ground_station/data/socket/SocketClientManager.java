@@ -240,7 +240,7 @@ public class SocketClientManager {
             @Override
             public void run() {
                 try {
-                    String response = socketClient.receiveResponse(2048);
+                    String response = socketClient.receiveResponse();
                     Log.d("SocketClientManager", "Received response from server: " + response);
                     mainHandler.post(() -> {
                         if (callback != null) {

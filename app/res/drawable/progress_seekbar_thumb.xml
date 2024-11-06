@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@android:color/transparent" /> <!-- 透明颜色 -->
+    <size android:width="0dp" android:height="0dp" /> <!-- 可选，设置为0dp以完全隐藏 -->
+</shape>

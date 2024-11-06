@@ -1,0 +1,29 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 进度条背景 -->
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <solid android:color="#7F50566A" /> <!-- 灰色背景 -->
+            <corners android:radius="10dp" /> <!-- 背景圆角 -->
+        </shape>
+    </item>
+
+    <!-- 进度条未完成部分 -->
+<!--    <item android:id="@android:id/secondaryProgress">-->
+<!--        <shape android:shape="rectangle">-->
+<!--            <solid android:color="#D3D3D3" /> &lt;!&ndash; 灰色的未完成部分（比背景浅） &ndash;&gt;-->
+<!--            <corners android:radius="10dp" /> &lt;!&ndash; 圆角与背景一致 &ndash;&gt;-->
+<!--        </shape>-->
+<!--    </item>-->
+
+    <!-- 进度条前景（已完成的进度部分） -->
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape android:shape="rectangle">
+                <solid android:color="@color/white" /> <!-- 白色前景（进度部分） -->
+                <corners android:radius="10dp" /> <!-- 圆角与背景一致 -->
+            </shape>
+        </clip>
+    </item>
+
+</layer-list>

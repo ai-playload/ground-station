@@ -1,5 +1,7 @@
 package java.com.example.ground_station.presentation.floating;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.SystemClock;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -16,13 +18,14 @@ import com.lzf.easyfloat.enums.ShowPattern;
 import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
+import java.com.example.ground_station.presentation.screen.MainActivity;
 import java.util.HashMap;
 import java.util.Map;
 
 public class FloatingWindowHelper {
     public static final String tag = "floating_window";
 
-    private static final long DEBOUNCE_DELAY_MS = 300; // 防抖延迟时间（毫秒）
+    private static final long DEBOUNCE_DELAY_MS = 400; // 防抖延迟时间（毫秒）
     private long lastClickTime = 0;
 
     private ImageView audioBtn;
@@ -30,7 +33,7 @@ public class FloatingWindowHelper {
     private ImageView audioFileBtn;
     private ImageView lightBtn;
     private ImageView detectorAlarmBtn;
-    private ImageView tvOptionsInputSettingsBtn;
+    private ImageView topMainActivityBtn;
 
     private ImageView currentSelectedBtn;
 
@@ -38,7 +41,7 @@ public class FloatingWindowHelper {
         EasyFloat.with(activity)
                 .setLayout(R.layout.floating_side_layout)
                 .setShowPattern(ShowPattern.ALL_TIME)
-                .setSidePattern(SidePattern.RESULT_HORIZONTAL)
+                .setSidePattern(SidePattern.RESULT_RIGHT)
                 .setGravity(Gravity.RIGHT, 0, 0)
                 .setDragEnable(true)
                 .setTag(tag)
@@ -81,7 +84,7 @@ public class FloatingWindowHelper {
                 audioFileBtn = view.findViewById(R.id.audio_file_btn);
                 lightBtn = view.findViewById(R.id.light_btn);
                 detectorAlarmBtn = view.findViewById(R.id.detector_alarm_btn);
-                tvOptionsInputSettingsBtn = view.findViewById(R.id.tv_options_input_settings_btn);
+                topMainActivityBtn = view.findViewById(R.id.tv_options_to_main_btn);
 
                 View.OnClickListener clickListener = v -> {
                     toggleButtonSelection((ImageView) v, activity);
@@ -92,7 +95,12 @@ public class FloatingWindowHelper {
                 audioFileBtn.setOnClickListener(clickListener);
                 lightBtn.setOnClickListener(clickListener);
                 detectorAlarmBtn.setOnClickListener(clickListener);
-                tvOptionsInputSettingsBtn.setOnClickListener(clickListener);
+                topMainActivityBtn.setOnClickListener(v -> {
+                    Context context = v.getContext().getApplicationContext();
+                    Intent intent = new Intent(context, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    context.startActivity(intent);
+                });
 //                        currentSelectedBtn = audioBtn;
             }
         }).show();
@@ -114,41 +122,34 @@ public class FloatingWindowHelper {
         if (currentSelectedBtn != null) {
             if (currentSelectedBtn == selectedBtn) {
                 setSelectedImage(currentSelectedBtn.getId(), currentSelectedBtn, false);
-//                currentSelectedBtn.setBackgroundResource(R.drawable.floating_bg_shape); // Deselect the button
                 currentSelectedBtn = null;
                 return;
             } else {
                 setSelectedImage(currentSelectedBtn.getId(), currentSelectedBtn, false);
-//                currentSelectedBtn.setBackgroundResource(R.drawable.floating_bg_shape); // Reset background of previously selected button
             }
         }
 
-//        selectedBtn.setBackgroundResource(R.drawable.floating_bg_selected_shape); // Set background of selected button
         setSelectedImage(selectedBtn.getId(), selectedBtn, true);
         currentSelectedBtn = selectedBtn; // Update the currently selected button
 
         if (selectedBtn == audioBtn) {
-            new FloatingAudioHelper().showFloatingAudio(selectedBtn.getContext(), () -> {
+            new FloatingNewAudioHelper().showFloatingNewAudio(selectedBtn.getContext(), () -> {
                 changeCloseBackground();
             });
         } else if (selectedBtn == textToSpeechBtn) {
-            new FloatingTextToSpeechHelper().showFloatingTextToSpeech(selectedBtn.getContext(), () -> {
+            new FloatingNewTextToSpeechHelper().showFloatingTextToSpeech(selectedBtn.getContext(), () -> {
                 changeCloseBackground();
             });
         } else if (selectedBtn == audioFileBtn) {
-            new FloatingAudioFileHelper().showFloatingAudioFile(activity, () -> {
+            new FloatingNewAudioFileHelper().showFloatingAudioFile(activity, () -> {
                 changeCloseBackground();
             });
         } else if (selectedBtn == lightBtn) {
-            new FloatingLightHelper().showFloatingLight(selectedBtn.getContext(), () -> {
+            new FloatingNewLightHelper().showFloatingLight(selectedBtn.getContext(), () -> {
                 changeCloseBackground();
             });
         } else if (selectedBtn == detectorAlarmBtn) {
-            new FloatingDetectorHelper().showFloatingDetector(selectedBtn.getContext(), () -> {
-                changeCloseBackground();
-            });
-        } else if (selectedBtn == tvOptionsInputSettingsBtn) {
-            new FloatingSettingsHelper().showFloatingSettings(selectedBtn.getContext(), () -> {
+            new FloatingNewDescentHelper().showFloatingSettings(selectedBtn.getContext(), () -> {
                 changeCloseBackground();
             });
         }
@@ -174,7 +175,6 @@ public class FloatingWindowHelper {
     private void changeCloseBackground() {
         if (currentSelectedBtn != null) {
             setSelectedImage(currentSelectedBtn.getId(), currentSelectedBtn, false);
-//            currentSelectedBtn.setBackgroundResource(R.drawable.floating_bg_shape); // Deselect the button
             currentSelectedBtn = null;
         }
     }

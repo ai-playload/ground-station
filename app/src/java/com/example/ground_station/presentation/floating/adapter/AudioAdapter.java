@@ -1,20 +1,19 @@
 package java.com.example.ground_station.presentation.floating.adapter;
 
 import android.annotation.SuppressLint;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.ground_station.R;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import java.com.example.ground_station.data.model.AudioModel;
 
 public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioViewHolder> {
@@ -41,18 +40,25 @@ public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioView
     @NonNull
     @Override
     public AudioViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_audio, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_new_audio, parent, false);
         return new AudioViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull AudioViewHolder holder, int position) {
         AudioModel audioModel = getItem(position);
-        holder.bind(audioModel);
+        holder.bind(audioModel, position == currentPlayingPosition);
         holder.itemView.isFocusableInTouchMode();
     }
 
     public void updatePlayingPosition(int newPlayingPosition) {
+        if (getItemCount() == 0) {
+            return;
+        }
+
+        if (currentPlayingPosition >= getItemCount()) {
+            currentPlayingPosition = getItemCount() - 1;
+        }
         if (currentPlayingPosition != RecyclerView.NO_POSITION) {
             getItem(currentPlayingPosition).setPlaying(false);
             notifyItemChanged(currentPlayingPosition);
@@ -62,6 +68,10 @@ public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioView
         notifyItemChanged(newPlayingPosition);
     }
 
+    public int getCurrentPlayingPosition() {
+        return currentPlayingPosition;
+    }
+
     public void togglePlayPause(int position) {
         AudioModel audioModel = getItem(position);
         audioModel.setPlaying(!audioModel.isPlaying());
@@ -69,11 +79,18 @@ public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioView
     }
 
     public void playNextAudio() {
-        if (currentPosition <= getItemCount() - 1) {
-            currentPosition++;
-
-            ItemClickHandle(currentPosition);
+        if (getItemCount() == 0) {
+            return;
         }
+
+        if (currentPosition >= getItemCount() - 1) {
+            // 到了最后一个时重置到第一个位置
+            currentPosition = 0;
+        } else {
+            // 否则播放下一个
+            currentPosition++;
+        }
+        ItemClickHandle(currentPosition);
     }
 
     public void playLoopAudio() {
@@ -88,19 +105,27 @@ public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioView
         }
     }
 
+    public AudioModel getCurrentItem(int position) {
+        return getItem(position);
+    }
+
     class AudioViewHolder extends RecyclerView.ViewHolder {
         private final TextView audioContent;
         private final ImageView playBtn;
-        private final ImageView deleteBtn;
+        private final View playImg;
+//        private final ImageView deleteBtn;
 
         public AudioViewHolder(@NonNull View itemView) {
             super(itemView);
             audioContent = itemView.findViewById(R.id.audio_content);
             playBtn = itemView.findViewById(R.id.play_btn);
-            deleteBtn = itemView.findViewById(R.id.delete_btn);
+            playImg = itemView.findViewById(R.id.audio_play_img);
 
             itemView.setOnClickListener(view -> {
+
                 int position = getAdapterPosition();
+                currentPosition = position;
+
                 if (position != RecyclerView.NO_POSITION) {
                     if (currentPlayingPosition == position) {
                         togglePlayPause(position);
@@ -118,19 +143,14 @@ public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioView
                     }
                 }
             });
-
-            deleteBtn.setOnClickListener(view -> {
-                if (onItemDeleteListener != null) {
-                    int position = getAdapterPosition();
-                    onItemDeleteListener.onItemDelete(getItem(position), position);
-                }
-            });
         }
 
-        public void bind(AudioModel audioModel) {
+        public void bind(AudioModel audioModel, boolean isSelected) {
             audioContent.setText(audioModel.getAudioFileName());
-            // Update play button state if necessary
-            playBtn.setImageResource(audioModel.isPlaying() ? R.drawable.ic_pause_circle : R.drawable.ic_play_circle);
+            playBtn.setImageResource(audioModel.isPlaying() ? R.drawable.ic_item_pause : R.drawable.ic_item_play);
+            itemView.setSelected(isSelected);
+            ViewCompat.setBackgroundTintList(playImg, ColorStateList.valueOf(isSelected ? Color.parseColor("#F99E51") : Color.parseColor("#FFFFFF")));
+            audioContent.setTextColor(isSelected ? 0xFFF99E51 : 0xFFE2E6F2);
         }
     }
 
@@ -152,6 +172,5 @@ public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioView
     public interface OnItemDeleteListener {
         void onItemDelete(AudioModel audioModel, int position);
     }
-
 }
 

@@ -5,10 +5,10 @@
     android:orientation="horizontal"
     android:gravity="center_vertical">
 
-    <ImageView
-        android:layout_width="15dp"
-        android:layout_height="38dp"
-        android:src="@drawable/ic_arrow_right"/>
+<!--    <ImageView-->
+<!--        android:layout_width="15dp"-->
+<!--        android:layout_height="38dp"-->
+<!--        android:src="@drawable/ic_arrow_right"/>-->
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -56,16 +56,11 @@
             android:src="@drawable/ic_descent_unselected"/>
 
         <ImageView
-            android:id="@+id/tv_options_input_settings_btn"
+            android:id="@+id/tv_options_to_main_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/ic_settings_unselected"/>
-
+            android:src="@drawable/ic_back_to_home"/>
 
     </LinearLayout>
-
-
-
-
 
 </LinearLayout>

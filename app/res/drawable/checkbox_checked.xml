@@ -1,0 +1,25 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 背景为黄色 -->
+    <item>
+        <shape android:shape="rectangle">
+            <!-- 黄色背景 -->
+            <solid android:color="#fff99e51" />
+            <!-- 白色边框 -->
+            <stroke
+                android:width="2dp"
+                android:color="#ffffffff" />
+            <!-- 圆角设置 -->
+            <corners
+                android:radius="3dp" />
+        </shape>
+    </item>
+
+    <!-- 对号（黑色） -->
+<!--    <item android:right="5dp" android:left="5dp" android:top="5dp" android:bottom="5dp">-->
+<!--        <bitmap-->
+<!--            android:src="@drawable/ic_check_black"  &lt;!&ndash; 你的对号图标 &ndash;&gt;-->
+<!--        android:gravity="center" />-->
+<!--    </item>-->
+
+</layer-list>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="primary">#F99E51</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="semi_transparent_black">#76000000</color> <!-- 60% opacity black -->
@@ -13,4 +14,11 @@
     <color name="borderColorError">#FF0000</color> <!-- 选中边框颜色 -->
 
     <color name="color_white_10">#19FFFFFF</color>
+    <color name="color_black_20">#76000000</color>
+
+    <color name="color_pressed_icon">#ff353a4a</color>
+    <color name="color_default_icon">#ffe2e6f2</color>
+
+    <color name="tab_unselected_color">#FF86909C</color>
+    <color name="tab_selected_color">#FFE2E6F2</color>
 </resources>

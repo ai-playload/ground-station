@@ -1,0 +1,31 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 背景层：黑色透明圆角矩形 -->
+    <item android:id="@android:id/background">
+        <shape>
+            <corners android:radius="16dp" />
+            <solid android:color="#7F50566A" />
+        </shape>
+    </item>
+
+    <!-- 二次进度层（可选） -->
+<!--    <item android:id="@android:id/secondaryProgress">-->
+<!--        <scale android:scaleWidth="100%">-->
+<!--            <shape>-->
+<!--                <corners android:radius="16dp" />-->
+<!--                <solid android:color="#BFFFFFFF" /> &lt;!&ndash; 半透明白色 &ndash;&gt;-->
+<!--            </shape>-->
+<!--        </scale>-->
+<!--    </item>-->
+
+    <!-- 进度层：白色圆角矩形 -->
+    <item android:id="@android:id/progress">
+        <scale android:scaleWidth="100%">
+            <shape>
+                <corners android:radius="16dp" />
+                <solid android:color="#FFFFFF" />
+            </shape>
+        </scale>
+    </item>
+
+</layer-list>

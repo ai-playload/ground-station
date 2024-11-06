@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 按下时的背景（渐变） -->
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <stroke android:width="0dp" android:color="#ff353a4a" />
+            <gradient
+                android:type="linear"
+                android:useLevel="true"
+                android:startColor="#fffbb658"
+                android:endColor="#fff78549"
+                android:angle="90" />
+            <corners
+                android:topLeftRadius="4dp"
+                android:topRightRadius="4dp"
+                android:bottomLeftRadius="4dp"
+                android:bottomRightRadius="4dp" />
+        </shape>
+    </item>
+    <!-- 按下时的背景（渐变） -->
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <stroke android:width="0dp" android:color="#ff353a4a" />
+            <gradient
+                android:type="linear"
+                android:useLevel="true"
+                android:startColor="#fffbb658"
+                android:endColor="#fff78549"
+                android:angle="90" />
+            <corners
+                android:topLeftRadius="4dp"
+                android:topRightRadius="4dp"
+                android:bottomLeftRadius="4dp"
+                android:bottomRightRadius="4dp" />
+        </shape>
+    </item>
+
+    <!-- 未选中状态的背景（纯色） -->
+    <item android:drawable="@drawable/shape_general_bg" />
+
+</selector>

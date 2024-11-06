@@ -67,10 +67,6 @@ public class GroundStationService extends Service implements AbilityCallback {
         return binder;
     }
 
-    public TtsHelper2 getTtsHelper() {
-        return aiSoundHelper;
-    }
-
     public class LocalBinder extends Binder {
         public GroundStationService getService() {
             return GroundStationService.this;
@@ -213,15 +209,21 @@ public class GroundStationService extends Service implements AbilityCallback {
 
     private void connectSocket(ConnectionCallback callback) {
         ShoutcasterConfig.DeviceInfo controller = config.getController();
-        ShoutcasterConfig.DeviceInfo cloudLightInfo = config.getCloudLightInfo();
 
         if (socketClientManager == null) {
             socketClientManager = new SocketClientManager(getApplicationContext(), controller.getIp(), controller.getPort());
         }
         socketClientManager.connect(controller, callback);
 
+        connectUdpSocket();
+    }
+
+    public void connectUdpSocket() {
+        ShoutcasterConfig.DeviceInfo cloudLightInfo = config.getCloudLightInfo();
+
         try {
             udpSocketClientManager = new UdpSocketClientManager(cloudLightInfo.getIp(), cloudLightInfo.getPort());
+            udpSocketClientManager.connect();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -313,8 +315,4 @@ public class GroundStationService extends Service implements AbilityCallback {
     public void onAbilityEnd() {
 
     }
-    public void send(byte msgId2, int... payload) {
-//        socketClientManager.sendRemoteAudioCommand(msgId2, payload);
-    }
-
 }

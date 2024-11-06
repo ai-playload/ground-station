@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 选中状态 -->
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <!-- 1dp 渐变边框 -->
+            <stroke android:width="1dp" android:color="#FBB658" />
+            <solid android:color="#b3353a4a" />
+            <corners android:bottomLeftRadius="4dp" android:bottomRightRadius="4dp" android:topLeftRadius="4dp" android:topRightRadius="4dp" />
+        </shape>
+    </item>
+
+    <!-- 未选中状态 -->
+    <item android:drawable="@drawable/shape_general_bg" />
+
+</selector>

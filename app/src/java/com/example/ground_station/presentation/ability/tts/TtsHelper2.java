@@ -22,8 +22,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Queue;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,17 +42,8 @@ public class TtsHelper2 implements SynthesisCallback {
     private Handler fileHandler;
     private File recordFile;
     private AudioFileGenerationCallback audioFileGenerationCallback;
-    int fileNameIndex = 0;
-
-    private long lastWriteTime = 0;
-    private Timer timer;
-    private static final long WRITE_INTERVAL = 500; // 500毫秒
-
 
     private static final String TAG = TtsHelper.class.getSimpleName();
-    private String fileName = "";
-    private int flag = 0;
-    private long length;
 
     public TtsHelper2() {
         textQueue = new ConcurrentLinkedQueue<>();
@@ -121,26 +110,6 @@ public class TtsHelper2 implements SynthesisCallback {
         });
     }
 
-    private IFileWriteListener fileWriteListener;
-
-    public void setFileWriteListener(IFileWriteListener fileWriteListener) {
-        this.fileWriteListener = fileWriteListener;
-    }
-
-    public interface IFileWriteListener {
-        void onSuccess(File file);
-    }
-
-    public void setFileName(int flag) {
-        this.flag = flag;
-        int tag = flag % 10;
-        this.fileName = "t" + tag + ".mp3";
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
     public void onCreate(String engineId, AbilityCallback callBack) {
         this.engineId = engineId;
         if (ttsEngine == null) {
@@ -150,10 +119,7 @@ public class TtsHelper2 implements SynthesisCallback {
         this.callBack = callBack;
     }
 
-    public static final String saveFolder = "/sdcard/Music";
-
     public File getRecordFile() {
-//        recordFile = new File(saveFolder,  this.fileName);
         return recordFile;
     }
 
@@ -290,8 +256,7 @@ public class TtsHelper2 implements SynthesisCallback {
     }
 
     @Override
-    public void error() {
-    }
+    public void error() {}
 
     @Override
     public void error(int errorCode) {
@@ -325,22 +290,18 @@ public class TtsHelper2 implements SynthesisCallback {
                 Log.d(TAG, "无法创建目录: " + saveFolder);
             }
         }
-// TODO: 2024/10/26  
-//        String name =
 
+        recordFile = new File(
+                saveFolder,
+                "t1.mp3");
 
 //        recordFile = new File(
 //                saveFolder,
 //                "001.wav"
 //        );
 
-        if (recordFile == null) {
-        }
-        getRecordFile();
-        recordFile = new File(saveFolder,  this.fileName);
         try {
             PcmUtil.changeWavHead(recordFile);
-            length = recordFile.length();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -354,23 +315,6 @@ public class TtsHelper2 implements SynthesisCallback {
                 fos.write(data);
                 fos.flush();
                 fos.close();
-
-                lastWriteTime = System.currentTimeMillis(); // 更新最后写入时间
-
-                // 启动或重置定时器
-                if (timer != null) {
-                    timer.cancel(); // 取消之前的定时器
-                }
-
-                timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        if (fileWriteListener != null) {
-                            fileWriteListener.onSuccess(file); // 超过500毫秒无写入，回调文件生成成功
-                        }
-                    }
-                }, WRITE_INTERVAL);
             }
         } catch (Exception var6) {
             var6.printStackTrace();

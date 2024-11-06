@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <size android:height="2dp" android:width="27dp"/> <!-- 指示器高度 -->
+            <solid android:color="@color/primary" /> <!-- 指示器颜色 -->
+            <corners android:radius="2dp" /> <!-- 圆角效果 -->
+        </shape>
+    </item>
+</layer-list>

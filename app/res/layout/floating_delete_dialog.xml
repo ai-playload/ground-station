@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="311dp"
+    android:layout_height="178dp"
+    android:background="@drawable/floating_new_audio_bg"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="删除"
+        android:textSize="18sp"
+        android:layout_gravity="center"
+        android:layout_marginTop="32dp"
+        android:textColor="@color/white"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="5dp"
+        android:text="确认要删除当前音频？"
+        android:textColor="#ffe2e6f2"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp">
+
+        <TextView
+            android:id="@+id/cancel_button"
+            android:layout_width="126dp"
+            android:layout_height="40dp"
+            android:layout_centerHorizontal="true"
+            android:text="取消"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:background="@drawable/shape_general_bg"
+            android:textSize="16sp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginRight="11dp"/>
+
+        <TextView
+            android:id="@+id/default_button"
+            android:layout_width="126dp"
+            android:layout_height="40dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="确定"
+            android:textColor="#ff1d2129"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/shape_selected_general_bg"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

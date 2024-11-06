@@ -1,7 +1,6 @@
 package java.com.example.ground_station.presentation.screen;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -15,19 +14,15 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
 import com.example.ground_station.R;
-import com.google.android.material.textfield.TextInputLayout;
 import com.iflytek.aikitdemo.tool.SPUtil;
 import com.lzf.easyfloat.EasyFloat;
 
@@ -47,8 +42,6 @@ public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_CODE = 100;
     private GroundStationService groundStationService;
     private boolean isBound = false;
-    private ActivityResultLauncher<String[]> activityResultLauncher;
-
     private EditText shoutIpEditText;
     private EditText shoutPortEditText;
     private EditText controllerIpEditText;
@@ -78,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main_1);
+        setContentView(R.layout.activity_new_main);
 
         Intent serviceIntent = new Intent(this, GroundStationService.class);
         startService(serviceIntent);
@@ -88,24 +81,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        @SuppressLint({"MissingInflatedId", "LocalSuppress"}) ImageView imageView = findViewById(R.id.start_up_btn);
-        TextView versionTv = findViewById(R.id.version_tv);
-        versionTv.setText("version: " + getVersionName());
+        TextView shoutBtn = findViewById(R.id.shout_connect_btn);
+        TextView cloudBtn = findViewById(R.id.cloud_connect_btn);
+        TextView controllerBtn = findViewById(R.id.controller_connect_btn);
 
-        shoutIpEditText = ((TextInputLayout) findViewById(R.id.shout_ip_input)).getEditText();
-        shoutPortEditText = ((TextInputLayout) findViewById(R.id.shout_port_input)).getEditText();
-        controllerIpEditText = ((TextInputLayout) findViewById(R.id.controller_ip_input)).getEditText();
-        controllerPortEditText = ((TextInputLayout) findViewById(R.id.controller_port_input)).getEditText();
-        cloudLightIpEditText = ((TextInputLayout) findViewById(R.id.cloud_light_ip_input)).getEditText();
-        cloudLightPortEditText = ((TextInputLayout) findViewById(R.id.cloud_light_port_input)).getEditText();
+        TextView versionTv = findViewById(R.id.version_tv);
+        versionTv.setText("版本号: " + getVersionName());
+
+        shoutIpEditText = findViewById(R.id.shout_ip_input);
+        shoutPortEditText = findViewById(R.id.shout_port_input);
+        controllerIpEditText = findViewById(R.id.controller_ip_input);
+        controllerPortEditText = findViewById(R.id.controller_port_input);
+        cloudLightIpEditText = findViewById(R.id.cloud_light_ip_input);
+        cloudLightPortEditText = findViewById(R.id.cloud_light_port_input);
 
         getSpValueToEditText();
 
-        imageView.setOnClickListener(v -> {
+        View.OnClickListener click = v -> {
             requestPermissions();
-//            requestFloatingPermissionsAndShow();
-//            checkInputsAndProceed();
-        });
+        };
+
+        shoutBtn.setOnClickListener(click);
+        cloudBtn.setOnClickListener(click);
+        controllerBtn.setOnClickListener(click);
     }
 
     private void getSpValueToEditText() {

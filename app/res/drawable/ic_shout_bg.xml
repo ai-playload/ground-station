@@ -1,0 +1,23 @@
+<shape android:shape="rectangle"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 设置渐变，保留原有颜色并调整角度 -->
+    <gradient
+        android:type="linear"
+        android:useLevel="true"
+        android:startColor="#fff7e7d2"
+        android:endColor="#ffefd7ca"
+        android:angle="90" />
+
+    <!-- 设置圆角，所有角设置为8dp的圆角 -->
+    <corners android:radius="8dp" />
+
+    <!-- 添加边框 -->
+    <stroke android:width="2dp" android:color="#ffd2a679" />
+
+    <!-- 添加填充距离 -->
+    <padding
+        android:left="4dp"
+        android:right="4dp"
+        android:top="4dp"
+        android:bottom="4dp" />
+</shape>

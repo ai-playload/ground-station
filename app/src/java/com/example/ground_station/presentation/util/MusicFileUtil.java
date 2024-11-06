@@ -3,6 +3,7 @@ package java.com.example.ground_station.presentation.util;
 import android.os.Environment;
 import android.util.Log;
 
+import java.com.example.ground_station.data.model.AudioModel;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,5 +111,15 @@ public class MusicFileUtil {
         }
 
         return false;
+    }
+
+    public static List<AudioModel> getAllMp3Files() {
+        List<AudioModel> audioModelList = new ArrayList<>();
+        List<String> filePaths = MusicFileUtil.getAllAudioFiles();
+        for (String filePath : filePaths) {
+            String fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
+            audioModelList.add(new AudioModel(fileName, filePath, false));
+        }
+        return audioModelList;
     }
 }

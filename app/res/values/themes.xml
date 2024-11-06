@@ -2,10 +2,21 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Groundstation" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <item name="colorPrimary">@color/purple</item>
+        <item name="colorPrimary">@color/primary</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="Theme.Groundstation" parent="Base.Theme.Groundstation" />
+
+
+    <style name="CustomSeekBarStyle" parent="Widget.AppCompat.SeekBar">
+        <!-- 自定义 thumb drawable -->
+        <item name="android:thumb">@drawable/progress_seekbar_thumb</item>
+    </style>
+
+    <!-- res/values/styles.xml -->
+    <style name="YellowCursorTheme" parent="Theme.AppCompat.Light">
+        <item name="android:textCursorDrawable">@drawable/cursor_yellow</item>
+    </style>
 
 </resources>

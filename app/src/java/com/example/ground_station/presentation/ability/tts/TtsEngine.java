@@ -205,6 +205,7 @@ public class TtsEngine implements AiListener {
             Log.d(TAG, "引擎计算中");
         } else if (event == AiEvent.EVENT_END.getValue()) {
             Log.d(TAG, "引擎计算结束" + Thread.currentThread().getName());
+            isSpeaking = true;
 //            this.loop = false;
         } else if (event == AiEvent.EVENT_TIMEOUT.getValue()) {
             callback = this.mCallback;
