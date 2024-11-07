@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -112,27 +113,33 @@ public class MainActivity extends AppCompatActivity {
         View.OnClickListener click = v -> {
             requestPermissions();
 //            requestFloatingPermissionsAndShow();
-//            checkInputsAndProceed();
+            checkInputsAndProceed();
         };
 
         shoutBtn.setOnClickListener(click);
         cloudBtn.setOnClickListener(click);
         controllerBtn.setOnClickListener(click);
 
-        findViewById(R.id.rfcBtn).setOnClickListener(view -> {
-            showFloatingWindow();
-        });
-        findViewById(R.id.crashLogView).setOnClickListener(view -> {
-            startActivity(new Intent(this, CrashInfoListActivity.class));
-        });
-        findViewById(R.id.createCrashTestView).setOnClickListener(view -> {
-            //创建崩溃日志
-            int i = 3 / 0;
-        });
+        if (BuildConfig.DEBUG) {
+            findViewById(R.id.rfcBtn).setOnClickListener(view -> {
+                showFloatingWindow();
+            });
+            findViewById(R.id.crashLogView).setOnClickListener(view -> {
+                startActivity(new Intent(this, CrashInfoListActivity.class));
+            });
+            findViewById(R.id.createCrashTestView).setOnClickListener(view -> {
+                //创建崩溃日志
+                int i = 3 / 0;
+            });
 
-        findViewById(R.id.testBtn).setOnClickListener(view -> {
-            startActivity(new Intent(MainActivity.this, TestInstructActivity.class));
-        });
+            findViewById(R.id.testBtn).setOnClickListener(view -> {
+                startActivity(new Intent(MainActivity.this, TestInstructActivity.class));
+            });
+            findViewById(R.id.ljBtn).setOnClickListener(view -> {
+                //更新\nIP/端口
+                checkInputsAndProceed();
+            });
+        }
         ((ViewGroup) findViewById(R.id.testParentView)).setVisibility(BuildConfig.DEBUG ? View.VISIBLE : View.GONE);
 
     }
