@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Ai Payload</string>
+    <string name="webdav_path">http://81.70.35.199/webdav</string>
 </resources>
