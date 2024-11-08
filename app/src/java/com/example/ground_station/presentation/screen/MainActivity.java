@@ -139,6 +139,10 @@ public class MainActivity extends AppCompatActivity {
                 //更新\nIP/端口
                 checkInputsAndProceed();
             });
+            findViewById(R.id.updateBtn).setOnClickListener(view -> {
+                //更新\n软件
+                startActivity(new Intent(MainActivity.this, SettingActivity.class));
+            });
         }
         ((ViewGroup) findViewById(R.id.testParentView)).setVisibility(BuildConfig.DEBUG ? View.VISIBLE : View.GONE);
 
@@ -240,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
         // 将输入内容传递给服务或其他操作
         int shoutPortValue = Integer.valueOf(shoutPort);
         ShoutcasterConfig.DeviceInfo shoutcasterInfo = new ShoutcasterConfig.DeviceInfo(shoutIp, shoutPortValue);
-        ShoutcasterConfig.DeviceInfo controllerInfo = new ShoutcasterConfig.DeviceInfo(shoutIp, shoutPortValue -1);
+        ShoutcasterConfig.DeviceInfo controllerInfo = new ShoutcasterConfig.DeviceInfo(shoutIp, shoutPortValue - 1);
         ShoutcasterConfig.DeviceInfo cloudLightInfo = new ShoutcasterConfig.DeviceInfo(cloudLightIp, Integer.parseInt(cloudLightPort));
 
         ShoutcasterConfig.DeviceInfo sjInfo = new ShoutcasterConfig.DeviceInfo(sjIP, Integer.parseInt(sjPort));

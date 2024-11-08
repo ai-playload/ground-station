@@ -36,8 +36,8 @@
         tools:targetApi="31">
         <activity
             android:name="java.com.example.ground_station.presentation.screen.MainActivity"
-            android:launchMode="singleTask"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -45,14 +45,17 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="java.com.example.ground_station.presentation.screen.TestInstructActivity"/>
+        <activity android:name="java.com.example.ground_station.presentation.screen.TestInstructActivity" />
+
         <service
             android:name="java.com.example.ground_station.data.service.GroundStationService"
             android:enabled="true"
             android:exported="false" />
 
-        <activity android:name="java.com.example.ground_station.data.crash.CrashInfoActivity"/>
-        <activity android:name="java.com.example.ground_station.data.crash.CrashInfoListActivity"/>
+        <activity android:name="java.com.example.ground_station.data.crash.CrashInfoActivity" />
+        <activity android:name="java.com.example.ground_station.data.crash.CrashInfoListActivity" />
+        <activity android:name="java.com.example.ground_station.presentation.screen.SoftUpdateActivity" />
+        <activity android:name="java.com.example.ground_station.presentation.screen.SettingActivity" />
 
     </application>
 
