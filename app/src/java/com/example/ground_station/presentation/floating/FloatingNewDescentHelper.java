@@ -163,38 +163,38 @@ public class FloatingNewDescentHelper extends BaseFloatingHelper {
         safetyButton.setOnClickListener(v -> {
             safetyButton.setSelected(!safetyButton.isSelected());
             if (isSafetyBtnEnable) {
-                groundStationService.sendSocketCommand(SocketConstant.PARACHUTE, PARACHUTE_STATUS_CLOSE);
+                groundStationService.sendSjInstruct(SocketConstant.PARACHUTE, PARACHUTE_STATUS_CLOSE);
             } else {
-                groundStationService.sendSocketCommand(SocketConstant.PARACHUTE, PARACHUTE_STATUS_OPEN);
+                groundStationService.sendSjInstruct(SocketConstant.PARACHUTE, PARACHUTE_STATUS_OPEN);
             }
             isSafetyBtnEnable = !isSafetyBtnEnable;
         });
 
         brakingButton.setOnClickListener(v -> {
-            groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_CONTROL, 1);
+            groundStationService.sendSjInstruct(SocketConstant.PARACHUTE_CONTROL, 1);
         });
 
         circuitButton.setOnClickListener(v -> {
-            groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_CONTROL, 2);
+            groundStationService.sendSjInstruct(SocketConstant.PARACHUTE_CONTROL, 2);
         });
 
 //        relieveButton.setOnClickListener(v -> {
-//            groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_CONTROL, 0);
+//            groundStationService.sendSjInstruct(SocketConstant.PARACHUTE_CONTROL, 0);
 //        });
 
         upActionButton.setOnClickListener(v -> {
-            groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_SPEED, speedValue);
-            groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_LENGTH, lengthValue);
+            groundStationService.sendSjInstruct(SocketConstant.PARACHUTE_SPEED, speedValue);
+            groundStationService.sendSjInstruct(SocketConstant.PARACHUTE_LENGTH, lengthValue);
         });
 
         downActionButton.setOnClickListener(v -> {
-            groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_SPEED, -speedValue);
-            groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_LENGTH, -lengthValue);
+            groundStationService.sendSjInstruct(SocketConstant.PARACHUTE_SPEED, -speedValue);
+            groundStationService.sendSjInstruct(SocketConstant.PARACHUTE_LENGTH, -lengthValue);
         });
 
         //2上升 3下降 4停止
         stopActionButton.setOnClickListener(v -> {
-            groundStationService.sendSocketCommand(SocketConstant.PARACHUTE, PARACHUTE_STATUS_STOP);
+            groundStationService.sendSjInstruct(SocketConstant.PARACHUTE, PARACHUTE_STATUS_STOP);
         });
     }
 

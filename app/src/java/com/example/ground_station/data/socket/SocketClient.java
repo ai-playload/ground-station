@@ -391,5 +391,17 @@ public class SocketClient {
         // 8. 发送完整消息
         send(data);
     }
+
+    /**
+     * 发送指令
+     * @param msgId2
+     * @param payload
+     * @throws IOException
+     */
+    public void sendSjInstruct(byte msgId2, int... payload) throws IOException {
+        byte[] data = SendUtils.toData(msgId2, payload);
+        // 8. 发送完整消息
+        send(data);
+    }
 }
 

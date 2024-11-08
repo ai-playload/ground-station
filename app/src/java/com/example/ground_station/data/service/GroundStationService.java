@@ -488,4 +488,13 @@ public class GroundStationService extends Service implements AbilityCallback {
         socketClientManager.sendInstruct(msgId2, payload);
     }
 
+    /**
+     * 发送索降的事情
+     * @param msgId2
+     * @param payload
+     */
+    public void sendSjInstruct(byte msgId2, int... payload) {
+        socketClientManager.sendSjInstruct(msgId2, payload);
+    }
+
 }

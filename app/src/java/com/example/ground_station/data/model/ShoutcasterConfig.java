@@ -2,14 +2,20 @@ package java.com.example.ground_station.data.model;
 
 public class ShoutcasterConfig {
 
+    private final DeviceInfo sjInfo;
     private DeviceInfo shoutcaster;
     private DeviceInfo controller;
     private DeviceInfo cloudLightInfo;
 
-    public ShoutcasterConfig(DeviceInfo shoutcaster, DeviceInfo controller, DeviceInfo cloudLightInfo) {
+    public ShoutcasterConfig(DeviceInfo shoutcaster, DeviceInfo controller, DeviceInfo cloudLightInfo, DeviceInfo sjInfo) {
         this.shoutcaster = shoutcaster;
         this.controller = controller;
         this.cloudLightInfo = cloudLightInfo;
+        this.sjInfo = sjInfo;
+    }
+
+    public DeviceInfo getSjInfo() {
+        return sjInfo;
     }
 
     public DeviceInfo getCloudLightInfo() {

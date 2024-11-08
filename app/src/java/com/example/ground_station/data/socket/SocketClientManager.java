@@ -6,12 +6,21 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.blankj.utilcode.util.StringUtils;
+import com.blankj.utilcode.util.ThreadUtils;
+import com.blankj.utilcode.util.TimeUtils;
+import com.iflytek.aikitdemo.tool.SPUtil;
+
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class SocketClientManager {
+    private int sjPortValue = -1;
+    private String sjIp;
     private ExecutorService executorService;
     private final Handler mainHandler;
     private final Handler reconnectHandler; // Handler for reconnection attempts
@@ -23,14 +32,31 @@ public class SocketClientManager {
     private final Context context;
     private ShoutcasterConfig.DeviceInfo controller;
     private SocketClient socketClient;
+    private SocketClient socketClientSj;//索降
+    private boolean isSocketConnectSj;
 
     public SocketClientManager(Context context, String serverIp, int serverPort) {
         this.executorService = Executors.newSingleThreadExecutor(); // 创建一个具有固定线程数的线程池
         this.socketClient = new SocketClient(serverIp, serverPort);
+
+        updateSjInfo();
+        if (!StringUtils.isEmpty(sjIp) && sjPortValue >= 0) {
+            this.socketClientSj = new SocketClient(sjIp, sjPortValue);
+        }
+
         this.mainHandler = new Handler(Looper.getMainLooper()); // 用于在主线程上处理结果
         this.reconnectHandler = new Handler(Looper.getMainLooper()); // Reconnection handler
         this.heartbeatHandler = new Handler(Looper.getMainLooper()); // Reconnection handler
         this.context = context;
+    }
+
+    private void updateSjInfo() {
+        // 索降
+        sjIp = SPUtil.INSTANCE.getString("sj_ip", "");
+        String sjPort = SPUtil.INSTANCE.getString("sj_port", "");
+        if (!StringUtils.isEmpty(sjIp) && !StringUtils.isEmpty(sjPort)) {
+            sjPortValue = Integer.parseInt(sjPort);
+        }
     }
 
     public void connect(ShoutcasterConfig.DeviceInfo controller, ConnectionCallback callback) {
@@ -53,6 +79,9 @@ public class SocketClientManager {
                     socketClient = new SocketClient(controller.getIp(), controller.getPort());
 
                     socketClient.connect(controller.getIp(), controller.getPort());
+
+                    isSocketConnectSj = soketConnectSj();
+
                     mainHandler.post(() -> {
                         Toast.makeText(context, "连接成功", Toast.LENGTH_SHORT).show();
 
@@ -81,6 +110,31 @@ public class SocketClientManager {
                 }
             }
         });
+    }
+
+    private boolean soketConnectSj() {
+        try {
+            updateSjInfo();
+            if (isConnectSj()) {
+                try {
+                    socketClientSj.disconnect(); // 断开当前连接
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            socketClientSj = new SocketClient(sjIp, sjPortValue);
+            if (!StringUtils.isEmpty(sjIp)) {
+                socketClientSj.connect(sjIp, sjPortValue);
+                return true;
+            }
+        } catch (Exception e) {
+            String message = e.getMessage();
+        }
+        return false;
+    }
+
+    private boolean isConnectSj() {
+        return socketClientSj != null && socketClientSj.getSocket() != null && socketClientSj.getSocket().isConnected();
     }
 
     // 心跳包逻辑
@@ -306,6 +360,47 @@ public class SocketClientManager {
                 }
             }
         });
+    }
+
+    ExecutorService fixedPool = Executors.newSingleThreadExecutor();
+    public void sendSjInstruct(byte msgId2, int... payload) {
+        fixedPool.execute(new ThreadUtils.SimpleTask<Boolean>() {
+            @Override
+            public Boolean doInBackground() throws Throwable {
+                try {
+                    Log.d("SocketClientManager", TimeUtils.getNowString() + " sj    单线程开始 msgId2: " + msgId2 + " Command sent: " + payload);
+                    if (!isSocketConnectSj) {
+                        isSocketConnectSj = soketConnectSj();
+                    }
+                    socketClientSj.sendSjInstruct(msgId2, payload);
+                    Log.d("SocketClientManager", TimeUtils.getNowString() + " sj    单线程结束 msgId2: " + msgId2 + " Command sent: " + payload);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+
+            }
+        });
+
+//        executorService.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    if (!isSocketConnectSj) {
+//                        isSocketConnectSj = soketConnectSj();
+//                    }
+//                    socketClientSj.sendSjInstruct(msgId2, payload);
+//                    Log.d("SocketClientManager", TimeUtils.getNowString() + " sj  udp msgId2: " + msgId2 + " Command sent: " + payload);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+
     }
 }
 

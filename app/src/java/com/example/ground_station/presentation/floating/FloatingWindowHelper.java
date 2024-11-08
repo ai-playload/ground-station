@@ -173,6 +173,13 @@ public class FloatingWindowHelper {
             int[] images = imageMap.get(id);
             currentSelectedBtn.setImageResource(isSelected ? images[0] : images[1]);
         }
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
+        thread.run();
     }
 
     private void changeCloseBackground() {

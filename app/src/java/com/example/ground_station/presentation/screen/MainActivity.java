@@ -236,24 +236,33 @@ public class MainActivity extends AppCompatActivity {
         proceedWithValidInputs(shoutIp, shoutPort, controllerIp, controllerPort, cloudLightIp, cloudLightPort);
     }
 
-    private void proceedWithValidInputs(String shoutIp, String shoutPort, String controllerIp, String controllerPort, String cloudLightIp, String cloudLightPort) {
+    private void proceedWithValidInputs(String shoutIp, String shoutPort, String sjIP, String sjPort, String cloudLightIp, String cloudLightPort) {
         // 将输入内容传递给服务或其他操作
-        ShoutcasterConfig.DeviceInfo shoutcasterInfo = new ShoutcasterConfig.DeviceInfo(shoutIp, Integer.parseInt(shoutPort));
-        ShoutcasterConfig.DeviceInfo controllerInfo = new ShoutcasterConfig.DeviceInfo(controllerIp, Integer.parseInt(controllerPort));
+        int shoutPortValue = Integer.valueOf(shoutPort);
+        ShoutcasterConfig.DeviceInfo shoutcasterInfo = new ShoutcasterConfig.DeviceInfo(shoutIp, shoutPortValue);
+        ShoutcasterConfig.DeviceInfo controllerInfo = new ShoutcasterConfig.DeviceInfo(shoutIp, shoutPortValue -1);
         ShoutcasterConfig.DeviceInfo cloudLightInfo = new ShoutcasterConfig.DeviceInfo(cloudLightIp, Integer.parseInt(cloudLightPort));
-        ShoutcasterConfig config = new ShoutcasterConfig(shoutcasterInfo, controllerInfo, cloudLightInfo);
+
+        ShoutcasterConfig.DeviceInfo sjInfo = new ShoutcasterConfig.DeviceInfo(sjIP, Integer.parseInt(sjPort));
+
+//        ShoutcasterConfig config = new ShoutcasterConfig(shoutcasterInfo, controllerInfo, cloudLightInfo);
+        ShoutcasterConfig config = new ShoutcasterConfig(shoutcasterInfo, controllerInfo, cloudLightInfo, sjInfo);
 
         // 将 shoutcaster 的 IP 和端口保存到 SharedPreferences
-        SPUtil.INSTANCE.putBase("shoutcaster_ip", shoutIp);
-        SPUtil.INSTANCE.putBase("shoutcaster_port", shoutPort);
+        SPUtil.INSTANCE.putBase("shoutcaster_ip", shoutcasterInfo.getIp());
+        SPUtil.INSTANCE.putBase("shoutcaster_port", String.valueOf(shoutcasterInfo.getPort()));
 
         // 将 controller 的 IP 和端口保存到 SharedPreferences
-        SPUtil.INSTANCE.putBase("controller_ip", controllerIp);
-        SPUtil.INSTANCE.putBase("controller_port", controllerPort);
+        SPUtil.INSTANCE.putBase("controller_ip", controllerInfo.getIp());
+        SPUtil.INSTANCE.putBase("controller_port", String.valueOf(controllerInfo.getPort()));
 
         // 将 cloud light 的 IP 和端口保存到 SharedPreferences
         SPUtil.INSTANCE.putBase("cloud_light_ip", cloudLightIp);
-        SPUtil.INSTANCE.putBase("cloud_light_port", cloudLightPort);
+        SPUtil.INSTANCE.putBase("cloud_light_port", String.valueOf(cloudLightPort));
+
+        // 索降
+        SPUtil.INSTANCE.putBase("sj_ip", sjInfo.getIp());
+        SPUtil.INSTANCE.putBase("sj_port", String.valueOf(sjInfo.getPort()));
 
         groundStationService.setShoutcasterConfig(config, new ConnectionCallback() {
             @Override
