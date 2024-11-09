@@ -1,11 +1,15 @@
 package java.com.example.ground_station.presentation.floating;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -19,6 +23,7 @@ import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
 import java.com.example.ground_station.presentation.screen.MainActivity;
+import java.com.example.ground_station.presentation.util.DisplayUtils;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,8 +39,10 @@ public class FloatingWindowHelper {
     private ImageView lightBtn;
     private ImageView detectorAlarmBtn;
     private ImageView topMainActivityBtn;
-
+    private ImageView switchBtn;
     private ImageView currentSelectedBtn;
+
+    private boolean isFloatingWindowVisible = true;
 
     public void showFloatingWindow(AppCompatActivity activity) {
         EasyFloat.with(activity)
@@ -85,10 +92,13 @@ public class FloatingWindowHelper {
                 lightBtn = view.findViewById(R.id.light_btn);
                 detectorAlarmBtn = view.findViewById(R.id.detector_alarm_btn);
                 topMainActivityBtn = view.findViewById(R.id.tv_options_to_main_btn);
+                switchBtn = view.findViewById(R.id.switch_btn);
 
                 View.OnClickListener clickListener = v -> {
                     toggleButtonSelection((ImageView) v, activity);
                 };
+
+                switchBtn.setOnClickListener(v -> toggleFloatingWindow(view));
 
                 audioBtn.setOnClickListener(clickListener);
                 textToSpeechBtn.setOnClickListener(clickListener);
@@ -104,6 +114,19 @@ public class FloatingWindowHelper {
 //                        currentSelectedBtn = audioBtn;
             }
         }).show();
+    }
+
+    private void toggleFloatingWindow(View floatingView) {
+        int translationX = floatingView.getWidth();
+        int btnWidth = DisplayUtils.dpToPx(15);
+
+        float targetX = isFloatingWindowVisible ? floatingView.getX() + translationX - btnWidth : floatingView.getX() - (translationX - btnWidth);
+
+        ObjectAnimator animator = ObjectAnimator.ofFloat(floatingView, "x", targetX);
+        animator.setDuration(300);
+        animator.start();
+
+        isFloatingWindowVisible = !isFloatingWindowVisible;
     }
 
     private void toggleButtonSelection(ImageView selectedBtn, AppCompatActivity activity) {

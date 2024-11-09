@@ -3,10 +3,14 @@ package java.com.example.ground_station.presentation.util;
 import android.os.Environment;
 import android.util.Log;
 
+import com.iflytek.aikitdemo.tool.ThreadExtKt;
+
 import java.com.example.ground_station.data.model.AudioModel;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import kotlin.Unit;
 
 public class MusicFileUtil {
     private static final String TAG = "MusicFileUtil";
@@ -121,5 +125,40 @@ public class MusicFileUtil {
             audioModelList.add(new AudioModel(fileName, filePath, false));
         }
         return audioModelList;
+    }
+
+    public static List<AudioModel> getAllRemoteAudioToAudioModel(List<String> filePaths) {
+        List<AudioModel> audioModelList = new ArrayList<>();
+
+        for (String filePath : filePaths) {
+            String fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
+            audioModelList.add(new AudioModel(fileName, filePath, false));
+        }
+        return audioModelList;
+    }
+
+    public static List<AudioModel> getRemoteAudioList(String response) {
+        if (response != null && response.length() > 1) {
+            // 查找第一个 '[' 和最后一个 ']' 的位置
+            int firstIndex = response.indexOf("[");
+            int lastIndex = response.lastIndexOf("]");
+
+            // 如果 '[' 和 ']' 都存在，且顺序正确
+            if (firstIndex != -1 && lastIndex != -1 && firstIndex < lastIndex) {
+                // 截取从 '[' 到 ']' 之间的内容
+                response = response.substring(firstIndex, lastIndex + 1);  // 保留到最后的 ']'
+            }
+
+            Log.d(TAG, "Received response after modification: " + response);
+
+            try {
+                GsonParser gsonParser = new GsonParser();
+                return getAllRemoteAudioToAudioModel(gsonParser.parseAudioFileList(response));
+            } catch (Exception e) {
+                Log.e(TAG, " error: " + e);
+            }
+        }
+
+        return null;
     }
 }

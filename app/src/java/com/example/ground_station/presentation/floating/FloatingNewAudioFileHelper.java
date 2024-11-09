@@ -256,28 +256,8 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
                 groundStationService.receiveResponse(response -> {
                     Log.d(TAG, "Received response before: " + response);
 
-                    if (response != null && response.length() > 1) {
-                        // 查找第一个 '[' 和最后一个 ']' 的位置
-                        int firstIndex = response.indexOf("[");
-                        int lastIndex = response.lastIndexOf("]");
-
-                        // 如果 '[' 和 ']' 都存在，且顺序正确
-                        if (firstIndex != -1 && lastIndex != -1 && firstIndex < lastIndex) {
-                            // 截取从 '[' 到 ']' 之间的内容
-                            response = response.substring(firstIndex, lastIndex + 1);  // 保留到最后的 ']'
-                        }
-
-                        Log.d(TAG, "Received response after modification: " + response);
-
-                        try {
-                            GsonParser gsonParser = new GsonParser();
-                            List<AudioModel> audioModelList = getAllRemoteAudioToAudioModel(gsonParser.parseAudioFileList(response));
-                            remoteAdapter.submitList(audioModelList);
-
-                        } catch (Exception e) {
-                            Log.e(TAG, " error: " + e);
-                        }
-                    }
+                    List<AudioModel> remoteAudioList = MusicFileUtil.getRemoteAudioList(response);
+                    remoteAdapter.submitList(remoteAudioList);
                 });
 
                 return Unit.INSTANCE;
