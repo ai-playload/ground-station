@@ -25,6 +25,7 @@ import java.com.example.ground_station.data.socket.ResponseCallback;
 import java.com.example.ground_station.data.socket.SocketClient;
 import java.com.example.ground_station.data.socket.SocketClientManager;
 import java.com.example.ground_station.data.socket.SocketConstant;
+import java.com.example.ground_station.data.socket.UdpSocketClient2;
 import java.com.example.ground_station.data.socket.UdpSocketClientManager;
 import java.com.example.ground_station.presentation.ability.AbilityCallback;
 import java.com.example.ground_station.presentation.ability.AbilityConstant;
@@ -32,10 +33,13 @@ import java.com.example.ground_station.presentation.ability.AudioFileGenerationC
 import java.com.example.ground_station.presentation.ability.tts.TtsHelper2;
 import java.com.example.ground_station.presentation.floating.FloatingWindowHelper;
 import java.com.example.ground_station.presentation.util.GsonParser;
+import java.com.example.ground_station.presentation.util.SendUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import kotlin.Unit;
@@ -72,6 +76,9 @@ public class GroundStationService extends Service implements AbilityCallback {
     private UdpSocketClientManager udpSocketClientManager;
     private ShoutcasterConfig config;
     private PlaybackCallback playbackCallback;
+    private UdpSocketClient2 udpSocketClient2;
+    private ExecutorService executorService;
+
 
     @Nullable
     @Override
@@ -151,6 +158,9 @@ public class GroundStationService extends Service implements AbilityCallback {
 
         initTts();
         initGStreamer();
+
+        executorService = Executors.newSingleThreadExecutor();
+        udpSocketClient2 = new UdpSocketClient2("127.0.0.1", 13551);
 //        createNotificationChannel();
 //        startForegroundService();
     }
@@ -245,15 +255,25 @@ public class GroundStationService extends Service implements AbilityCallback {
         }
         socketClientManager.connect(controller, callback);
 
-        try {
-            udpSocketClientManager = new UdpSocketClientManager(cloudLightInfo.getIp(), cloudLightInfo.getPort());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        connectUdpSocket();
+    }
+
+    public void connectUdpSocket() {
+        ShoutcasterConfig.DeviceInfo cloudLightInfo = config.getCloudLightInfo();
+
+        if (udpSocketClient2 != null) {
+            executorService.execute(() -> {
+                udpSocketClient2.connect(cloudLightInfo.getIp(), cloudLightInfo.getPort(), null);
+            });
         }
     }
 
     public void sendUdpSocketCommand(byte msgId2, int payload) {
-        udpSocketClientManager.sendUdpCommand(msgId2, payload);
+        try {
+            udpSocketClient2.sendData(SendUtils.toData(msgId2, payload));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void sendSocketCommand(byte msgId2, int payload) {
@@ -480,6 +500,16 @@ public class GroundStationService extends Service implements AbilityCallback {
 
     public void sendInstruct(String msgId2, String... payload) {
         socketClientManager.sendInstruct(msgId2, payload);
+    }
+
+    /**
+     * 发送索降的事情
+     *
+     * @param msgId2
+     * @param payload
+     */
+    public void sendSjInstruct(byte msgId2, int... payload) {
+        socketClientManager.sendSjInstruct(msgId2, payload);
     }
 
 }
