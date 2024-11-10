@@ -2,6 +2,7 @@ package java.com.example.ground_station.data.utils;
 
 import android.util.Log;
 
+import java.com.example.ground_station.presentation.util.CRC8Maxim;
 import java.io.IOException;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
@@ -43,7 +44,7 @@ public class SendUtils {
             packetWithoutChecksum[index] = (byte) value;//强转byte
         }
 
-        byte checksum = calculateCRC8(packetWithoutChecksum);
+        byte checksum = CRC8Maxim.calculateCRC8(packetWithoutChecksum);
         byte[] fullPacket = new byte[packetWithoutChecksum.length + 1];
         System.arraycopy(packetWithoutChecksum, 0, fullPacket, 0, packetWithoutChecksum.length);
         fullPacket[fullPacket.length - 1] = checksum;
@@ -51,11 +52,4 @@ public class SendUtils {
         return fullPacket;
     }
 
-    // CRC8 计算
-    private static byte calculateCRC8(byte[] data) {
-        Checksum crc = new CRC32();  // CRC32 为例，你可能需要换成 CRC8 实现
-        crc.update(data, 0, data.length);
-        long crcValue = crc.getValue();
-        return (byte) (crcValue & 0xFF);
-    }
 }
