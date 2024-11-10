@@ -162,7 +162,7 @@ public class FloatingWindowHelper {
     private void setSelectedImage(int id, ImageView currentSelectedBtn, boolean isSelected) {
         // 使用 Map 来存储 id 和对应的资源
         Map<Integer, int[]> imageMap = new HashMap<>();
-        imageMap.put(R.id.audio_btn, new int[]{R.drawable.ic_audio_selected, R.drawable.ic_audio_unselected});
+        imageMap.put(R.id.audio_btn, new int[]{R.drawable.ic_shout_selected, R.drawable.ic_shout_unselected});
         imageMap.put(R.id.text_to_speech_btn, new int[]{R.drawable.ic_tts_selected, R.drawable.ic_tts_unselected});
         imageMap.put(R.id.audio_file_btn, new int[]{R.drawable.ic_audio_selected, R.drawable.ic_audio_unselected});
         imageMap.put(R.id.light_btn, new int[]{R.drawable.ic_light_selected, R.drawable.ic_light_unselected});
