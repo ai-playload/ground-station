@@ -97,6 +97,34 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="21dp"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="音量"
+            android:textColor="#ffe5e6eb"
+            android:textSize="14sp"
+            />
+
+        <SeekBar
+            android:id="@+id/seek_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:max="100"
+            android:progress="0"
+            android:progressDrawable="@drawable/seekbar_progress_layer"
+            android:layout_marginRight="12dp"
+            android:thumb="@drawable/seekbar_thumb" />
+
+    </LinearLayout>
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="wrap_content"

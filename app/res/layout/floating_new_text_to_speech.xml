@@ -72,6 +72,34 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="21dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="音量"
+            android:textColor="#ffe5e6eb"
+            android:textSize="14sp"
+            />
+
+        <SeekBar
+            android:id="@+id/seek_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:max="100"
+            android:progress="0"
+            android:layout_marginRight="12dp"
+            android:progressDrawable="@drawable/seekbar_progress_layer"
+            android:thumb="@drawable/seekbar_thumb" />
+
+    </LinearLayout>
+
     <RadioGroup
         android:id="@+id/radio_group"
         android:layout_width="wrap_content"
@@ -102,20 +130,24 @@
             android:textColor="@color/white"
             android:textSize="14sp" />
 
-    </RadioGroup>
+        <View
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"/>
 
-    <CheckBox
-        android:id="@+id/tts_loop_cb"
-        android:layout_width="wrap_content"
-        android:layout_height="24dp"
-        android:layout_marginLeft="28dp"
-        android:layout_marginTop="4dp"
-        android:background="@null"
-        android:button="@null"
-        android:drawableLeft="@drawable/checkbox_selector"
-        android:text="循环播放"
-        android:textColor="@color/white"
-        android:textSize="14sp" />
+        <CheckBox
+            android:id="@+id/tts_loop_cb"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginRight="43dp"
+            android:background="@null"
+            android:button="@null"
+            android:drawableLeft="@drawable/checkbox_selector"
+            android:text="循环播放"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+    </RadioGroup>
 
     <TextView
         android:id="@+id/tts_play_btn"

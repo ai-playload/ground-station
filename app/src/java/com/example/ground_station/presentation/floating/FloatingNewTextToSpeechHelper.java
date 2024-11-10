@@ -12,11 +12,13 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatSeekBar;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ToastUtils;
@@ -53,8 +55,8 @@ public class FloatingNewTextToSpeechHelper extends BaseFloatingHelper {
         startGroundStationService(context, new IServiceConnection() {
             @Override
             public void onServiceConnected() {
-//                int volume = SPUtil.INSTANCE.getInt("audio_volume", 100);
-//                groundStationService.sendSetVolumeCommand(volume);
+                int volume = SPUtil.INSTANCE.getInt("audio_volume", 100);
+                groundStationService.sendSetVolumeCommand(volume);
 
                 groundStationService.getAiSoundHelper().setVCN("xiaofeng");
                 groundStationService.setPlaybackCallback(() -> {
@@ -93,6 +95,30 @@ public class FloatingNewTextToSpeechHelper extends BaseFloatingHelper {
 
                         CheckBox checkBox = view.findViewById(R.id.tts_loop_cb);
                         TextView speakButton = view.findViewById(R.id.tts_play_btn);
+
+                        SeekBar seekBar = view.findViewById(R.id.seek_bar);
+                        int volume = SPUtil.INSTANCE.getInt("audio_volume", 100);
+
+                        seekBar.setProgress(volume);
+                        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                            @Override
+                            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                            }
+
+                            @Override
+                            public void onStartTrackingTouch(SeekBar seekBar) {
+                            }
+
+                            @Override
+                            public void onStopTrackingTouch(SeekBar seekBar) {
+                                int volume = seekBar.getProgress();
+                                if (isBound) {
+                                    groundStationService.sendSetVolumeCommand(volume);
+                                    SPUtil.INSTANCE.putBase("audio_volume", volume);
+                                }
+                                Log.d(TAG, "volume value: " + volume);
+                            }
+                        });
 
                         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                             @Override

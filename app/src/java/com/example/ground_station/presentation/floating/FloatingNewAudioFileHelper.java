@@ -5,12 +5,14 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -180,6 +182,30 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
             boolean isSelected = !textView.isSelected();
             textView.setSelected(isSelected);
             isListLoopStatus = isSelected;
+        });
+
+        SeekBar seekBar = view.findViewById(R.id.seek_bar);
+        int volume = SPUtil.INSTANCE.getInt("audio_volume", 100);
+
+        seekBar.setProgress(volume);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                int volume = seekBar.getProgress();
+                if (isBound) {
+                    groundStationService.sendSetVolumeCommand(volume);
+                    SPUtil.INSTANCE.putBase("audio_volume", volume);
+                }
+                Log.d(TAG, "volume value: " + volume);
+            }
         });
 
         view.findViewById(R.id.audio_delete_btn).setOnClickListener(v -> {
