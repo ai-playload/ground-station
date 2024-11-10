@@ -247,12 +247,13 @@
     </ScrollView>
 
     <TextView
+        tools:text="versiion:"
         android:id="@+id/version_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="64dp"
-        android:layout_marginRight="16dp"
-        android:gravity="right" />
+        android:layout_marginLeft="80dp"
+        android:layout_marginBottom="44dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true" />
 
 </RelativeLayout>
