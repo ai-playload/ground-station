@@ -216,7 +216,7 @@ public class FloatingAudioFileHelper2 extends BaseFloatingHelper {
         groundStationService.getAudioListInfo(new ResultCallBack<List<AudioModel>>() {
             @Override
             public void result(List<AudioModel> audioModelList) {
-                if (audioListView != null) {
+                if (audioListView != null && audioModelList != null) {
                     Log.d(TAG, "uploadFile 文件已更新 : 文件数量：" + audioModelList.size());
                     audioListView.submitList(audioModelList);
                 }
