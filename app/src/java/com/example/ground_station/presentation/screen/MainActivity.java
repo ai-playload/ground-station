@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
         groundStationService.setShoutcasterConfig(config, new ConnectionCallback() {
             @Override
             public void onConnectionSuccess() {
-                requestFloatingPermissionsAndShow();
+//                requestFloatingPermissionsAndShow();
 //                Toast.makeText(MainActivity.this, "连接成功", Toast.LENGTH_SHORT).show();
             }
 
@@ -280,6 +280,9 @@ public class MainActivity extends AppCompatActivity {
 //                Toast.makeText(MainActivity.this, "连接失败，正在重连", Toast.LENGTH_SHORT).show();
             }
         });
+
+        //点击连接按钮直接展示悬浮窗
+        requestFloatingPermissionsAndShow();
     }
 
     private void requestPermissions() {
@@ -367,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
                 if (Settings.canDrawOverlays(this)) {
                     // 权限已授予，可以显示悬浮窗
                     showFloatingWindow();
-                    moveTaskToBack(true);
+//                    moveTaskToBack(true);
 
                 } else {
                     // 权限未授予，提示用户
@@ -409,12 +412,12 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 // 权限已授予，可以显示悬浮窗
                 showFloatingWindow();
-                moveTaskToBack(true);
+//                moveTaskToBack(true);
             }
         } else {
             // Android 6.0 以下不需要权限
             showFloatingWindow();
-            moveTaskToBack(true);
+//            moveTaskToBack(true);
         }
     }
 
