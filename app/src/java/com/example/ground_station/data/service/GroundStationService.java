@@ -260,20 +260,40 @@ public class GroundStationService extends Service implements AbilityCallback {
 
     public void connectUdpSocket() {
         ShoutcasterConfig.DeviceInfo cloudLightInfo = config.getCloudLightInfo();
-
         if (udpSocketClient2 != null) {
-            executorService.execute(() -> {
-                udpSocketClient2.connect(cloudLightInfo.getIp(), cloudLightInfo.getPort(), null);
+         ThreadUtils.executeByFixed(1, new ThreadUtils.SimpleTask<Object>() {
+                @Override
+                public Object doInBackground() throws Throwable {
+                    udpSocketClient2.connect(cloudLightInfo.getIp(), cloudLightInfo.getPort(), null);
+                    return null;
+                }
+
+                @Override
+                public void onSuccess(Object result) {
+
+                }
             });
         }
     }
-
+    ExecutorService fixedPool = Executors.newSingleThreadExecutor();
     public void sendUdpSocketCommand(byte msgId2, int payload) {
-        try {
-            udpSocketClient2.sendData(SendUtils.toData(msgId2, payload));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        fixedPool.execute(new ThreadUtils.SimpleTask<Object>() {
+
+            @Override
+            public Object doInBackground() throws Throwable {
+                try {
+                    udpSocketClient2.sendData(SendUtils.toData(msgId2, payload));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                return null;
+            }
+
+            @Override
+            public void onSuccess(Object result) {
+
+            }
+        });
     }
 
     public void sendSocketCommand(byte msgId2, int payload) {

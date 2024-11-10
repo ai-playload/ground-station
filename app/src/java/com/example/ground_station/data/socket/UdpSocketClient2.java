@@ -1,5 +1,6 @@
 package java.com.example.ground_station.data.socket;
 
+import com.blankj.utilcode.util.ToastUtils;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -24,11 +25,10 @@ public class UdpSocketClient2 {
     public void connect(String ip, int port, ConnectionCallback callback) {
         this.ip = ip;
         this.portJs = port;
-
         try {
             datagramSocket = new DatagramSocket(portJs);
             InetAddress serverAddress = InetAddress.getByName(ip);
-            datagramSocket.connect(serverAddress, portSend);
+            datagramSocket.connect(serverAddress, portJs + 1);
             isConnected = true;
 
             readThread = new Thread(new ReadThread());
@@ -54,7 +54,8 @@ public class UdpSocketClient2 {
     public void sendData(byte[] data) {
         if (datagramSocket != null && isConnected) {
             try {
-                DatagramPacket packet = new DatagramPacket(data, data.length, InetAddress.getByName(ip), portSend);
+                DatagramPacket packet = new DatagramPacket(data, data.length);
+                packet.setData(data);
                 datagramSocket.send(packet);
                 System.out.println("数据已发送：" + bytesToHex(data));
             } catch (IOException e) {
