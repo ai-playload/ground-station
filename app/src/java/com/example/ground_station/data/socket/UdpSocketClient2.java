@@ -17,11 +17,14 @@ public class UdpSocketClient2 {
 
     public UdpSocketClient2(String ip, int prot) {
         this.ip = ip;
-//        this.portJs = prot;
+        this.portJs = prot;
     }
 
     // 连接到服务器
-    public void connect(ConnectionCallback callback) {
+    public void connect(String ip, int port, ConnectionCallback callback) {
+        this.ip = ip;
+        this.portJs = port;
+
         try {
             datagramSocket = new DatagramSocket(portJs);
             InetAddress serverAddress = InetAddress.getByName(ip);

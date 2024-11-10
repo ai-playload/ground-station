@@ -1,10 +1,6 @@
 package java.com.example.ground_station.data.socket;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
-
-import com.iflytek.aikitdemo.tool.SPUtil;
 
 import java.com.example.ground_station.presentation.util.SendUtils;
 import java.io.IOException;
@@ -22,17 +18,6 @@ public class UdpSocketClientManager {
     }
 
     public void connect() {
-        udpSocketClient.connect(new ConnectionCallback() {
-            @Override
-            public void onConnectionSuccess() {
-
-            }
-
-            @Override
-            public void onConnectionFailure(Exception e) {
-
-            }
-        });
     }
 
     public void sendUdpCommand(byte msgId2, int payload) {
