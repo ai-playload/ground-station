@@ -1,0 +1,25 @@
+{
+  "server": {
+    "path": "http://81.70.35.199/webdav/",
+    "userName": "sftp",
+    "password": "456sftp"
+  },
+  "appUpdate": [
+    {
+      "apkName": "t-2.10.3.apk",
+      "type": "release",
+      "path": "/",
+      "分支": "feature/gs-add-xhbf",
+      "changeTime": "2024.11.10 21:43",
+      "change": "喊话器测试， 改文字转语音逻辑；增加远程循环播放音频文件"
+    },
+    {
+      "apkName": "t-2.11.0.1.apk",
+      "type": "debug",
+      "path": "/apk/funTest",
+      "分支": "feature/gs-add-new-ui-m2",
+      "changeTime": "2024.11.11 09:55",
+      "change": "合并新UI，解决已知bug.测通喊话器，灯光，索降器指令校验修改，待测试"
+    }
+  ]
+}
