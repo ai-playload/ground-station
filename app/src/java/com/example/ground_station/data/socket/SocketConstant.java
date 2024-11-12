@@ -55,4 +55,6 @@ public class SocketConstant {
 //    public static final byte SERVO_DOWN = (byte) 0x30;                // 舵机 down
 //    public static final byte SERVO_RETURN = (byte) 0x30;              // 舵机 回中
 
+    public static final byte DESCENT = (byte) 0x10; //索降器接收msg1指令
+
 }

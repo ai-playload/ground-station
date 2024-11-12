@@ -20,6 +20,7 @@ import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.example.widget.ScaleImage;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
+import java.com.example.ground_station.data.socket.MessageListener;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.util.DisplayUtils;
 
@@ -34,7 +35,27 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
     private final int PARACHUTE_STATUS_STOP = 4;
 
     public void showFloatingSettings(Context context, CloseCallback closeCallback) {
-        startGroundStationService(context, null);
+        startGroundStationService(context, new IServiceConnection() {
+            @Override
+            public void onServiceConnected() {
+                groundStationService.setMessageListener(new MessageListener() {
+                    @Override
+                    public void onMessageReceived(byte msg1, byte msg2, byte[] payload) {
+                        switch (msg1) {
+                            case SocketConstant.DESCENT:
+                                int weight = msg2;
+
+                                break;
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onServiceDisconnected() {
+
+            }
+        });
 
         EasyFloat.with(context)
                 .setShowPattern(ShowPattern.ALL_TIME)

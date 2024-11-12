@@ -16,6 +16,7 @@ import org.freedesktop.gstreamer.GStreamer;
 
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.socket.ConnectionCallback;
+import java.com.example.ground_station.data.socket.MessageListener;
 import java.com.example.ground_station.data.socket.ResponseCallback;
 import java.com.example.ground_station.data.socket.SocketClientManager;
 import java.com.example.ground_station.data.socket.UdpSocketClientManager;
@@ -60,6 +61,7 @@ public class GroundStationService extends Service implements AbilityCallback {
     private UdpSocketClientManager udpSocketClientManager;
     private ShoutcasterConfig config;
     private PlaybackCallback playbackCallback;
+    private MessageListener messageListener;
 
     @Nullable
     @Override
@@ -97,6 +99,10 @@ public class GroundStationService extends Service implements AbilityCallback {
 
     private void setMessage(final String message) {
         Log.d(TAG, message);
+    }
+
+    public void setMessageListener(MessageListener messageListener) {
+        this.messageListener = messageListener;
     }
 
     private void onGStreamerInitialized() {
@@ -213,7 +219,7 @@ public class GroundStationService extends Service implements AbilityCallback {
         if (socketClientManager == null) {
             socketClientManager = new SocketClientManager(getApplicationContext(), controller.getIp(), controller.getPort());
         }
-        socketClientManager.connect(controller, callback);
+        socketClientManager.connect(controller, callback, messageListener);
 
         connectUdpSocket();
     }
