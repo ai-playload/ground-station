@@ -1,5 +1,7 @@
 package java.com.example.ground_station.data.socket;
 
+import android.util.Log;
+
 import java.com.example.ground_station.presentation.callback.UploadProgressListener;
 import java.com.example.ground_station.presentation.util.CRC8Maxim;
 import java.io.File;
@@ -59,6 +61,10 @@ public class SocketClient {
                 try {
                     byte[] buffer = new byte[1024]; // 假设每条消息不会超过1024字节
                     int bytesRead = inputStream.read(buffer);
+
+                    String message = new String(buffer, 0, bytesRead, StandardCharsets.UTF_8);
+                    // 打印日志
+                    Log.d("SocketClient", "startListening Received message: " + message);
 
                     if (bytesRead > 2) { // 确保至少有 msg1、msg2 和 payload 部分
                         byte msg1 = buffer[0];
