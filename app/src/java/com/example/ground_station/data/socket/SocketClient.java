@@ -346,6 +346,18 @@ public class SocketClient {
         }
     }
 
+    public Byte receiveResponseByte() throws IOException {
+        if (inputStream == null) {
+            return null;
+        }
+        byte[] buffer = new byte[1];
+        int bytesRead = inputStream.read(buffer);
+        if (bytesRead == -1) {
+            return null;
+        }
+        return buffer[0];
+    }
+
     public String receiveResponse() throws IOException {
         if (inputStream == null) {
             return null;

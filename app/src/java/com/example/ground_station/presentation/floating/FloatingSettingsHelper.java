@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +21,7 @@ import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.example.widget.ScaleImage;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
+import java.com.example.ground_station.data.service.ResultCallBack;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.util.DisplayUtils;
 
@@ -32,6 +34,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
     private final int PARACHUTE_STATUS_UP = 2;
     private final int PARACHUTE_STATUS_DOWN = 3;
     private final int PARACHUTE_STATUS_STOP = 4;
+    private TextView weigthTv;
 
     public void showFloatingSettings(Context context, CloseCallback closeCallback) {
         startGroundStationService(context, null);
@@ -107,6 +110,10 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             MaterialRadioButton radioButtonLength = view.findViewById(R.id.radio_button_length);
                             TextInputEditText audioInputContent = view.findViewById(R.id.audioInputContent);
                             TextInputEditText speedInputContent = view.findViewById(R.id.speedInputContent);
+                            weigthTv = view.findViewById(R.id.weight_tv);
+
+                            setWeigthValue(weigthTv);
+
                             radioButtonSpeed.setChecked(true);
 
                             radioButtonSpeed.setOnClickListener(v -> {
@@ -172,6 +179,36 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                     }
                 })
                 .show();
+    }
+
+    @Override
+    public void onSuccessConnected() {
+        setWeigthValue(weigthTv);
+    }
+
+    private void setWeigthValue(TextView weigthTv) {
+        if (groundStationService == null || weigthTv == null) {
+            return;
+        }
+        groundStationService.sendInstructAndCallback(new ResultCallBack<Byte>() {
+
+            @Override
+            public void result(Byte value) {
+                String str = "--";
+                if (value != null) {
+                    str = value + "";
+                }
+                String finalStr = str;
+                weigthTv.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        weigthTv.setText("重量：" + finalStr + "kg");
+                    }
+                });
+            }
+        }, SocketConstant.PARACHUTE_WEIGHT);
+
+
     }
 
 }

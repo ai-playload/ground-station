@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
+import java.com.example.ground_station.data.service.ResultCallBack;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -278,6 +279,21 @@ public class SocketClientManager {
         executorService.shutdown();
     }
 
+    public void sendInstructAndCallback(ResultCallBack<Byte> callBack, byte msgId2, int... payload) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    socketClient.sendInstruct(msgId2, payload);
+                    Byte b = socketClient.receiveResponseByte();
+                    callBack.result(b);
+                    Log.d("SocketClientManager", "msgId2: " + msgId2 + " Command sent: " + payload);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
     public void sendInstruct(byte msgId2, int... payload) {
         executorService.execute(new Runnable() {

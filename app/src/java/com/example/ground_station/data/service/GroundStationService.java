@@ -474,6 +474,9 @@ public class GroundStationService extends Service implements AbilityCallback {
         socketClientManager.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, SocketConstant.PM.PLAY_BUNCH_DELETE);
     }
 
+    public void sendInstructAndCallback(ResultCallBack runnable, byte msgId2, int... payload) {
+        socketClientManager.sendInstructAndCallback(runnable, msgId2, payload);
+    }
     public void sendInstruct(byte msgId2, int... payload) {
         socketClientManager.sendInstruct(msgId2, payload);
     }
