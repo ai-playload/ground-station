@@ -33,7 +33,7 @@ public class SocketClientManager {
         this.context = context;
     }
 
-    public void connect(ShoutcasterConfig.DeviceInfo controller, ConnectionCallback callback) {
+    public void connect(ShoutcasterConfig.DeviceInfo controller, ConnectionCallback callback, MessageListener messageListener) {
         this.controller = controller;
 
         executorService.execute(new Runnable() {
@@ -53,6 +53,8 @@ public class SocketClientManager {
                     socketClient = new SocketClient(controller.getIp(), controller.getPort());
 
                     socketClient.connect(controller.getIp(), controller.getPort());
+                    socketClient.startListening();
+                    socketClient.setMessageListener(messageListener);
                     mainHandler.post(() -> {
                         Toast.makeText(context, "连接成功", Toast.LENGTH_SHORT).show();
 
@@ -62,7 +64,7 @@ public class SocketClientManager {
                     });
                     isConnected = true;
                     stopReconnection();
-                    startHeartbeat();
+                    startHeartbeat(callback, messageListener);
                     Log.d("SocketClientManager", "Connected to server");
                 } catch (Exception e) {
                     Log.d("SocketClientManager", "Exception " + e);
@@ -76,7 +78,7 @@ public class SocketClientManager {
                         }
                     });
                     if (!isReconnecting) {
-                        startReconnection(callback); // Start reconnection attempts on failure
+                        startReconnection(callback, messageListener); // Start reconnection attempts on failure
                     }
                 }
             }
@@ -84,7 +86,7 @@ public class SocketClientManager {
     }
 
     // 心跳包逻辑
-    private void startHeartbeat() {
+    private void startHeartbeat(ConnectionCallback callback, MessageListener messageListener) {
         heartbeatHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -95,7 +97,7 @@ public class SocketClientManager {
                     } catch (IOException e) {
                         Log.d("SocketClientManager", "Heartbeat failed, reconnecting...");
                         if (!isReconnecting) {
-                            startReconnection(null);
+                            startReconnection(callback, messageListener);
                         }
                     }
                 });
@@ -108,13 +110,13 @@ public class SocketClientManager {
         heartbeatHandler.removeCallbacksAndMessages(null);
     }
 
-    private void startReconnection(ConnectionCallback callback) {
+    private void startReconnection(ConnectionCallback callback, MessageListener messageListener) {
         isReconnecting = true;
         reconnectHandler.post(new Runnable() {
             @Override
             public void run() {
                 Log.d("SocketClientManager", "Attempting to reconnect... ip: " + controller.getIp() + " port: " + controller.getPort());
-                connect(controller, callback); // Try to reconnect
+                connect(controller, callback, messageListener); // Try to reconnect
                 if (isReconnecting) {
                     reconnectHandler.postDelayed(this, RECONNECT_DELAY); // Retry after delay if still reconnecting
                 }

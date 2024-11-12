@@ -13,8 +13,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
-import java.util.zip.CRC32;
-import java.util.zip.Checksum;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SocketClient {
     private static final int CONNECTION_TIMEOUT_MS = 5000; // Set a 5-second timeout
@@ -24,6 +24,14 @@ public class SocketClient {
     private Socket socket;
     private OutputStream outputStream;
     private InputStream inputStream;
+
+    private MessageListener messageListener; // 回调接口
+    private boolean listening; // 标识是否继续监听消息
+    private ExecutorService executorService; // 线程池
+
+    public void setMessageListener(MessageListener listener) {
+        this.messageListener = listener;
+    }
 
     public SocketClient(String serverIp, int serverPort) {
         this.serverIp = serverIp;
@@ -42,6 +50,40 @@ public class SocketClient {
             inputStream = socket.getInputStream();
         } catch (SocketTimeoutException e) {
             throw new IOException("Connection timed out", e);
+        }
+    }
+
+    public void startListening() {
+        listening = true;
+        executorService = Executors.newSingleThreadExecutor(); // 创建单线程线程池
+        executorService.submit(() -> {
+            while (listening) {
+                try {
+                    byte[] buffer = new byte[1024]; // 假设每条消息不会超过1024字节
+                    int bytesRead = inputStream.read(buffer);
+
+                    if (bytesRead > 2) { // 确保至少有 msg1、msg2 和 payload 部分
+                        byte msg1 = buffer[0];
+                        byte msg2 = buffer[1];
+                        byte[] payload = new byte[bytesRead - 2]; // 提取 payload 部分
+                        System.arraycopy(buffer, 2, payload, 0, bytesRead - 2);
+
+                        if (messageListener != null) {
+                            messageListener.onMessageReceived(msg1, msg2, payload); // 调用回调
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    break;
+                }
+            }
+        });
+    }
+
+    public void stopListening() {
+        listening = false;
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdownNow(); // 关闭线程池
         }
     }
 
@@ -376,6 +418,9 @@ public class SocketClient {
         if (socket != null) {
             socket.close();
         }
+
+        //停止接收数据
+        stopListening();
     }
 
     public Socket getSocket() {
