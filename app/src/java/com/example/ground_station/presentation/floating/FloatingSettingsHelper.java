@@ -35,6 +35,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
     private final int PARACHUTE_STATUS_DOWN = 3;
     private final int PARACHUTE_STATUS_STOP = 4;
     private TextView weigthTv;
+    private TextView lenghtTv;
 
     public void showFloatingSettings(Context context, CloseCallback closeCallback) {
         startGroundStationService(context, null);
@@ -111,6 +112,10 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             TextInputEditText audioInputContent = view.findViewById(R.id.audioInputContent);
                             TextInputEditText speedInputContent = view.findViewById(R.id.speedInputContent);
                             weigthTv = view.findViewById(R.id.weight_tv);
+                            lenghtTv = view.findViewById(R.id.put_line_tv);
+                            view.findViewById(R.id.location_tv).setOnClickListener(view1 -> {
+                                setWeigthValue(weigthTv);
+                            });
 
                             setWeigthValue(weigthTv);
 
@@ -197,18 +202,33 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                 String str = "--";
                 if (value != null) {
                     str = value + "";
+                    String finalStr = str;
+                    weigthTv.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            weigthTv.setText("重量：" + finalStr + "kg");
+                        }
+                    });
+
                 }
-                String finalStr = str;
-                weigthTv.post(new Runnable() {
+                groundStationService.sendInstructAndCallback(new ResultCallBack<Byte>() {
+
                     @Override
-                    public void run() {
-                        weigthTv.setText("重量：" + finalStr + "kg");
+                    public void result(Byte value) {
+                        String str = "--";
+                        if (value != null) {
+                            str = value + "";
+                            String finalStr = str;
+                            lenghtTv.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    lenghtTv.setText("当前放线长度：：" + finalStr + "m");
+                                }
+                            });
+                        }
                     }
-                });
+                }, SocketConstant.PARACHUTE_LENGHT);//长度
             }
-        }, SocketConstant.PARACHUTE_WEIGHT);
-
-
+        }, SocketConstant.PARACHUTE_WEIGHT);//重量
     }
-
 }

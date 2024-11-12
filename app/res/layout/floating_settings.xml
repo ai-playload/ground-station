@@ -63,13 +63,14 @@
             android:layout_marginLeft="16dp"/>
 
     </LinearLayout>
-    <TextView
+    <Button
         android:id="@+id/location_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:textSize="12sp"
-        android:text="当前位置：未到限位"
+        android:visibility="visible"
+        android:text="获取重量和长度"
         android:layout_marginTop="4dp"
         android:layout_below="@+id/put_line_parent"
         android:layout_marginLeft="16dp"/>
@@ -194,6 +195,16 @@
          android:layout_marginLeft="4dp"
          android:text="停止"/>
 
+
+
+    <Button
+        android:id="@+id/circuit_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/up_action"
+        android:layout_marginLeft="16dp"
+        android:text="紧急熔断"/>
+
     <Button
         android:id="@+id/braking_tv"
         android:layout_width="wrap_content"
@@ -201,19 +212,12 @@
         android:layout_below="@+id/up_action"
         android:layout_marginTop="4dp"
         android:text="紧急制动"
+        android:visibility="gone"
         android:layout_marginLeft="16dp"/>
 
     <Button
-        android:id="@+id/circuit_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/braking_tv"
-        android:layout_toRightOf="@+id/braking_tv"
-        android:layout_marginLeft="4dp"
-        android:text="紧急熔断"/>
-
-    <Button
         android:id="@+id/relieve_tv"
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/circuit_tv"

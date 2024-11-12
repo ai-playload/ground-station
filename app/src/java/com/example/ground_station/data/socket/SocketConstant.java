@@ -55,6 +55,7 @@ public class SocketConstant {
     public static final byte PARACHUTE_CONTROL = (byte) 0x39;         // 缓降器紧急控制
     public static final byte PARACHUTE_SPEED = (byte) 0x3a;           // 缓降器速度控制
     public static final byte PARACHUTE_WEIGHT = (byte) 0x3c;         // 缓降器载重获取
+    public static final byte PARACHUTE_LENGHT = (byte) 0x3e;         // 缓降器位置获取
     public static final byte SERVO_STATUS = (byte) 0x3f;              // 舵机状态
     public static final byte PARACHUTE_LENGTH = (byte) 0x3d;        // 缓降器位置控制
     public static final byte LIGHT = (byte) 0x29;                     // 开灯

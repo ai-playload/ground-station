@@ -3,6 +3,7 @@ package java.com.example.ground_station.data.socket;
 import android.util.Log;
 
 import java.com.example.ground_station.data.utils.SendUtils;
+import java.com.example.ground_station.data.utils.Utils;
 import java.com.example.ground_station.presentation.callback.UploadProgressListener;
 import java.com.example.ground_station.presentation.util.CRC8Maxim;
 import java.io.File;
@@ -14,8 +15,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
-import java.util.zip.CRC32;
-import java.util.zip.Checksum;
 
 public class SocketClient {
     private static final int CONNECTION_TIMEOUT_MS = 5000; // Set a 5-second timeout
@@ -282,7 +281,7 @@ public class SocketClient {
         String fileName = file.getName();
         sendFileMetadata(fileName, fileSize, "/data/play/");
         String response = receiveResponse();
-        Log.d("uploadAudioFile", " 接收字符串：" +response  );
+        Log.d("uploadAudioFile", " 接收字符串：" + response);
         // 4. 逐块读取并发送文件内容，同时计算进度
         while ((bytesRead = fileInputStream.read(buffer)) != -1) {
             totalBytesRead += bytesRead; // 累加已读取的字节数
@@ -346,16 +345,16 @@ public class SocketClient {
         }
     }
 
-    public Byte receiveResponseByte() throws IOException {
+    public byte[] receiveResponseByte() throws IOException {
         if (inputStream == null) {
             return null;
         }
-        byte[] buffer = new byte[1];
+        byte[] buffer = new byte[1024];
         int bytesRead = inputStream.read(buffer);
         if (bytesRead == -1) {
             return null;
         }
-        return buffer[0];
+        return Utils.subByte(buffer, 0, bytesRead);
     }
 
     public String receiveResponse() throws IOException {
@@ -397,6 +396,7 @@ public class SocketClient {
 
     /**
      * 发送指令
+     *
      * @param msgId2
      * @param payload
      * @throws IOException

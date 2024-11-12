@@ -6,8 +6,12 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.blankj.utilcode.util.ToastUtils;
+
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.service.ResultCallBack;
+import java.com.example.ground_station.data.utils.ResponseUitls;
+import java.com.example.ground_station.data.utils.Utils;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -285,11 +289,15 @@ public class SocketClientManager {
             public void run() {
                 try {
                     socketClient.sendInstruct(msgId2, payload);
-                    Byte b = socketClient.receiveResponseByte();
-                    callBack.result(b);
+                    byte[] bytes = socketClient.receiveResponseByte();
+                    String str = Utils.types2String(bytes);
+                    ToastUtils.showLong("返回值： " + str);
+                    Byte result = ResponseUitls.getSocketResult(bytes, msgId2);
+                    callBack.result(result);
                     Log.d("SocketClientManager", "msgId2: " + msgId2 + " Command sent: " + payload);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
+                    callBack.result(null);
                 }
             }
         });
