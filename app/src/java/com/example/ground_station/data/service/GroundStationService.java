@@ -23,6 +23,7 @@ import java.com.example.ground_station.presentation.ability.AbilityCallback;
 import java.com.example.ground_station.presentation.ability.AbilityConstant;
 import java.com.example.ground_station.presentation.ability.AudioFileGenerationCallback;
 import java.com.example.ground_station.presentation.ability.tts.TtsHelper2;
+import java.com.example.ground_station.presentation.callback.ResultCallback;
 import java.com.example.ground_station.presentation.floating.FloatingWindowHelper;
 import java.io.IOException;
 
@@ -69,6 +70,10 @@ public class GroundStationService extends Service implements AbilityCallback {
 
     public TtsHelper2 getTtsHelper() {
         return aiSoundHelper;
+    }
+
+    public void sendMsgAndCallBack(ResultCallback<byte[]> resultCallback) {
+        socketClientManager.sendMsgAndCallBack(resultCallback);
     }
 
     public class LocalBinder extends Binder {
@@ -314,7 +319,7 @@ public class GroundStationService extends Service implements AbilityCallback {
 
     }
     public void send(byte msgId2, int... payload) {
-//        socketClientManager.sendRemoteAudioCommand(msgId2, payload);
+        socketClientManager.send(msgId2, payload);
     }
 
 }

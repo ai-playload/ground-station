@@ -2,8 +2,10 @@ package java.com.example.ground_station.data.socket;
 
 import android.util.Log;
 
+import java.com.example.ground_station.presentation.callback.ResultCallback;
 import java.com.example.ground_station.presentation.callback.UploadProgressListener;
 import java.com.example.ground_station.presentation.util.CRC8Maxim;
+import java.com.example.ground_station.presentation.util.SendUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,11 +15,10 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
-import java.util.zip.CRC32;
-import java.util.zip.Checksum;
 
 public class SocketClient {
     private static final int CONNECTION_TIMEOUT_MS = 5000; // Set a 5-second timeout
+    private static final int BYTE_LENGTH = 6;
 
     private String serverIp;
     private int serverPort;
@@ -281,7 +282,7 @@ public class SocketClient {
         String fileName = file.getName();
         sendFileMetadata(fileName, fileSize, "/data/play/");
         String response = receiveResponse();
-        Log.d("uploadAudioFile", " 接收字符串：" +response  );
+        Log.d("uploadAudioFile", " 接收字符串：" + response);
         // 4. 逐块读取并发送文件内容，同时计算进度
         while ((bytesRead = fileInputStream.read(buffer)) != -1) {
             totalBytesRead += bytesRead; // 累加已读取的字节数
@@ -380,6 +381,52 @@ public class SocketClient {
 
     public Socket getSocket() {
         return socket;
+    }
+
+    public byte[] receiveResponseByte(int size) throws IOException {
+        if (inputStream == null) {
+            return null;
+        }
+        byte[] buffer = new byte[size];
+        int bytesRead = inputStream.read(buffer, 0, size);
+        if (bytesRead == -1) {
+            return null;
+        }
+
+        byte[] bytes = subByte(buffer, 0, bytesRead);
+        return bytes;
+    }
+
+    public byte[] subByte(byte[] b, int off, int length) {
+        byte[] b1 = new byte[length];
+        System.arraycopy(b, off, b1, 0, length);
+        return b1;
+    }
+
+    public void jsX(ResultCallback<byte[]> callback) {
+        if (inputStream == null) {
+            return;
+        }
+        try {
+            while (true) {
+                byte[] bytes = new byte[BYTE_LENGTH];
+                // 读取客户端发送的信息
+                int count = inputStream.read(bytes, 0, BYTE_LENGTH);
+                if (count > 0) {
+                    callback.result(bytes);
+                    // 接收到消息打印
+                    System.out.println("接收到客户端的信息是:" + new String(bytes).trim());
+                }
+                count = 0;
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
+    public void send(byte msgId2, int... payload) throws IOException {
+        byte[] data = SendUtils.toData(msgId2, payload);
+        send(data);
     }
 }
 

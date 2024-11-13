@@ -1,12 +1,15 @@
 package java.com.example.ground_station.presentation.floating;
 
 import android.content.Context;
+import android.os.Looper;
+import android.os.Message;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,7 +24,10 @@ import com.lzf.easyfloat.example.widget.ScaleImage;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
 import java.com.example.ground_station.data.socket.SocketConstant;
+import java.com.example.ground_station.presentation.callback.ResultCallback;
 import java.com.example.ground_station.presentation.util.DisplayUtils;
+import java.com.example.ground_station.presentation.util.Utils;
+import java.util.concurrent.TimeUnit;
 
 public class FloatingSettingsHelper extends BaseFloatingHelper {
     private final String tag = "settings_tag";
@@ -32,6 +38,9 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
     private final int PARACHUTE_STATUS_UP = 2;
     private final int PARACHUTE_STATUS_DOWN = 3;
     private final int PARACHUTE_STATUS_STOP = 4;
+    private TextView lenghtTv;
+    private TextView weightTv;
+    private TextView hintTv;
 
     public void showFloatingSettings(Context context, CloseCallback closeCallback) {
         startGroundStationService(context, null);
@@ -60,6 +69,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                     });
                 })
                 .registerCallbacks(new OnFloatCallbacks() {
+
                     @Override
                     public void dragEnd(@NonNull View view) {
 
@@ -82,7 +92,9 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
 
                     @Override
                     public void dismiss() {
-
+                        if (mHandler != null) {
+                            mHandler.removeCallbacksAndMessages(null);
+                        }
                     }
 
                     @Override
@@ -108,6 +120,14 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             TextInputEditText audioInputContent = view.findViewById(R.id.audioInputContent);
                             TextInputEditText speedInputContent = view.findViewById(R.id.speedInputContent);
                             radioButtonSpeed.setChecked(true);
+
+                            hintTv = view.findViewById(R.id.hint_tv);
+                            lenghtTv = view.findViewById(R.id.put_line_tv);
+                            weightTv = view.findViewById(R.id.weight_tv);
+                            view.findViewById(R.id.location_tv).setOnClickListener(view1 -> {
+                                updateWeightInfo();
+                                updateLenghtInfo();
+                            });
 
                             radioButtonSpeed.setOnClickListener(v -> {
                                 if (radioButtonSpeed.isChecked()) {
@@ -140,38 +160,132 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                                 groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_CONTROL, 2);
                             });
 
+
                             relieveButton.setOnClickListener(v -> {
-                                groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_CONTROL, 0);
+//                                groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_CONTROL, 0);
+                                updateLenghtInfo();
                             });
 
                             upActionButton.setOnClickListener(v -> {
                                 if (radioButtonSpeed.isChecked()) {
-                                    groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_SPEED, Integer.parseInt(audioInputContent.getText().toString()));
+                                    groundStationService.send(SocketConstant.PARACHUTE_SPEED, Integer.parseInt(audioInputContent.getText().toString()));
                                 }
 
                                 if (radioButtonLength.isChecked()) {
-                                    groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_LENGTH, Integer.parseInt(speedInputContent.getText().toString()));
+                                    groundStationService.send(SocketConstant.PARACHUTE_LENGTH, Integer.parseInt(speedInputContent.getText().toString()));
                                 }
+                                getLenghtInfo();
                             });
 
                             downActionButton.setOnClickListener(v -> {
                                 if (radioButtonSpeed.isChecked()) {
-                                    groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_SPEED, -Integer.parseInt(audioInputContent.getText().toString()));
+                                    groundStationService.send(SocketConstant.PARACHUTE_SPEED, -Integer.parseInt(audioInputContent.getText().toString()));
                                 }
 
                                 if (radioButtonLength.isChecked()) {
-                                    groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_LENGTH, -Integer.parseInt(speedInputContent.getText().toString()));
+                                    groundStationService.send(SocketConstant.PARACHUTE_LENGTH, -Integer.parseInt(speedInputContent.getText().toString()));
                                 }
+                                getLenghtInfo();
                             });
 
                             //2上升 3下降 4停止
                             stopActionButton.setOnClickListener(v -> {
-                                groundStationService.sendSocketCommand(SocketConstant.PARACHUTE, PARACHUTE_STATUS_STOP);
+                                groundStationService.send(SocketConstant.PARACHUTE, PARACHUTE_STATUS_STOP);
+                                stopGetLenghtInfo();
                             });
                         }
                     }
                 })
                 .show();
     }
+
+    @Override
+    protected void onConnectedSuccess() {
+        setJsMsgCallback();
+        if (weightTv != null) {
+            weightTv.post(new Runnable() {
+                @Override
+                public void run() {
+                    updateWeightInfo();
+                    updateLenghtInfo();
+                }
+            });
+        }
+    }
+
+    private void setJsMsgCallback() {
+        if (groundStationService == null || weightTv == null) {
+            return;
+        }
+        groundStationService.sendMsgAndCallBack(new ResultCallback<byte[]>() {
+            @Override
+            public void result(byte[] bytes) {
+                String s = Utils.bytesToHexFun3(bytes);
+                if (hintTv != null) {
+                    hintTv.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (bytes != null && bytes.length >= 4) {
+                                byte aByte = bytes[4];
+                                int v = aByte;
+                                byte zl = bytes[3];
+                                if (zl == SocketConstant.PARACHUTE_3E) {
+                                    lenghtTv.setText("当前放线长度：" + v + "m");
+                                } else if (zl == SocketConstant.PARACHUTE_3C) {
+                                    weightTv.setText("重量：" + v + "kg");
+                                }
+                                if (zl != SocketConstant.HEART_BEAT) {
+                                    hintTv.setText(s);
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void updateWeightInfo() {
+        if (groundStationService == null || weightTv == null) {
+            return;
+        }
+        groundStationService.send(SocketConstant.PARACHUTE_3C);
+    }
+
+    private void updateLenghtInfo() {
+        if (groundStationService == null || weightTv == null) {
+            return;
+        }
+        groundStationService.send(SocketConstant.PARACHUTE_3E);
+    }
+
+    private boolean getLoghtLoading = false;
+
+    private void getLenghtInfo() {
+        updateLenghtInfo();
+        if (!getLoghtLoading) {
+            getLoghtLoading = true;
+//            mHandler.sendEmptyMessageDelayed(SocketConstant.PARACHUTE_3E, 1000);
+        }
+    }
+
+    private void stopGetLenghtInfo() {
+        updateLenghtInfo();
+//        mHandler.removeMessages(SocketConstant.PARACHUTE_3E);
+        getLoghtLoading = false;
+    }
+
+    android.os.Handler mHandler = new android.os.Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case SocketConstant.PARACHUTE_3E:
+                    updateLenghtInfo();
+//                    mHandler.sendEmptyMessageDelayed(SocketConstant.PARACHUTE_3E, 1000);
+                    break;
+            }
+        }
+    };
 
 }

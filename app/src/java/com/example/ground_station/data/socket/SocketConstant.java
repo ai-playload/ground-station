@@ -44,6 +44,8 @@ public class SocketConstant {
     public static final byte PARACHUTE = (byte) 0x38;                 // 缓降器
     public static final byte PARACHUTE_CONTROL = (byte) 0x39;         // 缓降器紧急控制
     public static final byte PARACHUTE_SPEED = (byte) 0x3a;           // 缓降器速度控制
+    public static final byte PARACHUTE_3C = (byte) 0x3c;           // 缓降器重量获取
+    public static final byte PARACHUTE_3E = (byte) 0x3e;           // 缓降器长度获取
     public static final byte SERVO_STATUS = (byte) 0x3f;              // 舵机状态
     public static final byte PARACHUTE_LENGTH = (byte) 0x3d;        // 缓降器位置控制
     public static final byte LIGHT = (byte) 0x29;                     // 开灯

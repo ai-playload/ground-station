@@ -6,7 +6,10 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.blankj.utilcode.util.ThreadUtils;
+
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
+import java.com.example.ground_station.presentation.callback.ResultCallback;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,6 +26,7 @@ public class SocketClientManager {
     private final Context context;
     private ShoutcasterConfig.DeviceInfo controller;
     private SocketClient socketClient;
+    private ExecutorService jsMsgThread;
 
     public SocketClientManager(Context context, String serverIp, int serverPort) {
         this.executorService = Executors.newSingleThreadExecutor(); // 创建一个具有固定线程数的线程池
@@ -63,6 +67,9 @@ public class SocketClientManager {
                     isConnected = true;
                     stopReconnection();
                     startHeartbeat();
+
+
+
                     Log.d("SocketClientManager", "Connected to server");
                 } catch (Exception e) {
                     Log.d("SocketClientManager", "Exception " + e);
@@ -82,6 +89,8 @@ public class SocketClientManager {
             }
         });
     }
+
+
 
     // 心跳包逻辑
     private void startHeartbeat() {
@@ -272,6 +281,65 @@ public class SocketClientManager {
 
     public void shutdown() {
         executorService.shutdown();
+    }
+
+    public void sendMsgAndCallBack(ResultCallback<byte[]> resultCallback ) {
+        if (jsMsgThread == null) {
+            jsMsgThread = ThreadUtils.getFixedPool(1);
+            jsMsgThread.execute(new Runnable() {
+                @Override
+                public void run() {
+                    socketClient.jsX(resultCallback);
+                }
+            });
+        }
+
+
+//        executorService.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//
+//
+//                String msg = "指令：";
+//                try {
+//                    socketClient.sendServoCommand(msgId2);
+//                    byte[] bytes = socketClient.receiveResponseByte(1024);
+//                    if (bytes != null) {
+//                        msg += Utils.bytesToHexFun3(bytes);
+//                    }
+//                    if (bytes != null && bytes.length >= 4) {
+//                        if (bytes[0] == SocketConstant.HEADER && bytes[3] == msgId2) {
+//                            byte v = bytes[4];
+//                            resultCallback.result(v);
+//                            return;
+//                        }
+//                    }
+//                    Log.d("SocketClientManager", "Disconnected from server");
+//                } catch (Exception e) {
+//                    String message = e.getMessage();
+//                    msg += message;
+//                    e.printStackTrace();
+//                }
+//                ToastUtils.showLong(msg);
+//            }
+//        });
+    }
+
+    public void send(byte msgId2, int... payload) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    socketClient.send(msgId2, payload);
+                } catch (IOException e) {
+                    if (!isReconnecting) {
+//                        startReconnection(null); // Start reconnection attempts on failure
+                    }
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }
 

@@ -45,22 +45,61 @@
         android:layout_below="@+id/safety_button"
         android:layout_marginLeft="16dp"/>
 
+
     <TextView
-        android:id="@+id/location_tv"
+        android:id="@+id/weight_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:textSize="12sp"
-        android:text="当前位置：未到限位"
+        android:text="重量：--kg"
         android:layout_marginTop="4dp"
-        android:layout_below="@+id/put_line_tv"
+        android:paddingRight="16dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/safety_button"
         android:layout_marginLeft="16dp"/>
+
+    <Button
+        android:id="@+id/location_tv"
+        android:layout_width="66dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:visibility="visible"
+        android:text="更新"
+        android:layout_marginTop="14dp"
+        android:layout_toRightOf="@+id/safety_button"
+        android:layout_marginLeft="13dp"/>
+
+    <TextView
+        android:id="@+id/hint_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:visibility="visible"
+        android:textSize="12sp"
+        android:text="指令： "
+        android:layout_marginTop="8dp"
+        android:paddingRight="16dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/weight_tv"
+        android:layout_marginLeft="16dp"/>
+<!--    <TextView-->
+<!--        android:id="@+id/location_tv"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:textColor="@color/white"-->
+<!--        android:textSize="12sp"-->
+<!--        android:text="当前位置：未到限位"-->
+<!--        android:layout_marginTop="4dp"-->
+<!--        android:layout_below="@+id/put_line_tv"-->
+<!--        android:layout_marginLeft="16dp"/>-->
 
     <RadioGroup
         android:id="@+id/radio_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/location_tv"
+        android:layout_below="@+id/weight_tv"
         android:layout_marginLeft="16dp"
         android:orientation="vertical">
 
@@ -184,15 +223,15 @@
         android:layout_below="@+id/up_action"
         android:layout_marginTop="4dp"
         android:text="紧急制动"
+        android:visibility="gone"
         android:layout_marginLeft="16dp"/>
 
     <Button
         android:id="@+id/circuit_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/braking_tv"
-        android:layout_toRightOf="@+id/braking_tv"
-        android:layout_marginLeft="4dp"
+        android:layout_below="@+id/up_action"
+        android:layout_marginLeft="16dp"
         android:text="紧急熔断"/>
 
     <Button
@@ -201,7 +240,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/circuit_tv"
         android:layout_marginLeft="16dp"
-        android:text="解除"/>
+        android:visibility="visible"
+        android:text="更新长度"/>
 
 <!--    <LinearLayout-->
 <!--        android:layout_width="match_parent"-->
