@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.blankj.utilcode.util.StringUtils;
 import com.example.ground_station.R;
 import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -25,7 +26,7 @@ import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.callback.ResultCallback;
-import java.com.example.ground_station.presentation.helper.RevHelper;
+import java.com.example.ground_station.presentation.helper.RecvHelper;
 import java.com.example.ground_station.presentation.util.DisplayUtils;
 import java.com.example.ground_station.presentation.util.Utils;
 
@@ -68,7 +69,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                         }
                     });
 
-                    RevHelper.getInstance().start();
+                    RecvHelper.getInstance().start();
                 })
                 .registerCallbacks(new OnFloatCallbacks() {
 
@@ -94,7 +95,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
 
                     @Override
                     public void dismiss() {
-                        RevHelper.getInstance().stop();
+                        RecvHelper.getInstance().stop();
                         if (mHandler != null) {
                             mHandler.removeCallbacksAndMessages(null);
                         }
@@ -160,7 +161,16 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             });
 
                             circuitButton.setOnClickListener(v -> {
-                                groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_CONTROL, 2);
+                                String str = circuitButton.getText().toString();
+                                String rd = "紧急熔断";
+                                String gb = "开闭熔断";
+                                if (StringUtils.equals(str, rd)) {
+                                    circuitButton.setText(gb);
+                                    groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_CONTROL, 2);
+                                } else {
+                                    circuitButton.setText(rd);
+                                    groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_CONTROL, 0);
+                                }
                             });
 
 
@@ -197,7 +207,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                                 stopGetLenghtInfo();
                             });
 
-                            RevHelper.getInstance().setCallback(new ResultCallback<byte[]>() {
+                            RecvHelper.getInstance().setCallback(new ResultCallback<byte[]>() {
                                 @Override
                                 public void result(byte[] bytes) {
                                     setRevInfo(bytes);
@@ -237,11 +247,15 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
 
     private void setRevInfo(byte[] bytes) {
         if (hintTv != null) {
-            String s = Utils.bytesToHexFun3(bytes);
-            hintTv.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (bytes != null && bytes.length >= 4) {
+            if (bytes != null && bytes.length >= 4 && bytes[0] == SocketConstant.HEADER) {
+                byte aByte = bytes[3];
+                if (aByte == SocketConstant.HEART_BEAT) {
+                    return;
+                }
+                hintTv.post(new Runnable() {
+                    @Override
+                    public void run() {
+
                         byte aByte = bytes[4];
                         int v = aByte;
                         byte zl = bytes[3];
@@ -251,11 +265,12 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             weightTv.setText("重量：" + v + "kg");
                         }
                         if (zl != SocketConstant.HEART_BEAT) {
+                            String s = Utils.bytesToHexFun3(bytes);
                             hintTv.setText(s);
                         }
                     }
-                }
-            });
+                });
+            }
         }
     }
 

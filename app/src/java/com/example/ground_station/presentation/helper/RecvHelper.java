@@ -7,17 +7,17 @@ import java.com.example.ground_station.presentation.callback.ResultCallback;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class RevHelper implements Runnable {
+public class RecvHelper implements Runnable {
 
     private ResultCallback<byte[]> callback;
     private SocketClient socketClient;
 
-    private RevHelper() {
+    private RecvHelper() {
     }
 
-    static RevHelper revHelper = new RevHelper();
+    static RecvHelper revHelper = new RecvHelper();
 
-    public static synchronized RevHelper getInstance() {
+    public static synchronized RecvHelper getInstance() {
         return revHelper;
     }
 
@@ -57,7 +57,7 @@ public class RevHelper implements Runnable {
                         System.out.println("接收到客户端的信息是:" + new String(bytes).trim());
                     }
                     count = 0;
-                } catch (IOException e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
