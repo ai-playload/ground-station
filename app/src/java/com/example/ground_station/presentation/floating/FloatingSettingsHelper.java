@@ -25,9 +25,9 @@ import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.callback.ResultCallback;
+import java.com.example.ground_station.presentation.helper.RevHelper;
 import java.com.example.ground_station.presentation.util.DisplayUtils;
 import java.com.example.ground_station.presentation.util.Utils;
-import java.util.concurrent.TimeUnit;
 
 public class FloatingSettingsHelper extends BaseFloatingHelper {
     private final String tag = "settings_tag";
@@ -67,6 +67,8 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             EasyFloat.updateFloat(TAG, params.width, params.height);
                         }
                     });
+
+                    RevHelper.getInstance().start();
                 })
                 .registerCallbacks(new OnFloatCallbacks() {
 
@@ -92,6 +94,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
 
                     @Override
                     public void dismiss() {
+                        RevHelper.getInstance().stop();
                         if (mHandler != null) {
                             mHandler.removeCallbacksAndMessages(null);
                         }
@@ -193,6 +196,13 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                                 groundStationService.send(SocketConstant.PARACHUTE, PARACHUTE_STATUS_STOP);
                                 stopGetLenghtInfo();
                             });
+
+                            RevHelper.getInstance().setCallback(new ResultCallback<byte[]>() {
+                                @Override
+                                public void result(byte[] bytes) {
+                                    setRevInfo(bytes);
+                                }
+                            });
                         }
                     }
                 })
@@ -201,7 +211,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
 
     @Override
     protected void onConnectedSuccess() {
-        setJsMsgCallback();
+//        setJsMsgCallback();
         if (weightTv != null) {
             weightTv.post(new Runnable() {
                 @Override
@@ -220,29 +230,33 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
         groundStationService.sendMsgAndCallBack(new ResultCallback<byte[]>() {
             @Override
             public void result(byte[] bytes) {
-                String s = Utils.bytesToHexFun3(bytes);
-                if (hintTv != null) {
-                    hintTv.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (bytes != null && bytes.length >= 4) {
-                                byte aByte = bytes[4];
-                                int v = aByte;
-                                byte zl = bytes[3];
-                                if (zl == SocketConstant.PARACHUTE_3E) {
-                                    lenghtTv.setText("当前放线长度：" + v + "m");
-                                } else if (zl == SocketConstant.PARACHUTE_3C) {
-                                    weightTv.setText("重量：" + v + "kg");
-                                }
-                                if (zl != SocketConstant.HEART_BEAT) {
-                                    hintTv.setText(s);
-                                }
-                            }
-                        }
-                    });
-                }
+                setRevInfo(bytes);
             }
         });
+    }
+
+    private void setRevInfo(byte[] bytes) {
+        if (hintTv != null) {
+            String s = Utils.bytesToHexFun3(bytes);
+            hintTv.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (bytes != null && bytes.length >= 4) {
+                        byte aByte = bytes[4];
+                        int v = aByte;
+                        byte zl = bytes[3];
+                        if (zl == SocketConstant.PARACHUTE_3E) {
+                            lenghtTv.setText("当前放线长度：" + v + "m");
+                        } else if (zl == SocketConstant.PARACHUTE_3C) {
+                            weightTv.setText("重量：" + v + "kg");
+                        }
+                        if (zl != SocketConstant.HEART_BEAT) {
+                            hintTv.setText(s);
+                        }
+                    }
+                }
+            });
+        }
     }
 
     private void updateWeightInfo() {

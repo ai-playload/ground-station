@@ -428,5 +428,9 @@ public class SocketClient {
         byte[] data = SendUtils.toData(msgId2, payload);
         send(data);
     }
+
+    public InputStream getInputStream() {
+        return inputStream;
+    }
 }
 
