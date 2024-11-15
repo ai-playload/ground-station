@@ -10,7 +10,9 @@ import com.blankj.utilcode.util.ThreadUtils;
 
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.presentation.callback.ResultCallback;
-import java.com.example.ground_station.presentation.helper.RecvHelper;
+
+import java.com.example.ground_station.presentation.helper.RecvTaskHelper;
+import java.com.example.ground_station.presentation.helper.SendTaskHelper;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -69,7 +71,8 @@ public class SocketClientManager {
                     stopReconnection();
                     startHeartbeat();
 
-                    RecvHelper.getInstance().setSocketManager(socketClient);
+                    RecvTaskHelper.getInstance().setSocketManager(socketClient);
+                    SendTaskHelper.getInstance().setSocketManager(socketClient);
 
                     Log.d("SocketClientManager", "Connected to server");
                 } catch (Exception e) {

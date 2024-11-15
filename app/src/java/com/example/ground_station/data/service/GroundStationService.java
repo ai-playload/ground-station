@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.blankj.utilcode.util.ToastUtils;
 import com.iflytek.aikitdemo.tool.ThreadExtKt;
 import com.lzf.easyfloat.EasyFloat;
 
@@ -320,6 +322,12 @@ public class GroundStationService extends Service implements AbilityCallback {
     }
     public void send(byte msgId2, int... payload) {
         socketClientManager.send(msgId2, payload);
+//        int msgId21 = msgId2;
+        try {
+            String hexString = Integer.toHexString(msgId2);
+            ToastUtils.showShort("" + hexString);
+        }catch (Exception e ) {
+        }
     }
 
 }

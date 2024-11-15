@@ -1,8 +1,10 @@
 package java.com.example.ground_station.presentation.floating;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,7 +28,9 @@ import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.callback.ResultCallback;
-import java.com.example.ground_station.presentation.helper.RecvHelper;
+
+import java.com.example.ground_station.presentation.helper.RecvTaskHelper;
+import java.com.example.ground_station.presentation.helper.SendTaskHelper;
 import java.com.example.ground_station.presentation.util.DisplayUtils;
 import java.com.example.ground_station.presentation.util.Utils;
 
@@ -69,7 +73,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                         }
                     });
 
-                    RecvHelper.getInstance().start();
+                    RecvTaskHelper.getInstance().getLoop().start();
                 })
                 .registerCallbacks(new OnFloatCallbacks() {
 
@@ -95,7 +99,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
 
                     @Override
                     public void dismiss() {
-                        RecvHelper.getInstance().stop();
+                        RecvTaskHelper.getInstance().getLoop().stop();
                         if (mHandler != null) {
                             mHandler.removeCallbacksAndMessages(null);
                         }
@@ -147,17 +151,17 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
 
                             safetyButton.setOnClickListener(v -> {
                                 if (isSafetyBtnEnable) {
-                                    groundStationService.sendSocketCommand(SocketConstant.PARACHUTE, PARACHUTE_STATUS_CLOSE);
+                                    groundStationService.send(SocketConstant.PARACHUTE, PARACHUTE_STATUS_CLOSE);
                                     safetyButton.setText("关");
                                 } else {
-                                    groundStationService.sendSocketCommand(SocketConstant.PARACHUTE, PARACHUTE_STATUS_OPEN);
+                                    groundStationService.send(SocketConstant.PARACHUTE, PARACHUTE_STATUS_OPEN);
                                     safetyButton.setText("开");
                                 }
                                 isSafetyBtnEnable = !isSafetyBtnEnable;
                             });
 
                             brakingButton.setOnClickListener(v -> {
-                                groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_CONTROL, 1);
+                                groundStationService.send(SocketConstant.PARACHUTE_CONTROL, 1);
                             });
 
                             circuitButton.setOnClickListener(v -> {
@@ -166,10 +170,10 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                                 String gb = "开闭熔断";
                                 if (StringUtils.equals(str, rd)) {
                                     circuitButton.setText(gb);
-                                    groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_CONTROL, 2);
+                                    groundStationService.send(SocketConstant.PARACHUTE_CONTROL, 2);
                                 } else {
                                     circuitButton.setText(rd);
-                                    groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_CONTROL, 0);
+                                    groundStationService.send(SocketConstant.PARACHUTE_CONTROL, 0);
                                 }
                             });
 
@@ -207,12 +211,14 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                                 stopGetLenghtInfo();
                             });
 
-                            RecvHelper.getInstance().setCallback(new ResultCallback<byte[]>() {
+                            RecvTaskHelper.getInstance().setCallback(new ResultCallback<byte[]>() {
                                 @Override
                                 public void result(byte[] bytes) {
                                     setRevInfo(bytes);
                                 }
                             });
+
+                            ((TextView) view.findViewById(R.id.initTv)).setText("已经完成初始化！！！");
                         }
                     }
                 })
@@ -249,27 +255,38 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
         if (hintTv != null) {
             if (bytes != null && bytes.length >= 4 && bytes[0] == SocketConstant.HEADER) {
                 byte aByte = bytes[3];
-                if (aByte == SocketConstant.HEART_BEAT) {
+                if (aByte == SocketConstant.HEART_BEAT) {//心跳包数据
                     return;
                 }
-                hintTv.post(new Runnable() {
-                    @Override
-                    public void run() {
+                String v = Utils.bytesToHexFun3(bytes);
+                String hintText = hintTv.getText().toString();
+                boolean hintChange = !TextUtils.equals(v, hintText);
 
-                        byte aByte = bytes[4];
-                        int v = aByte;
-                        byte zl = bytes[3];
-                        if (zl == SocketConstant.PARACHUTE_3E) {
-                            lenghtTv.setText("当前放线长度：" + v + "m");
-                        } else if (zl == SocketConstant.PARACHUTE_3C) {
-                            weightTv.setText("重量：" + v + "kg");
-                        }
-                        if (zl != SocketConstant.HEART_BEAT) {
-                            String s = Utils.bytesToHexFun3(bytes);
-                            hintTv.setText(s);
-                        }
-                    }
-                });
+                if (hintChange) {
+                    Message message = new Message();
+                    message.what = 0;
+                    Bundle bundle = new Bundle();
+                    bundle.putByteArray("gs", bytes);
+                    message.setData(bundle);
+                    mHandler.sendMessage(message);
+
+//                    hintTv.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            byte aByte = bytes[4];
+//                            int v = aByte;
+//                            byte zl = bytes[3];
+//                            if (zl == SocketConstant.PARACHUTE_3E) {
+//                                lenghtTv.setText("当前放线长度：" + v + "m");
+//                            } else if (zl == SocketConstant.PARACHUTE_3C) {
+//                                weightTv.setText("重量：" + v + "kg");
+//                            }
+//                            if (hintChange) {
+//                                hintTv.setText(v);
+//                            }
+//                        }
+//                    });
+                }
             }
         }
     }
@@ -291,17 +308,22 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
     private boolean getLoghtLoading = false;
 
     private void getLenghtInfo() {
-        updateLenghtInfo();
-        if (!getLoghtLoading) {
-            getLoghtLoading = true;
-//            mHandler.sendEmptyMessageDelayed(SocketConstant.PARACHUTE_3E, 1000);
-        }
+        SendTaskHelper.getInstance().setInsturd(SocketConstant.PARACHUTE_3E);
+        SendTaskHelper.getInstance().getLoop().start();
+
+//        updateLenghtInfo();
+//        if (!getLoghtLoading) {
+//            getLoghtLoading = true;
+////            mHandler.sendEmptyMessageDelayed(SocketConstant.PARACHUTE_3E, 1000);
+//        }
     }
 
     private void stopGetLenghtInfo() {
-        updateLenghtInfo();
-//        mHandler.removeMessages(SocketConstant.PARACHUTE_3E);
-        getLoghtLoading = false;
+        SendTaskHelper.getInstance().getLoop().stop();
+
+//        updateLenghtInfo();
+////        mHandler.removeMessages(SocketConstant.PARACHUTE_3E);
+//        getLoghtLoading = false;
     }
 
     android.os.Handler mHandler = new android.os.Handler(Looper.getMainLooper()) {
@@ -309,10 +331,23 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case SocketConstant.PARACHUTE_3E:
-                    updateLenghtInfo();
-//                    mHandler.sendEmptyMessageDelayed(SocketConstant.PARACHUTE_3E, 1000);
+                case 0:
+                    byte[] bytes = msg.getData().getByteArray("gs");
+                    byte aByte = bytes[4];
+                    int v = aByte;
+                    byte zl = bytes[3];
+                    if (zl == SocketConstant.PARACHUTE_3E) {
+                        lenghtTv.setText("当前放线长度：" + v + "m");
+                    } else if (zl == SocketConstant.PARACHUTE_3C) {
+                        weightTv.setText("重量：" + v + "kg");
+                    }
+                    String str = Utils.bytesToHexFun3(bytes);
+                    hintTv.setText(str);
                     break;
+//                case SocketConstant.PARACHUTE_3E:
+//                    updateLenghtInfo();
+////                    mHandler.sendEmptyMessageDelayed(SocketConstant.PARACHUTE_3E, 1000);
+//                    break;
             }
         }
     };
