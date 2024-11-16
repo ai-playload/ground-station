@@ -65,6 +65,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
     private TextInputEditText lenghtInputView;
     private TextView jsTv;
     private TextView fsTv;
+    private TextView circuitButton;
 
     public void showFloatingSettings(Context context, CloseCallback closeCallback) {
         startGroundStationService(context, null);
@@ -137,7 +138,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
 
                             TextView safetyButton = view.findViewById(R.id.safety_button);
                             Button brakingButton = view.findViewById(R.id.braking_tv);
-                            TextView circuitButton = view.findViewById(R.id.circuit_tv);
+                            circuitButton = view.findViewById(R.id.circuit_tv);
                             Button relieveButton = view.findViewById(R.id.relieve_tv);
                             Button upActionButton = view.findViewById(R.id.up_action);
                             Button downActionButton = view.findViewById(R.id.down_action);
@@ -201,40 +202,6 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                                 }
                             });
 
-//                            speedInputView.addTextChangedListener(new TextWatcher() {
-//                                @Override
-//                                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//                                }
-//
-//                                @Override
-//                                public void onTextChanged(CharSequence c, int i, int i1, int i2) {
-//                                    checkSpeed(c);
-//                                }
-//
-//                                @Override
-//                                public void afterTextChanged(Editable editable) {
-//
-//                                }
-//                            });
-
-//                            lenghtInputView.addTextChangedListener(new TextWatcher() {
-//                                @Override
-//                                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//                                }
-//
-//                                @Override
-//                                public void onTextChanged(CharSequence c, int i, int i1, int i2) {
-//
-//                                }
-//
-//                                @Override
-//                                public void afterTextChanged(Editable editable) {
-//
-//                                }
-//                            });
-
 
                             relieveButton.setOnClickListener(v -> {
 //                                groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_CONTROL, 0);
@@ -252,10 +219,11 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             });
 
                             upActionButton.setOnClickListener(v -> {
-//                                if (radioButtonSpeed.isChecked()) {
-//                                }
-//                                if (radioButtonLength.isChecked()) {
-//                                }
+                                if (isFusingLoadifng()) {
+                                    ToastUtils.showShort("熔断中不可操作");
+                                    return;
+                                }
+
                                 boolean hc = checkSpeed();
                                 boolean hl = checkLenght();
                                 if (!hc || !hl) {
@@ -268,10 +236,10 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             });
 
                             downActionButton.setOnClickListener(v -> {
-//                                if (radioButtonSpeed.isChecked()) {
-//                                }
-//                                if (radioButtonLength.isChecked()) {
-//                                }
+                                if (isFusingLoadifng()) {
+                                    ToastUtils.showShort("熔断中不可操作");
+                                    return;
+                                }
                                 boolean hc = checkSpeed();
                                 boolean hl = checkLenght();
                                 if (!hc || !hl) {
@@ -320,6 +288,10 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                     }
                 })
                 .show();
+    }
+
+    private boolean isFusingLoadifng() {
+        return circuitButton != null && TextUtils.equals(circuitButton.getText().toString(), "熔断中") ;
     }
 
     private boolean checkLenght() {
