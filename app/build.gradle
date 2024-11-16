@@ -6,13 +6,16 @@ plugins {
 android {
     namespace 'com.example.ground_station'
     compileSdk 34
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
         applicationId "com.example.ground_station"
-        minSdk 21
+        minSdk 24
         targetSdk 34
         versionCode 7
-        versionName "2.6"
+        versionName "2.10.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -52,7 +55,26 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+            buildConfigField "boolean","DEBUG1","false"
 
+            sourceSets {
+                main {
+                    manifest.srcFile 'AndroidManifest.xml'
+                    java.srcDirs = ['src']
+                    resources.srcDirs = ['src']
+                    aidl.srcDirs = ['src']
+                    renderscript.srcDirs = ['src']
+                    res.srcDirs = ['res']
+                    assets.srcDirs = ['assets']
+                }
+            }
+        }
+
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+            buildConfigField "boolean","DEBUG1","true"
             sourceSets {
                 main {
                     manifest.srcFile 'AndroidManifest.xml'
@@ -115,6 +137,6 @@ dependencies {
     implementation 'org.bouncycastle:bcprov-jdk15on:1.68'
 
     implementation 'com.blankj:utilcodex:1.31.1'
-
+    implementation("io.github.cymchad:BaseRecyclerViewAdapterHelper:3.0.14")
 //    implementation "com.github.recruit-lifestyle:FloatingView:2.4.4"
 }

@@ -31,6 +31,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.iflytek.aikitdemo.tool.SPUtil;
 import com.lzf.easyfloat.EasyFloat;
 
+import java.com.example.ground_station.data.crash.CrashInfoListActivity;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.service.GroundStationService;
 import java.com.example.ground_station.data.socket.ConnectionCallback;
@@ -109,6 +110,14 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions();
 //            requestFloatingPermissionsAndShow();
 //            checkInputsAndProceed();
+        });
+
+        findViewById(R.id.crashLogView).setOnClickListener(view -> {
+            startActivity(new Intent(this, CrashInfoListActivity.class));
+        });
+        findViewById(R.id.createCrashTestView).setOnClickListener(view -> {
+            //创建崩溃日志
+            int i = 3 / 0;
         });
     }
 
