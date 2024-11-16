@@ -27,11 +27,15 @@
         android:layout_marginTop="32dp"
         android:layout_marginLeft="16dp"/>
 
-    <Button
+    <TextView
         android:id="@+id/safety_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="开"
+        android:text="关机中"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="10dp"
+        android:textColor="#fff"
+        android:background="@drawable/custom_btn_bg"
         android:layout_toRightOf="@id/safety_title"
         android:layout_marginTop="16dp"/>
 
@@ -95,7 +99,7 @@
 <!--        android:layout_below="@+id/put_line_tv"-->
 <!--        android:layout_marginLeft="16dp"/>-->
 
-    <RadioGroup
+    <LinearLayout
         android:id="@+id/radio_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -108,13 +112,13 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
+            <TextView
                 android:id="@+id/radio_button_speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:buttonTint="@drawable/radio_button_color"
-                android:text="按速度  "/>
+                android:text="速度：  "/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/audioContent"
@@ -132,7 +136,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="number"
                     android:textColor="@color/white"
-                    android:text="10"
+                    android:text="1"
                     android:maxLines="1" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -140,9 +144,18 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="m/min (0~20)"
+                android:text="  档位（1~10）"
                 android:textColor="@color/white" />
 
+            <TextView
+                android:id="@+id/speedComiftBtn"
+                android:text="确认"
+                android:layout_marginLeft="11dp"
+                android:background="#fa0"
+                android:layout_marginTop="5dp"
+                android:padding="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
 
         <LinearLayout
@@ -150,13 +163,13 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <com.google.android.material.radiobutton.MaterialRadioButton
+            <TextView
                 android:id="@+id/radio_button_length"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:buttonTint="@drawable/radio_button_color"
-                android:text="按长度 目标长度："/>
+                android:text="步进长度："/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/speedContent"
@@ -174,7 +187,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="number"
                     android:textColor="@color/white"
-                    android:text="10"
+                    android:text="1"
                     android:maxLines="1" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -182,12 +195,15 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" m/ (0~30)"
+                android:text="  m（1~30）"
                 android:textColor="@color/white" />
+
+
+
 
         </LinearLayout>
 
-    </RadioGroup>
+    </LinearLayout>
 
     <Button
         android:layout_below="@+id/radio_group"
@@ -226,13 +242,44 @@
         android:visibility="gone"
         android:layout_marginLeft="16dp"/>
 
-    <Button
+    <TextView
         android:id="@+id/circuit_tv"
-        android:layout_width="wrap_content"
+        android:layout_width="88dp"
+        android:gravity="center"
         android:layout_height="wrap_content"
         android:layout_below="@+id/up_action"
         android:layout_marginLeft="16dp"
-        android:text="紧急熔断"/>
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="10dp"
+        android:textColor="#fff"
+        android:background="@drawable/custom_btn_bg"
+        android:text="熔断"/>
+
+    <TextView
+        android:id="@+id/zoneTv"
+        android:layout_width="88dp"
+        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/up_action"
+        android:layout_toRightOf="@+id/circuit_tv"
+        android:layout_marginLeft="16dp"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="10dp"
+        android:textColor="#fff"
+        android:background="@drawable/custom_btn_bg"
+        android:text="零位学习"/>
+
+    <TextView
+        android:id="@+id/testLandAndSeeped"
+        android:text="测试2"
+        android:layout_marginLeft="11dp"
+        android:background="@drawable/custom_btn_bg"
+        android:layout_below="@+id/up_action"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@+id/zoneTv"
+        android:padding="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <Button
         android:id="@+id/relieve_tv"
@@ -242,6 +289,17 @@
         android:layout_marginLeft="16dp"
         android:visibility="visible"
         android:text="更新长度"/>
+
+    <Button
+        android:id="@+id/textSendBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/circuit_tv"
+        android:layout_toRightOf="@+id/relieve_tv"
+        android:layout_marginLeft="16dp"
+        android:visibility="visible"
+        android:textSize="12dp"
+        android:text="测试一次性发送多条指令"/>
 
     <TextView
         android:id="@+id/initTv"

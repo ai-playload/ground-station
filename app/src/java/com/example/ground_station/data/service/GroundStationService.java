@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.iflytek.aikitdemo.tool.ThreadExtKt;
 import com.lzf.easyfloat.EasyFloat;
@@ -20,6 +21,7 @@ import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.socket.ConnectionCallback;
 import java.com.example.ground_station.data.socket.ResponseCallback;
 import java.com.example.ground_station.data.socket.SocketClientManager;
+import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.data.socket.UdpSocketClientManager;
 import java.com.example.ground_station.presentation.ability.AbilityCallback;
 import java.com.example.ground_station.presentation.ability.AbilityConstant;
@@ -28,6 +30,8 @@ import java.com.example.ground_station.presentation.ability.tts.TtsHelper2;
 import java.com.example.ground_station.presentation.callback.ResultCallback;
 import java.com.example.ground_station.presentation.floating.FloatingWindowHelper;
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
@@ -320,14 +324,60 @@ public class GroundStationService extends Service implements AbilityCallback {
     public void onAbilityEnd() {
 
     }
+
+    int t;
+
     public void send(byte msgId2, int... payload) {
-        socketClientManager.send(msgId2, payload);
-//        int msgId21 = msgId2;
-        try {
-            String hexString = Integer.toHexString(msgId2);
-            ToastUtils.showShort("" + hexString);
-        }catch (Exception e ) {
+        if (!filtSend(msgId2)) {
+            socketClientManager.send(msgId2, payload);
+
+            try {
+                String hexString = Integer.toHexString(msgId2);
+                ToastUtils.showShort("" + hexString);
+
+                String pv = "";
+                if (payload != null && payload.length > 0) {
+                    int p = payload[0];
+                    pv = Integer.toHexString(Math.abs(p));
+                    if (pv.length() == 1) {
+                        pv = "0" + pv;
+                    }
+                    if (p < 0) {
+                        pv = "-" + pv;
+                    }
+                }
+                fsMap.put(TimeUtils.getNowString() + t++, hexString + pv);
+
+                resultCallback.result(fsMap);
+            } catch (Exception e) {
+            }
         }
     }
+
+    byte[] filtSend = new byte[]{SocketConstant.PARACHUTE_3E, SocketConstant.PARACHUTE_3C};
+
+    private boolean filtSend(byte msgId2) {
+        for (byte b : filtSend) {
+            if (b == msgId2) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    ResultCallback<Map> resultCallback;
+
+    public void setResultCallback(ResultCallback resultCallback) {
+        this.resultCallback = resultCallback;
+    }
+
+    public Map<String, String> fsMap = new LinkedHashMap<String, String>() {
+
+        @Override
+        protected boolean removeEldestEntry(Entry<String, String> eldest) {
+            super.removeEldestEntry(eldest);
+            return this.size() > 8;
+        }
+    };
 
 }

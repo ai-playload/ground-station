@@ -85,6 +85,10 @@ public class MainActivity extends AppCompatActivity {
         bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
 
         initView();
+        findViewById(R.id.rfcBtn).setOnClickListener(view -> {
+            showFloatingWindow();
+        });
+        SPUtil.INSTANCE.putBase("sj_kg", false);
     }
 
     private void initView() {
