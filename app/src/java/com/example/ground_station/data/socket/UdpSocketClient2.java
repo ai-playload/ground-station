@@ -3,6 +3,7 @@ package java.com.example.ground_station.data.socket;
 import android.util.Log;
 
 import com.blankj.utilcode.util.ToastUtils;
+import com.example.ground_station.BuildConfig;
 
 import java.com.example.ground_station.data.service.ResultCallBack;
 import java.com.example.ground_station.data.utils.Utils;
@@ -78,9 +79,15 @@ public class UdpSocketClient2 {
                 packet.setData(data);
                 datagramSocket.send(packet);
                 System.out.println("数据已发送：" + bytesToHex(data));
+                if (BuildConfig.DEBUG) {
+                    ToastUtils.showShort("udp 成功发送指令：" + data[3] );
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 System.err.println("发送失败: " + e.getMessage());
+                if (BuildConfig.DEBUG) {
+                    ToastUtils.showShort("udp 发送失败- 指令：" + data[3] );
+                }
             }
         } else {
             System.err.println("未连接到服务器，无法发送数据");
