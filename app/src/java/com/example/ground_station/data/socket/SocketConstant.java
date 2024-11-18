@@ -55,6 +55,9 @@ public class SocketConstant {
     public static final byte LIGHT = (byte) 0x29;                     // 开灯
     public static final byte BRIGHTNESS = (byte) 0x2a;                // 亮度
     public static final byte EXPLOSION_FLASH = (byte) 0x2b;           // 爆闪
+    public static final byte EXPLOSION_WD = (byte) 0x2c;           // 查询温度
+    public static final byte EXPLOSION_WD_DRIVE = (byte) 0x02;           // 查询驱动温度参数
+    public static final byte EXPLOSION_WD_HEAD = (byte) 0x01;           // 查询灯头温度参数
     public static final byte RED_BLUE_FLASH = (byte) 0x2e;            // 红蓝爆闪
     public static final byte NOTIFY_RE_FILENAME = (byte) 0x15;          // 提示传文件成功
     public static final byte PLAY_REMOTE_AUDIO_BY_INDEX = (byte) 0x99;  //网络点播控制 发送索引播放音频

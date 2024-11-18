@@ -1,48 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rlContent"
     android:layout_width="300dp"
     android:layout_height="348dp"
-    android:id="@+id/rlContent"
-    android:background="@drawable/floating_layout_bg_shape">
+    android:background="@drawable/floating_layout_bg_shape"
+    android:orientation="vertical">
 
     <ImageView
         android:id="@+id/close_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_close"
-        android:padding="8dp"
+        android:layout_alignParentEnd="true"
         android:layout_marginTop="8dp"
         android:layout_marginRight="8dp"
-        android:layout_alignParentEnd="true"/>
+        android:padding="8dp"
+        android:src="@drawable/ic_close" />
 
     <TextView
-        android:layout_marginTop="16dp"
         android:id="@+id/light_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
         android:text="照明"
-        android:textSize="12sp"
         android:textColor="@color/white"
-        android:layout_marginLeft="16dp" />
+        android:textSize="12sp" />
 
     <Button
-        android:layout_below="@+id/light_title"
         android:id="@+id/open_light_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/light_title"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="4dp"
-        android:text="开灯"/>
+        android:text="开灯" />
 
     <Button
         android:id="@+id/flashing_light_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/open_light_btn"
-        android:layout_toRightOf="@+id/open_light_btn"
         android:layout_marginLeft="8dp"
-        android:text="爆闪灯开"/>
+        android:layout_toRightOf="@+id/open_light_btn"
+        android:text="爆闪灯开" />
 
     <Button
         android:id="@+id/red_blue_light_btn"
@@ -50,134 +51,148 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/open_light_btn"
         android:layout_marginLeft="16dp"
-        android:text="红蓝灯开"/>
+        android:text="红蓝灯开" />
 
     <TextView
-        android:layout_marginTop="4dp"
         android:id="@+id/brightness_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/red_blue_light_btn"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
         android:text="亮度调节"
-        android:textSize="12sp"
         android:textColor="@color/white"
-        android:layout_marginLeft="16dp" />
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/seekValueTv"
+        android:layout_width="50dp"
+        android:layout_height="24dp"
+        android:gravity="center_vertical"
+        android:includeFontPadding="true"
+        android:layout_marginTop="4dp"
+        android:layout_below="@+id/brightness_title"
+        android:layout_alignParentRight="true"
+        android:textColor="@color/white"
+        tools:text="100%" />
 
     <androidx.appcompat.widget.AppCompatSeekBar
         android:id="@+id/seek_bar"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
         android:layout_below="@+id/brightness_title"
         android:layout_marginTop="4dp"
         android:layout_marginRight="4dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/seekValueTv"
+        android:max="100"
+        android:min="0"
+        android:progress="100"
         android:progressBackgroundTint="@color/white"
         android:progressTint="@color/purple"
-        android:thumb="@drawable/custom_thumb"
-        android:progress="100"
-        android:min="0"
-        android:max="100"/>
+        android:thumb="@drawable/custom_thumb" />
 
     <CheckBox
         android:id="@+id/check_box"
-        android:layout_below="@+id/seek_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/white"
+        android:layout_below="@+id/seek_bar"
         android:layout_marginLeft="16dp"
-        android:textSize="12sp"
-        android:text="开启调仓跟随"/>
+        android:text="开启调仓跟随"
+        android:textColor="@color/white"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/drive_temp_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="驱动温度："
-        android:textSize="12sp"
-        android:textColor="@color/gray_white"
         android:layout_below="@+id/seek_bar"
+        android:layout_marginLeft="16dp"
         android:layout_toRightOf="@+id/check_box"
-        android:layout_marginLeft="16dp"/>
+        android:text="驱动温度："
+        android:textColor="@color/gray_white"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/lamp_holder_tempe_tv"
+        android:layout_marginTop="3dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="灯头温度："
-        android:textSize="12sp"
-        android:textColor="@color/gray_white"
         android:layout_below="@+id/drive_temp_tv"
+        android:layout_marginLeft="16dp"
         android:layout_toRightOf="@+id/check_box"
-        android:layout_marginLeft="16dp"/>
+        android:text="灯头温度："
+        android:textColor="@color/gray_white"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/controller_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/check_box"
+        android:layout_marginLeft="16dp"
         android:text="云台控制"
-        android:textSize="12sp"
         android:textColor="@color/white"
-        android:layout_marginLeft="16dp"/>
+        android:textSize="12sp" />
 
-<!--    <ImageView-->
-<!--        android:id="@+id/yaw_center"-->
-<!--        android:layout_width="36dp"-->
-<!--        android:layout_height="36dp"-->
-<!--        android:src="@drawable/ic_width"-->
-<!--        android:layout_marginLeft="138dp"-->
-<!--        android:background="?attr/selectableItemBackgroundBorderless"-->
-<!--        android:clickable="true"-->
-<!--        android:layout_below="@+id/controller_title"/>-->
+    <!--    <ImageView-->
+    <!--        android:id="@+id/yaw_center"-->
+    <!--        android:layout_width="36dp"-->
+    <!--        android:layout_height="36dp"-->
+    <!--        android:src="@drawable/ic_width"-->
+    <!--        android:layout_marginLeft="138dp"-->
+    <!--        android:background="?attr/selectableItemBackgroundBorderless"-->
+    <!--        android:clickable="true"-->
+    <!--        android:layout_below="@+id/controller_title"/>-->
 
-<!--    <ImageView-->
-<!--        android:id="@+id/pitch_center"-->
-<!--        android:layout_width="36dp"-->
-<!--        android:layout_height="36dp"-->
-<!--        android:layout_marginLeft="8dp"-->
-<!--        android:src="@drawable/ic_height"-->
-<!--        android:layout_toRightOf="@+id/yaw_center"-->
-<!--        android:background="?attr/selectableItemBackgroundBorderless"-->
-<!--        android:clickable="true"-->
-<!--        android:layout_below="@+id/controller_title"/>-->
+    <!--    <ImageView-->
+    <!--        android:id="@+id/pitch_center"-->
+    <!--        android:layout_width="36dp"-->
+    <!--        android:layout_height="36dp"-->
+    <!--        android:layout_marginLeft="8dp"-->
+    <!--        android:src="@drawable/ic_height"-->
+    <!--        android:layout_toRightOf="@+id/yaw_center"-->
+    <!--        android:background="?attr/selectableItemBackgroundBorderless"-->
+    <!--        android:clickable="true"-->
+    <!--        android:layout_below="@+id/controller_title"/>-->
 
     <ImageView
         android:id="@+id/center"
         android:layout_width="36dp"
         android:layout_height="36dp"
+        android:layout_below="@+id/controller_title"
         android:layout_marginLeft="184dp"
-        android:src="@drawable/ic_control_camera"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
-        android:layout_below="@+id/controller_title"/>
+        android:src="@drawable/ic_control_camera" />
 
     <TextView
         android:id="@+id/yaw_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="俯仰："
-        android:textSize="12sp"
-        android:textColor="@color/gray_white"
         android:layout_below="@+id/center"
         android:layout_alignLeft="@+id/center"
-        android:layout_marginLeft="8dp" />
+        android:layout_marginLeft="8dp"
+        android:text="俯仰："
+        android:textColor="@color/gray_white"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/pitch_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="航向："
-        android:textSize="12sp"
-        android:textColor="@color/gray_white"
         android:layout_below="@+id/yaw_tv"
         android:layout_alignLeft="@+id/center"
-        android:layout_marginLeft="8dp" />
+        android:layout_marginLeft="8dp"
+        android:text="航向："
+        android:textColor="@color/gray_white"
+        android:textSize="12sp" />
 
     <RelativeLayout
         android:id="@+id/direction_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_below="@+id/controller_title">
+        android:layout_below="@+id/controller_title"
+        android:layout_marginLeft="16dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -189,14 +204,14 @@
                 android:id="@+id/keyboard_left"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/ic_keyboard_arrow_left"/>
+                android:src="@drawable/ic_keyboard_arrow_left" />
 
             <ImageView
                 android:id="@+id/keyboard_right"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_marginLeft="32dp"
-                android:src="@drawable/ic_keyboard_arrow_right"/>
+                android:src="@drawable/ic_keyboard_arrow_right" />
 
         </LinearLayout>
 
@@ -210,14 +225,14 @@
                 android:id="@+id/keyboard_up"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/ic_keyboard_arrow_up"/>
+                android:src="@drawable/ic_keyboard_arrow_up" />
 
             <ImageView
                 android:id="@+id/keyboard_down"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_marginTop="32dp"
-                android:src="@drawable/ic_keyboard_arrow_down"/>
+                android:src="@drawable/ic_keyboard_arrow_down" />
 
         </LinearLayout>
 
@@ -228,11 +243,11 @@
         android:id="@+id/ivScale"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:padding="8dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
+        android:padding="8dp"
         android:src="@drawable/icon_scale" />
 
 </RelativeLayout>

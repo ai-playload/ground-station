@@ -1,10 +1,17 @@
 package java.com.example.ground_station.data.socket;
 
+import android.util.Log;
+
 import com.blankj.utilcode.util.ToastUtils;
+
+import java.com.example.ground_station.data.service.ResultCallBack;
+import java.com.example.ground_station.data.utils.Utils;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UdpSocketClient2 {
 
@@ -15,10 +22,20 @@ public class UdpSocketClient2 {
     private DatagramPacket receivePacket;
     private volatile boolean isConnected = false;
     private Thread readThread;
+    private ResultCallBack<List<byte[]>> callBack;
 
-    public UdpSocketClient2(String ip, int prot) {
-        this.ip = ip;
-        this.portJs = prot;
+//    public UdpSocketClient2(String ip, int prot) {
+//        this.ip = ip;
+//        this.portJs = prot;
+//    }
+
+    private UdpSocketClient2() {
+    }
+
+    private static UdpSocketClient2 instance = new UdpSocketClient2();
+
+    public static synchronized UdpSocketClient2 getInstance() {
+        return instance;
     }
 
     // 连接到服务器
@@ -30,6 +47,9 @@ public class UdpSocketClient2 {
             InetAddress serverAddress = InetAddress.getByName(ip);
             datagramSocket.connect(serverAddress, portJs + 1);
             isConnected = true;
+
+            byte[] buffer = new byte[256];
+            receivePacket = new DatagramPacket(buffer, buffer.length);
 
             readThread = new Thread(new ReadThread());
             readThread.start();
@@ -86,17 +106,47 @@ public class UdpSocketClient2 {
         System.out.println("连接已关闭");
     }
 
+    private List list = new ArrayList<Byte[]>();
+
     private class ReadThread implements Runnable {
         @Override
         public void run() {
             try {
-                byte[] buffer = new byte[256];
-                receivePacket = new DatagramPacket(buffer, buffer.length);
-
-                while (isConnected) {
+                while (isConnected && readThread != null && !readThread.isInterrupted()) {
                     datagramSocket.receive(receivePacket);
-                    String receivedData = bytesToHex(receivePacket.getData());
-                    System.out.println("收到的数据：" + receivedData);
+
+                    byte[] data = receivePacket.getData();
+
+                    byte[] bytes = Utils.subByte(data, receivePacket.getOffset(), receivePacket.getLength());
+
+                    if (bytes != null && bytes.length > 0) {
+                        list.clear();
+                        int length = bytes.length;
+                        for (int i = 0; i < length; i++) {
+                            byte v = bytes[i];
+                            if (v == SocketConstant.HEADER) {
+                                if (i + 2 < length) {
+                                    byte dataSize = bytes[i + 1];
+                                    int sumSize = dataSize + 3;
+
+                                    if (sumSize + i <= length) {
+                                        byte[] temp = new byte[sumSize];
+                                        for (int n = 0; n < sumSize; n++) {
+                                            temp[n] = bytes[i + n];
+                                        }
+                                        list.add(temp);
+                                    }
+                                }
+                            }
+                        }
+                        if (list.size() > 0 && callBack != null) {
+                            callBack.result(list);
+                        }
+                    }
+//                    System.arraycopy(data,0,tempArray,0,it.length)
+//                    Log.e("ReadThread","receive：${String2ByteArrayUtils.bytes2Hex(tempArray)}");
+//                    String receivedData = bytesToHex(data);
+//                    System.out.println("收到的数据：" + receivedData);
                 }
             } catch (IOException e) {
                 if (isConnected) {
@@ -105,5 +155,9 @@ public class UdpSocketClient2 {
                 }
             }
         }
+    }
+
+    public void setCallBack(ResultCallBack<List<byte[]>> callBack) {
+        this.callBack = callBack;
     }
 }

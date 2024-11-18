@@ -24,8 +24,11 @@ import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.example.widget.ScaleImage;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
+import java.com.example.ground_station.data.service.ResultCallBack;
 import java.com.example.ground_station.data.socket.SocketConstant;
+import java.com.example.ground_station.data.socket.UdpSocketClient2;
 import java.com.example.ground_station.presentation.util.DisplayUtils;
+import java.util.List;
 
 public class FloatingLightHelper extends BaseFloatingHelper {
     private final String tag = "light_tag";
@@ -75,6 +78,9 @@ public class FloatingLightHelper extends BaseFloatingHelper {
             handler.postDelayed(this, 100); // 每100毫秒发送一次消息
         }
     };
+    private TextView setkValueTv;
+    private TextView driveWdTv;
+    private TextView headWdTv;
 
     public void showFloatingLight(Context context, CloseCallback closeCallback) {
         startGroundStationService(context, new IServiceConnection() {
@@ -289,11 +295,13 @@ public class FloatingLightHelper extends BaseFloatingHelper {
                                 }
                             });
 
+                            setkValueTv = view.findViewById(R.id.seekValueTv);
                             AppCompatSeekBar seekBar = view.findViewById(R.id.seek_bar);
-
+                            updateUISeekValueTv(seekBar.getProgress());
                             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                                 @Override
                                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                    updateUISeekValueTv(progress);
                                 }
 
                                 @Override
@@ -309,10 +317,76 @@ public class FloatingLightHelper extends BaseFloatingHelper {
                                     Log.d(TAG, "volume value: " + volume);
                                 }
                             });
+
+                            driveWdTv = view.findViewById(R.id.drive_temp_tv);
+                            headWdTv = view.findViewById(R.id.lamp_holder_tempe_tv);
+
+                            UdpSocketClient2.getInstance().setCallBack(new ResultCallBack<List<byte[]>>() {
+                                @Override
+                                public void result(List<byte[]> bytes) {
+                                    disCacllBack(bytes);
+                                }
+                            });
+
+                            reuestWd();
                         }
                     }
                 })
                 .show();
+    }
+
+    private void disCacllBack(List<byte[]> bytes) {
+        for (byte[] data : bytes) {
+            if (data != null && data.length >= 5) {
+                byte msgId2 = data[3];
+                Byte v = data[4];
+                switch (msgId2) {
+                    case SocketConstant.EXPLOSION_WD:
+                        Byte v2 = data[5];
+                        if (v == SocketConstant.EXPLOSION_WD_HEAD && v2 != headWdValue) {//灯头温度
+                            headWdValue = v2;
+                            if (headWdTv != null && v != null) {
+                                headWdTv.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        headWdTv.setText("灯头温度：" + v2 + "°C");
+                                    }
+                                });
+                            }
+                        } else if (v == SocketConstant.EXPLOSION_WD_DRIVE && v2 != driveWdValue) {
+                            driveWdValue = v2;
+                            if (driveWdTv != null && v != null) {
+                                driveWdTv.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        driveWdTv.setText("驱动温度：" + v2 + "°C");
+                                    }
+                                });
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+    }
+
+    private int driveWdValue, headWdValue = Integer.MIN_VALUE;
+
+    private void updateUISeekValueTv(int volume) {
+        if (setkValueTv != null) {
+            setkValueTv.setText(volume + "%");
+        }
+    }
+
+    public void reuestWd() {
+        if (checkService()) {
+            groundStationService.sendUdpSocketCommand(SocketConstant.EXPLOSION_WD, SocketConstant.EXPLOSION_WD_HEAD);
+            groundStationService.sendUdpSocketCommand(SocketConstant.EXPLOSION_WD, SocketConstant.EXPLOSION_WD_DRIVE);
+        }
+    }
+
+    private boolean checkService() {
+        return groundStationService != null;
     }
 
 }
