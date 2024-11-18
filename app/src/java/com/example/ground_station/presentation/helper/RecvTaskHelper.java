@@ -53,13 +53,14 @@ public class RecvTaskHelper {
                 }
                 count = 0;
             } catch (Exception e) {
-                throw new RuntimeException(e);
+// TODO: 2024/11/17  
             }
         }
     }
 
     private InputStream getInput() {
-        if (socketClient != null && socketClient.getSocket() != null && socketClient.getSocket().isConnected()) {
+        if (socketClient != null && socketClient.getSocket() != null
+                && socketClient.getSocket().isConnected() &&  !socketClient.getSocket().isClosed()) {
             InputStream inputStream = socketClient.getInputStream();
             if (inputStream != null) {
                 return inputStream;

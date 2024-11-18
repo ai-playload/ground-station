@@ -1,16 +1,19 @@
 package java.com.example.ground_station.presentation.helper;
 
-import android.os.Looper;
 import android.util.Log;
 
+import com.blankj.utilcode.util.TimeUtils;
+
 import java.com.example.ground_station.data.socket.SocketClient;
+import java.util.Vector;
 
 public class SendTaskHelper {
 
     static SendTaskHelper helper = new SendTaskHelper();
     public static final int BYTE_LENGTH = 6;
     int x = 0;
-    private byte[] ins;
+//    private byte[] ins;
+    private Vector<Byte> list = new Vector<>();
 
     public synchronized static SendTaskHelper getInstance() {
         return helper;
@@ -21,7 +24,7 @@ public class SendTaskHelper {
 
     private SendTaskHelper() {
         loop = new LoopHelper();
-        loop.setTime(1000);
+        loop.setTime(3000);
         loop.setRunnable(new Runnable() {
             @Override
             public void run() {
@@ -36,12 +39,14 @@ public class SendTaskHelper {
     }
 
     public void runTast() {
-        Log.d("taxa", "x:" + x++);
+        Log.d("gs:TaskHelper:Send", TimeUtils.getNowString() + " 执行次数:" + x++);
         try {
             if (socketClient != null && (socketClient.getSocket() != null && socketClient.getSocket().isConnected())) {
-                if (ins != null) {
-                    for (byte in : ins) {
-                        socketClient.send(in);
+                if (list != null && list.size() > 0) {
+                    for (Byte in : list) {
+                        if (in != null) {
+                            socketClient.send(in);
+                        }
                     }
                 }
             }
@@ -52,8 +57,19 @@ public class SendTaskHelper {
         }
     }
 
-    public void setInsturd(byte... ins) {
-        this.ins = ins;
+    public void addInsturd(byte... ins) {
+        for (byte in : ins) {
+            list.add(in);
+        }
+    }
+
+    public void remove(byte... ins) {
+        for (byte in : ins) {
+            int index = list.indexOf(in);
+            if (index >= 0) {
+                list.remove(index);
+            }
+        }
     }
 
     private SocketClient socketClient;

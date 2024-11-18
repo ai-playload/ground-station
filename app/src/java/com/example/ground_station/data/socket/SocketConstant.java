@@ -46,7 +46,8 @@ public class SocketConstant {
     public static final byte PARACHUTE_SPEED = (byte) 0x3a;           // 缓降器速度控制
     public static final byte PARACHUTE_3C = (byte) 0x3c;           // 缓降器重量获取
     public static final byte PARACHUTE_3E = (byte) 0x3e;           // 缓降器长度获取
-    public static final byte SERVO_STATUS = (byte) 0x3f;              // 舵机状态
+    public static final byte PARACHUTE_CIRCUI_STATUS = (byte) 0x3f;              // 获取缓降器熔断状态
+    public static final byte SERVO_SWITCH_STATUS = (byte) 0x40;              //询问开关状态
     public static final byte PARACHUTE_LENGTH = (byte) 0x3d;        // 缓降器位置控制
     public static final byte LIGHT = (byte) 0x29;                     // 开灯
     public static final byte BRIGHTNESS = (byte) 0x2a;                // 亮度
@@ -55,10 +56,13 @@ public class SocketConstant {
     public static final byte NOTIFY_RE_FILENAME = (byte) 0x15;          // 提示传文件成功
     public static final byte PLAY_REMOTE_AUDIO_BY_INDEX = (byte) 0x99;  // 发送索引播放音频
 
+
     public static final byte HEART_BEAT = (byte) 0x50;  // Heartbeat 心跳包
 
 //    public static final byte SERVO_UP = (byte) 0x30;                  // 舵机 up
 //    public static final byte SERVO_DOWN = (byte) 0x30;                // 舵机 down
 //    public static final byte SERVO_RETURN = (byte) 0x30;              // 舵机 回中
+
+
 
 }

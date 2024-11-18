@@ -10,7 +10,7 @@ public class LoopHelper {
 //    Handler mainHandler;
     Handler workHandler;
     HandlerThread mHandlerThread;
-    private long time = 100;
+    private long time = 1000;
 
     public void setTime(long time) {
         this.time = time;

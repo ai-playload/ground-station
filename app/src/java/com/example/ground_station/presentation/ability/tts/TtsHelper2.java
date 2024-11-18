@@ -335,7 +335,7 @@ public class TtsHelper2 implements SynthesisCallback {
             PcmUtil.changeWavHead(recordFile);
             length = recordFile.length();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+
         }
     }
 

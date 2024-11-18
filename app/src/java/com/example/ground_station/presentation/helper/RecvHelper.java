@@ -58,7 +58,7 @@ public class RecvHelper implements Runnable {
                     }
                     count = 0;
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    // TODO: 2024/11/17  
                 }
             }
         }

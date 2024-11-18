@@ -462,7 +462,7 @@ public class TtsHelper implements SynthesisCallback {
         try {
             PcmUtil.changeWavHead(recordFile);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+
         }
     }
 

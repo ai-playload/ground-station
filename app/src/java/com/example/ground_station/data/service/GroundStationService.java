@@ -227,8 +227,10 @@ public class GroundStationService extends Service implements AbilityCallback {
         ShoutcasterConfig.DeviceInfo cloudLightInfo = config.getCloudLightInfo();
 
         if (socketClientManager == null) {
-            socketClientManager = new SocketClientManager(getApplicationContext(), controller.getIp(), controller.getPort());
+
+//            socketClientManager = new SocketClientManager(getApplicationContext(), controller.getIp(), controller.getPort());
         }
+        socketClientManager =   SocketClientManager.getInstance();
         socketClientManager.connect(controller, callback);
 
         try {
@@ -354,7 +356,8 @@ public class GroundStationService extends Service implements AbilityCallback {
         }
     }
 
-    byte[] filtSend = new byte[]{SocketConstant.PARACHUTE_3E, SocketConstant.PARACHUTE_3C};
+    byte[] filtSend = new byte[]{};
+//    byte[] filtSend = new byte[]{SocketConstant.PARACHUTE_3E, SocketConstant.PARACHUTE_3C};
 
     private boolean filtSend(byte msgId2) {
         for (byte b : filtSend) {

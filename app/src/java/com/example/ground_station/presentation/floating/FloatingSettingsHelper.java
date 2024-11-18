@@ -1,27 +1,23 @@
 package java.com.example.ground_station.presentation.floating;
 
+import android.app.Application;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.Message;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 
-import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.example.ground_station.R;
@@ -33,6 +29,7 @@ import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.example.widget.ScaleImage;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
+import java.com.example.ground_station.data.socket.DeviceStatus;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.callback.ResultCallback;
 
@@ -40,16 +37,16 @@ import java.com.example.ground_station.presentation.helper.RecvTaskHelper;
 import java.com.example.ground_station.presentation.helper.SendTaskHelper;
 import java.com.example.ground_station.presentation.util.DisplayUtils;
 import java.com.example.ground_station.presentation.util.Utils;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.function.Predicate;
 
 public class FloatingSettingsHelper extends BaseFloatingHelper {
     private final String tag = "settings_tag";
     private final String TAG = "FloatingSettingsHelper";
     private boolean isSafetyBtnEnable = SPUtil.INSTANCE.getBoolean("sj_kg", false);
+    private int circuiStatus = DeviceStatus.NORMAL;
+
+
     private final int PARACHUTE_STATUS_CLOSE = 0;
     private final int PARACHUTE_STATUS_OPEN = 1;
     private final int PARACHUTE_STATUS_UP = 2;
@@ -66,6 +63,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
     private TextView jsTv;
     private TextView fsTv;
     private TextView circuitButton;
+    private TextView safetyButton;
 
     public void showFloatingSettings(Context context, CloseCallback closeCallback) {
         startGroundStationService(context, null);
@@ -136,7 +134,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                         if (view != null) {
                             initFloatingView(view, tag, closeCallback);
 
-                            TextView safetyButton = view.findViewById(R.id.safety_button);
+                            safetyButton = view.findViewById(R.id.safety_button);
                             Button brakingButton = view.findViewById(R.id.braking_tv);
                             circuitButton = view.findViewById(R.id.circuit_tv);
                             Button relieveButton = view.findViewById(R.id.relieve_tv);
@@ -144,82 +142,51 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             Button downActionButton = view.findViewById(R.id.down_action);
                             Button stopActionButton = view.findViewById(R.id.stop_action);
 
-//                            MaterialRadioButton radioButtonSpeed = view.findViewById(R.id.radio_button_speed);
-//                            MaterialRadioButton radioButtonLength = view.findViewById(R.id.radio_button_length);
                             speedInputView = view.findViewById(R.id.audioInputContent);
                             lenghtInputView = view.findViewById(R.id.speedInputContent);
-//                            radioButtonSpeed.setChecked(true);
 
                             hintTv = view.findViewById(R.id.hint_tv);
                             lenghtTv = view.findViewById(R.id.put_line_tv);
                             weightTv = view.findViewById(R.id.weight_tv);
                             view.findViewById(R.id.location_tv).setOnClickListener(view1 -> {
-                                updateWeightInfo();
-//                                updateLenghtInfo();
+                                requestWeightInfo();
                             });
-
-//                            radioButtonSpeed.setOnClickListener(v -> {
-//                                if (radioButtonSpeed.isChecked()) {
-//                                    radioButtonLength.setChecked(false); // 取消另一个按钮的选中状态
-//                                }
-//                            });
-//
-//                            radioButtonLength.setOnClickListener(v -> {
-//                                if (radioButtonLength.isChecked()) {
-//                                    radioButtonSpeed.setChecked(false); // 取消另一个按钮的选中状态
-//                                }
-//                            });
-                            safetyButton.setBackgroundResource(isSafetyBtnEnable ? R.drawable.custom_btn_bg_green : R.drawable.custom_btn_bg);
+                            updateSwitchUi();
                             safetyButton.setOnClickListener(v -> {
-                                if (isSafetyBtnEnable) {
-                                    groundStationService.send(SocketConstant.PARACHUTE, PARACHUTE_STATUS_CLOSE);
-                                    safetyButton.setText("关机中");
-                                } else {
-                                    groundStationService.send(SocketConstant.PARACHUTE, PARACHUTE_STATUS_OPEN);
-                                    safetyButton.setText("开机中");
-                                }
                                 isSafetyBtnEnable = !isSafetyBtnEnable;
-                                safetyButton.setBackgroundResource(isSafetyBtnEnable ? R.drawable.custom_btn_bg_green : R.drawable.custom_btn_bg);
-                                SPUtil.INSTANCE.putBase("sj_kg", isSafetyBtnEnable);
+                                updateSwitchState();
                             });
 
                             brakingButton.setOnClickListener(v -> {
-                                groundStationService.send(SocketConstant.PARACHUTE_CONTROL, 1);
+                                sendInstruct(SocketConstant.PARACHUTE_CONTROL, 1);
                             });
 
                             circuitButton.setOnClickListener(v -> {
-                                String str = circuitButton.getText().toString();
-                                String rd = "熔断";
-                                String gb = "熔断中";
-                                if (StringUtils.equals(str, rd)) {
-                                    circuitButton.setText(gb);
-                                    groundStationService.send(SocketConstant.PARACHUTE_CONTROL, 2);
-                                    circuitButton.setBackgroundResource(R.drawable.custom_btn_bg_fa0);
+                                if (circuiStatus != DeviceStatus.LOADING) {
+                                    circuiStatus = DeviceStatus.LOADING;
+                                    sendInstruct(SocketConstant.PARACHUTE_CONTROL, 2);//进行熔断
+                                    SendTaskHelper.getInstance().addInsturd(SocketConstant.PARACHUTE_CIRCUI_STATUS);//增加固定频率问询熔断状态
                                 } else {
-                                    circuitButton.setText(rd);
-                                    groundStationService.send(SocketConstant.PARACHUTE_CONTROL, 0);
-                                    circuitButton.setBackgroundResource(R.drawable.custom_btn_bg);
+                                    circuiStatus = DeviceStatus.NORMAL;
+                                    sendInstruct(SocketConstant.PARACHUTE_CONTROL, 0);//取消熔断
+                                    SendTaskHelper.getInstance().remove(SocketConstant.PARACHUTE_CIRCUI_STATUS);
                                 }
+                                updateCiruciStatus();
                             });
 
 
                             relieveButton.setOnClickListener(v -> {
-//                                groundStationService.sendSocketCommand(SocketConstant.PARACHUTE_CONTROL, 0);
-                                updateLenghtInfo();
+                                requestLenghtInfo();
                             });
 
-                            view.findViewById(R.id.speedComiftBtn).setOnClickListener(view1 -> {
-                                boolean hc = checkSpeed();
-                                groundStationService.send(SocketConstant.PARACHUTE_SPEED, Integer.parseInt(speedInputView.getText().toString()));
-                            });
 
                             view.findViewById(R.id.zoneTv).setOnClickListener(view1 -> {
                                 //零位学习
-                                groundStationService.send(SocketConstant.PARACHUTE_CONTROL, 5);
+                                sendInstruct(SocketConstant.PARACHUTE_CONTROL, 5);
                             });
 
                             upActionButton.setOnClickListener(v -> {
-                                if (isFusingLoadifng()) {
+                                if (isCircuiLoading()) {
                                     ToastUtils.showShort("熔断中不可操作");
                                     return;
                                 }
@@ -229,14 +196,12 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                                 if (!hc || !hl) {
                                     ToastUtils.showShort("速度档位设置区间为:1~10, 长度设置区间为:1~30。");
                                 }
-//                                groundStationService.send(SocketConstant.PARACHUTE_SPEED, Integer.parseInt(speedInputView.getText().toString()));
-                                groundStationService.send(SocketConstant.PARACHUTE_LENGTH, Integer.parseInt(lenghtInputView.getText().toString()));
-                                getLenghtInfo();
-
+                                sendInstruct(SocketConstant.PARACHUTE_SPEED, Integer.parseInt(speedInputView.getText().toString()));
+                                sendInstruct(SocketConstant.PARACHUTE_LENGTH, Integer.parseInt(lenghtInputView.getText().toString()));
                             });
 
                             downActionButton.setOnClickListener(v -> {
-                                if (isFusingLoadifng()) {
+                                if (isCircuiLoading()) {
                                     ToastUtils.showShort("熔断中不可操作");
                                     return;
                                 }
@@ -245,15 +210,13 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                                 if (!hc || !hl) {
                                     ToastUtils.showShort("速度档位设置区间为:1~10, 长度设置区间为:1~30。");
                                 }
-//                                groundStationService.send(SocketConstant.PARACHUTE_SPEED, -Integer.parseInt(speedInputView.getText().toString()));
-                                groundStationService.send(SocketConstant.PARACHUTE_LENGTH, -Integer.parseInt(lenghtInputView.getText().toString()));
-                                getLenghtInfo();
+                                sendInstruct(SocketConstant.PARACHUTE_SPEED, -Integer.parseInt(speedInputView.getText().toString()));
+                                sendInstruct(SocketConstant.PARACHUTE_LENGTH, -Integer.parseInt(lenghtInputView.getText().toString()));
                             });
 
                             //2上升 3下降 4停止
                             stopActionButton.setOnClickListener(v -> {
-                                groundStationService.send(SocketConstant.PARACHUTE, PARACHUTE_STATUS_STOP);
-                                stopGetLenghtInfo();
+                                sendInstruct(SocketConstant.PARACHUTE, PARACHUTE_STATUS_STOP);
                             });
 
                             RecvTaskHelper.getInstance().setCallback(new ResultCallback<byte[]>() {
@@ -268,30 +231,56 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             jsTv = view.findViewById(R.id.jsTv);
                             fsTv = view.findViewById(R.id.fsTv);
 
-
                             view.findViewById(R.id.textSendBtn).setOnClickListener(view1 -> {
                                 try {
+                                    boolean hc = checkSpeed();
+                                    boolean hc1 = checkLenght();
                                     int size = Integer.parseInt(lenghtInputView.getText().toString());
                                     for (int i = 0; i < size; i++) {
-                                        updateLenghtInfo();
-                                        updateWeightInfo();
+//                                        updateLenghtInfo();
+//                                        updateWeightInfo();
+                                        sendInstruct(SocketConstant.PARACHUTE_SPEED, -Integer.parseInt(speedInputView.getText().toString()));
+                                        sendInstruct(SocketConstant.PARACHUTE_LENGTH, -Integer.parseInt(lenghtInputView.getText().toString()));
                                     }
                                 } catch (Exception e) {
                                 }
                             });
 
                             view.findViewById(R.id.testLandAndSeeped).setOnClickListener(view1 -> {
-                                groundStationService.send(SocketConstant.PARACHUTE_SPEED, -Integer.parseInt(speedInputView.getText().toString()));
-                                groundStationService.send(SocketConstant.PARACHUTE_LENGTH, -Integer.parseInt(lenghtInputView.getText().toString()));
+                                // TODO: 2024/11/17 测试
+                                requestSwitchInfo();
                             });
+
+
+                            SendTaskHelper.getInstance().getLoop().setTime(3000);
+                            SendTaskHelper.getInstance().getLoop().start();
                         }
                     }
                 })
                 .show();
     }
 
-    private boolean isFusingLoadifng() {
-        return circuitButton != null && TextUtils.equals(circuitButton.getText().toString(), "熔断中") ;
+    private void updateSwitchState() {
+        if (groundStationService != null) {
+            if (!isSafetyBtnEnable) {
+                sendInstruct(SocketConstant.PARACHUTE, PARACHUTE_STATUS_CLOSE);
+            } else {
+                sendInstruct(SocketConstant.PARACHUTE, PARACHUTE_STATUS_OPEN);
+            }
+        }
+        updateSwitchUi();
+        SPUtil.INSTANCE.putBase("sj_kg", isSafetyBtnEnable);
+    }
+
+    private void updateSwitchUi() {
+        if (safetyButton != null) {
+            safetyButton.setText(isSafetyBtnEnable ? "开机中" : "关机中");
+            safetyButton.setBackgroundResource(isSafetyBtnEnable ? R.drawable.custom_btn_bg_green : R.drawable.custom_btn_bg);
+        }
+    }
+
+    private boolean isCircuiLoading() {
+        return circuiStatus == DeviceStatus.LOADING;
     }
 
     private boolean checkLenght() {
@@ -332,18 +321,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
 
     @Override
     protected void onConnectedSuccess() {
-//        setJsMsgCallback();
-//        if (weightTv != null) {
-//            weightTv.post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    updateWeightInfo();
-//                    updateLenghtInfo();
-//                }
-//            });
-//        }
-
-        if (groundStationService != null) {
+        if (checkSerrvice()) {
             groundStationService.setResultCallback(new ResultCallback<Map<String, String>>() {
 
                 @Override
@@ -353,19 +331,12 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                     }
                 }
             });
+            requestSwitchInfo();
+            requestLenghtInfo();
+            requestWeightInfo();
+            requestParachuteStatus();
+            SendTaskHelper.getInstance().addInsturd(SocketConstant.PARACHUTE_3C);
         }
-    }
-
-    private void setJsMsgCallback() {
-        if (groundStationService == null || weightTv == null) {
-            return;
-        }
-        groundStationService.sendMsgAndCallBack(new ResultCallback<byte[]>() {
-            @Override
-            public void result(byte[] bytes) {
-                setRevInfo(bytes);
-            }
-        });
     }
 
     private void setRevInfo(byte[] bytes) {
@@ -386,61 +357,35 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                     bundle.putByteArray("gs", bytes);
                     message.setData(bundle);
                     mHandler.sendMessage(message);
-
-//                    hintTv.post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            byte aByte = bytes[4];
-//                            int v = aByte;
-//                            byte zl = bytes[3];
-//                            if (zl == SocketConstant.PARACHUTE_3E) {
-//                                lenghtTv.setText("当前放线长度：" + v + "m");
-//                            } else if (zl == SocketConstant.PARACHUTE_3C) {
-//                                weightTv.setText("重量：" + v + "kg");
-//                            }
-//                            if (hintChange) {
-//                                hintTv.setText(v);
-//                            }
-//                        }
-//                    });
                 }
             }
         }
     }
 
-    private void updateWeightInfo() {
-        if (groundStationService == null || weightTv == null) {
-            return;
+    private void sendInstruct(byte msgId2, int... payload) {
+        if (checkSerrvice()) {
+            groundStationService.send(msgId2, payload);//获取开关状态指令
         }
-        groundStationService.send(SocketConstant.PARACHUTE_3C);
     }
 
-    private void updateLenghtInfo() {
-        if (groundStationService == null || weightTv == null) {
-            return;
-        }
-        groundStationService.send(SocketConstant.PARACHUTE_3E);
+    private void requestSwitchInfo() {
+        sendInstruct(SocketConstant.SERVO_SWITCH_STATUS);//获取开关状态指令
     }
 
-    private boolean getLoghtLoading = false;
-
-    private void getLenghtInfo() {
-        SendTaskHelper.getInstance().setInsturd(SocketConstant.PARACHUTE_3E);
-        SendTaskHelper.getInstance().getLoop().start();
-
-//        updateLenghtInfo();
-//        if (!getLoghtLoading) {
-//            getLoghtLoading = true;
-////            mHandler.sendEmptyMessageDelayed(SocketConstant.PARACHUTE_3E, 1000);
-//        }
+    private void requestWeightInfo() {
+        sendInstruct(SocketConstant.PARACHUTE_3C);
     }
 
-    private void stopGetLenghtInfo() {
-        SendTaskHelper.getInstance().getLoop().stop();
+    private void requestLenghtInfo() {
+        sendInstruct(SocketConstant.PARACHUTE_3E);
+    }
 
-//        updateLenghtInfo();
-////        mHandler.removeMessages(SocketConstant.PARACHUTE_3E);
-//        getLoghtLoading = false;
+    private void requestParachuteStatus() {
+        sendInstruct(SocketConstant.PARACHUTE_CIRCUI_STATUS);
+    }
+
+    private boolean checkSerrvice() {
+        return groundStationService != null && weightTv != null;
     }
 
     int t;
@@ -451,26 +396,54 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
             switch (msg.what) {
                 case 0:
                     byte[] bytes = msg.getData().getByteArray("gs");
-                    byte aByte = bytes[4];
-                    int v = aByte;
+                    int v = bytes[4];
+                    ;
                     byte zl = bytes[3];
                     if (zl == SocketConstant.PARACHUTE_3E) {
                         lenghtTv.setText("当前放线长度：" + v + "m");
                     } else if (zl == SocketConstant.PARACHUTE_3C) {
                         weightTv.setText("重量：" + v + "kg");
+                    } else if (zl == SocketConstant.SERVO_SWITCH_STATUS) {
+                        //更新开关状态
+                        if (v == 1 || v == 0) {
+                            isSafetyBtnEnable = v == 1;
+                            updateSwitchState();
+                        }
+                    } else if (zl == SocketConstant.PARACHUTE_CIRCUI_STATUS) {
+                        boolean change = circuiStatus == v;
+                        //熔断状态
+                        if (v == DeviceStatus.COMPLETE) {//完成状态恢复默认
+                            v = DeviceStatus.NORMAL;
+                        }
+                        circuiStatus = v;
+                        if (change) {
+                            updateCiruciStatus();
+                        }
+                        if (circuiStatus != DeviceStatus.LOADING) {//如果熔断完成，则取消掉固定频率问询
+                            SendTaskHelper.getInstance().remove(SocketConstant.PARACHUTE_CIRCUI_STATUS);
+                        }
                     }
+
                     String str = Utils.bytesToHexFun3(bytes);
                     jsMap.put(TimeUtils.getNowString() + t++, str);
                     hintTv.setText(str);
                     jsTv.setText(formartJs(jsMap));
                     break;
-//                case SocketConstant.PARACHUTE_3E:
-//                    updateLenghtInfo();
-////                    mHandler.sendEmptyMessageDelayed(SocketConstant.PARACHUTE_3E, 1000);
-//                    break;
             }
         }
     };
+
+    private void updateCiruciStatus() {
+        Application context = com.blankj.utilcode.util.Utils.getApp();
+        if (circuiStatus == DeviceStatus.LOADING) {
+            circuitButton.setText(context.getString(R.string.ciruit));
+            circuitButton.setBackgroundResource(R.drawable.custom_btn_bg_fa0);
+        } else {
+            circuiStatus = DeviceStatus.NORMAL;
+            circuitButton.setText(context.getString(R.string.ciruit));
+            circuitButton.setBackgroundResource(R.drawable.custom_btn_bg);
+        }
+    }
 
     private String formartJs(Map<String, String> jsMap) {
         StringBuilder sb = new StringBuilder();

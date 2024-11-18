@@ -266,7 +266,7 @@ public class SocketClient {
      */
     public void uploadFile(File file, UploadProgressListener listener) throws IOException {
         if (!file.exists() || !file.isFile()) {
-            throw new IllegalArgumentException("Invalid file");
+
         }
 
         // 1. 读取文件内容到字节数组

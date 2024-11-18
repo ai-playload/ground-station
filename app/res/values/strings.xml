@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Ai Payload</string>
+    <string name="ciruit">熔断</string>
+    <string name="ciruit_loading">熔断中</string>
 </resources>

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.ThreadUtils;
+import com.blankj.utilcode.util.Utils;
 
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.presentation.callback.ResultCallback;
@@ -31,14 +32,27 @@ public class SocketClientManager {
     private SocketClient socketClient;
     private ExecutorService jsMsgThread;
 
-    public SocketClientManager(Context context, String serverIp, int serverPort) {
+    private static SocketClientManager manager = new SocketClientManager(Utils.getApp());
+
+    public static SocketClientManager getInstance() {
+        return manager;
+    }
+
+    public SocketClientManager(Context context) {
         this.executorService = Executors.newSingleThreadExecutor(); // 创建一个具有固定线程数的线程池
-        this.socketClient = new SocketClient(serverIp, serverPort);
         this.mainHandler = new Handler(Looper.getMainLooper()); // 用于在主线程上处理结果
         this.reconnectHandler = new Handler(Looper.getMainLooper()); // Reconnection handler
         this.heartbeatHandler = new Handler(Looper.getMainLooper()); // Reconnection handler
         this.context = context;
     }
+//    public SocketClientManager(Context context, String serverIp, int serverPort) {
+//        this.executorService = Executors.newSingleThreadExecutor(); // 创建一个具有固定线程数的线程池
+//        this.socketClient = new SocketClient(serverIp, serverPort);
+//        this.mainHandler = new Handler(Looper.getMainLooper()); // 用于在主线程上处理结果
+//        this.reconnectHandler = new Handler(Looper.getMainLooper()); // Reconnection handler
+//        this.heartbeatHandler = new Handler(Looper.getMainLooper()); // Reconnection handler
+//        this.context = context;
+//    }
 
     public void connect(ShoutcasterConfig.DeviceInfo controller, ConnectionCallback callback) {
         this.controller = controller;
@@ -48,7 +62,7 @@ public class SocketClientManager {
             public void run() {
                 try {
                     // 如果已经连接，先断开连接
-                    if (socketClient.getSocket() != null && socketClient.getSocket().isConnected()) {
+                    if (socketClient != null && socketClient.getSocket() != null && socketClient.getSocket().isConnected()) {
                         try {
                             socketClient.disconnect(); // 断开当前连接
                             isConnected = false; // 更新状态为未连接
