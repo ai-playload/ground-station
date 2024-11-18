@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatSeekBar;
 
+import com.example.ground_station.BuildConfig;
 import com.example.ground_station.R;
 import com.lzf.easyfloat.EasyFloat;
 import com.lzf.easyfloat.enums.ShowPattern;
@@ -329,6 +330,13 @@ public class FloatingLightHelper extends BaseFloatingHelper {
                             });
 
                             reuestWd();
+
+
+                            View testWdBtn = view.findViewById(R.id.testLightBtn);
+                            testWdBtn.setVisibility(BuildConfig.DEBUG ? View.VISIBLE : View.GONE);
+                            testWdBtn.setOnClickListener(view1 -> {
+                                reuestWd();
+                            });
                         }
                     }
                 })
