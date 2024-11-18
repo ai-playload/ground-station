@@ -27,13 +27,13 @@ import java.com.example.ground_station.data.socket.SocketClientManager;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.data.socket.UdpSocketClient2;
 import java.com.example.ground_station.data.socket.UdpSocketClientManager;
+import java.com.example.ground_station.data.utils.SendUtils;
 import java.com.example.ground_station.presentation.ability.AbilityCallback;
 import java.com.example.ground_station.presentation.ability.AbilityConstant;
 import java.com.example.ground_station.presentation.ability.AudioFileGenerationCallback;
 import java.com.example.ground_station.presentation.ability.tts.TtsHelper2;
 import java.com.example.ground_station.presentation.floating.FloatingWindowHelper;
 import java.com.example.ground_station.presentation.util.GsonParser;
-import java.com.example.ground_station.presentation.util.SendUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -160,7 +160,8 @@ public class GroundStationService extends Service implements AbilityCallback {
         initGStreamer();
 
         executorService = Executors.newSingleThreadExecutor();
-        udpSocketClient2 = new UdpSocketClient2("127.0.0.1", 13551);
+        udpSocketClient2 = UdpSocketClient2.getInstance();
+//        udpSocketClient2 = new UdpSocketClient2("127.0.0.1", 13551);
 //        createNotificationChannel();
 //        startForegroundService();
     }
@@ -529,7 +530,7 @@ public class GroundStationService extends Service implements AbilityCallback {
      * @param payload
      */
     public void sendSjInstruct(byte msgId2, int... payload) {
-        socketClientManager.sendSjInstruct(msgId2, payload);
+//        socketClientManager.sendSjInstruct(msgId2, payload);
     }
 
 }

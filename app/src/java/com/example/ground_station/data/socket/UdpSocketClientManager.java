@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.iflytek.aikitdemo.tool.SPUtil;
 
-import java.com.example.ground_station.presentation.util.SendUtils;
+import java.com.example.ground_station.data.utils.SendUtils;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
