@@ -69,7 +69,7 @@ public class SocketClientManager {
                     isConnected = false;
 
                     mainHandler.post(() -> {
-                        Toast.makeText(context, "连接失败，正在重连", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context, "连接失败，正在重连", Toast.LENGTH_SHORT).show();
 
                         if (callback != null) {
                             callback.onConnectionFailure(e);
