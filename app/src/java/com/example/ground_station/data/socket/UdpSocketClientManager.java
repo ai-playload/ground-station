@@ -16,10 +16,7 @@ public class UdpSocketClientManager {
     public UdpSocketClientManager(String serverIp, int serverPort) throws IOException {
         this.executorService = Executors.newSingleThreadExecutor(); // 创建一个具有固定线程数的线程池
 
-        this.udpSocketClient = new UdpSocketClient2(serverIp, serverPort); // 实例化 UdpSocketClient
-    }
-
-    public void connect() {
+        this.udpSocketClient =   UdpSocketClient2.getInstance(); // 实例化 UdpSocketClient
     }
 
     public void sendUdpCommand(byte msgId2, int payload) {

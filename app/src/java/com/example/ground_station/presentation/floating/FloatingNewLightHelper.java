@@ -8,16 +8,21 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.AppCompatSeekBar;
+
 import com.example.ground_station.R;
 import com.iflytek.aikitdemo.tool.SPUtil;
 import com.lzf.easyfloat.EasyFloat;
 import com.lzf.easyfloat.enums.ShowPattern;
 import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
+
+import org.w3c.dom.Text;
+
 import java.com.example.ground_station.data.socket.SocketConstant;
 
 public class FloatingNewLightHelper extends BaseFloatingHelper {
@@ -26,6 +31,10 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
     private boolean isLighting = false;
     private boolean isFlashing = false;
     private boolean isRedBlueLighting = false;
+    private TextView setkValueTv;
+    private TextView driveWdTv;
+    private TextView headWdTv;
+    private int driveWdValue, headWdValue = Integer.MIN_VALUE;
 
     public void showFloatingLight(Context context, CloseCallback closeCallback) {
         startGroundStationService(context, new IServiceConnection() {
@@ -98,6 +107,7 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                             @Override
                             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                updateUISeekValueTv(progress);
                             }
 
                             @Override
@@ -114,88 +124,91 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                                 Log.d(TAG, "progress value: " + progress);
                             }
                         });
+                        setkValueTv = view.findViewById(R.id.seekValueTv);
+                        updateUISeekValueTv(seekBar.getProgress());
+
+
+                        AppCompatImageButton leftRotation = view.findViewById(R.id.light_left_btn);
+                        leftRotation.setOnTouchListener(new View.OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View v, MotionEvent event) {
+                                switch (event.getAction()) {
+                                    case MotionEvent.ACTION_DOWN:
+                                        groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 6);
+                                        ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up_select);
+                                        return true;
+                                    case MotionEvent.ACTION_UP:
+                                    case MotionEvent.ACTION_CANCEL:
+                                        groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 7);
+                                        ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up);
+                                        return true;
+                                }
+                                return false;
+                            }
+                        });
+
+                        AppCompatImageButton rightRotation = view.findViewById(R.id.light_right_btn);
+                        rightRotation.setOnTouchListener(new View.OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View v, MotionEvent event) {
+                                switch (event.getAction()) {
+                                    case MotionEvent.ACTION_DOWN:
+                                        groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 8);
+                                        ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up_select);
+                                        return true;
+                                    case MotionEvent.ACTION_UP:
+                                    case MotionEvent.ACTION_CANCEL:
+                                        // 松开按钮时停止定时任务
+                                        groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 9);
+                                        ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up);
+                                        return true;
+                                }
+                                return false;
+                            }
+                        });
+
+                        AppCompatImageButton upRotation = view.findViewById(R.id.light_up_btn);
+                        upRotation.setOnTouchListener(new View.OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View v, MotionEvent event) {
+                                switch (event.getAction()) {
+                                    case MotionEvent.ACTION_DOWN:
+                                        groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 1);
+                                        ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up_select);
+                                        return true;
+                                    case MotionEvent.ACTION_UP:
+                                    case MotionEvent.ACTION_CANCEL:
+                                        groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 2);
+                                        ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up);
+                                        return true;
+                                }
+                                return false;
+                            }
+                        });
+
+                        AppCompatImageButton downRotation = view.findViewById(R.id.light_down_btn);
+                        downRotation.setOnTouchListener(new View.OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View v, MotionEvent event) {
+                                switch (event.getAction()) {
+                                    case MotionEvent.ACTION_DOWN:
+                                        groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 3);
+                                        ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up_select);
+                                        return true;
+                                    case MotionEvent.ACTION_UP:
+                                    case MotionEvent.ACTION_CANCEL:
+                                        groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 4);
+                                        ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up);
+                                        return true;
+                                }
+                                return false;
+                            }
+                        });
+
+                        view.findViewById(R.id.light_center_btn).setOnClickListener(v -> {
+                            groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 5);
+                        });
                     }
-
-                    AppCompatImageButton leftRotation = view.findViewById(R.id.light_left_btn);
-                    leftRotation.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            switch (event.getAction()) {
-                                case MotionEvent.ACTION_DOWN:
-                                    groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 6);
-                                    ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up_select);
-                                    return true;
-                                case MotionEvent.ACTION_UP:
-                                case MotionEvent.ACTION_CANCEL:
-                                    groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 7);
-                                    ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up);
-                                    return true;
-                            }
-                            return false;
-                        }
-                    });
-
-                    AppCompatImageButton rightRotation = view.findViewById(R.id.light_right_btn);
-                    rightRotation.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            switch (event.getAction()) {
-                                case MotionEvent.ACTION_DOWN:
-                                    groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 8);
-                                    ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up_select);
-                                    return true;
-                                case MotionEvent.ACTION_UP:
-                                case MotionEvent.ACTION_CANCEL:
-                                    // 松开按钮时停止定时任务
-                                    groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 9);
-                                    ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up);
-                                    return true;
-                            }
-                            return false;
-                        }
-                    });
-
-                    AppCompatImageButton upRotation = view.findViewById(R.id.light_up_btn);
-                    upRotation.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            switch (event.getAction()) {
-                                case MotionEvent.ACTION_DOWN:
-                                    groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 1);
-                                    ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up_select);
-                                    return true;
-                                case MotionEvent.ACTION_UP:
-                                case MotionEvent.ACTION_CANCEL:
-                                    groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 2);
-                                    ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up);
-                                    return true;
-                            }
-                            return false;
-                        }
-                    });
-
-                    AppCompatImageButton downRotation = view.findViewById(R.id.light_down_btn);
-                    downRotation.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            switch (event.getAction()) {
-                                case MotionEvent.ACTION_DOWN:
-                                    groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 3);
-                                    ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up_select);
-                                    return true;
-                                case MotionEvent.ACTION_UP:
-                                case MotionEvent.ACTION_CANCEL:
-                                    groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 4);
-                                    ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up);
-                                    return true;
-                            }
-                            return false;
-                        }
-                    });
-
-                    view.findViewById(R.id.light_center_btn).setOnClickListener(v -> {
-                        groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 5);
-                    });
                 })
                 .registerCallbacks(new OnFloatCallbacks() {
                     @Override
@@ -235,4 +248,10 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                 .show();
     }
 
+
+    private void updateUISeekValueTv(int volume) {
+        if (setkValueTv != null) {
+            setkValueTv.setText(volume + "%");
+        }
+    }
 }
