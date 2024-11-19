@@ -270,14 +270,15 @@
         android:text="零位学习"/>
 
     <TextView
-        android:id="@+id/testLandAndSeeped"
-        android:text="测试2"
-        android:layout_marginLeft="11dp"
+        android:id="@+id/removePeelBtn"
+        android:text="去皮"
+        android:layout_marginLeft="22dp"
+        android:paddingHorizontal="11dp"
+        android:paddingVertical="8dp"
+        android:textColor="#fff"
         android:background="@drawable/custom_btn_bg"
         android:layout_below="@+id/up_action"
-        android:layout_marginTop="5dp"
         android:layout_toRightOf="@+id/zoneTv"
-        android:padding="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
@@ -300,15 +301,6 @@
         android:visibility="visible"
         android:textSize="12dp"
         android:text="测试一次性发送多条指令"/>
-
-    <TextView
-        android:id="@+id/initTv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/circuit_tv"
-        android:layout_marginLeft="176dp"
-        android:visibility="visible"
-        android:text="初始化状态"/>
 
 <!--    <LinearLayout-->
 <!--        android:layout_width="match_parent"-->

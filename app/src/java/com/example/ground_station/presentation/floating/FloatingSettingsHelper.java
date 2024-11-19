@@ -226,8 +226,6 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                                 }
                             });
 
-                            ((TextView) view.findViewById(R.id.initTv)).setText("已经完成初始化！！！");
-
                             jsTv = view.findViewById(R.id.jsTv);
                             fsTv = view.findViewById(R.id.fsTv);
 
@@ -246,11 +244,10 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                                 }
                             });
 
-                            view.findViewById(R.id.testLandAndSeeped).setOnClickListener(view1 -> {
-                                // TODO: 2024/11/17 测试
-                                requestSwitchInfo();
+                            view.findViewById(R.id.removePeelBtn).setOnClickListener(view1 -> {
+                                sendInstruct(SocketConstant.SERVO_WEIGHT_REMOVE_PEEL);
+                                requestWeightInfo();
                             });
-
 
                             SendTaskHelper.getInstance().getLoop().setTime(3000);
                             SendTaskHelper.getInstance().getLoop().start();
