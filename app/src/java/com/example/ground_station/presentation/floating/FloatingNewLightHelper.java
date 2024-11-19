@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -14,6 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.AppCompatSeekBar;
 
+import com.blankj.utilcode.util.ToastUtils;
+import com.example.ground_station.BuildConfig;
 import com.example.ground_station.R;
 import com.iflytek.aikitdemo.tool.SPUtil;
 import com.lzf.easyfloat.EasyFloat;
@@ -21,9 +22,10 @@ import com.lzf.easyfloat.enums.ShowPattern;
 import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
-import org.w3c.dom.Text;
-
+import java.com.example.ground_station.data.service.ResultCallBack;
 import java.com.example.ground_station.data.socket.SocketConstant;
+import java.com.example.ground_station.data.socket.UdpSocketClient2;
+import java.com.example.ground_station.data.utils.Utils;
 
 public class FloatingNewLightHelper extends BaseFloatingHelper {
     private final String tag = "light_tag";
@@ -208,6 +210,25 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                         view.findViewById(R.id.light_center_btn).setOnClickListener(v -> {
                             groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 5);
                         });
+
+                        driveWdTv = view.findViewById(R.id.drive_temp_tv);
+                        headWdTv = view.findViewById(R.id.lamp_holder_tempe_tv);
+
+                        UdpSocketClient2.getInstance().setCallBack(new ResultCallBack<byte[]>() {
+                            @Override
+                            public void result(byte[] bytes) {
+                                disCacllBack(bytes);
+                            }
+                        });
+
+                        requestWd();
+
+
+                        View testWdBtn = view.findViewById(R.id.testLightBtn);
+                        testWdBtn.setVisibility(BuildConfig.DEBUG ? View.VISIBLE : View.GONE);
+                        testWdBtn.setOnClickListener(view1 -> {
+                            requestWd();
+                        });
                     }
                 })
                 .registerCallbacks(new OnFloatCallbacks() {
@@ -248,10 +269,57 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                 .show();
     }
 
+    @Override
+    public void onSuccessConnected() {
+        super.onSuccessConnected();
+        requestWd();
+    }
 
     private void updateUISeekValueTv(int volume) {
         if (setkValueTv != null) {
             setkValueTv.setText(volume + "%");
         }
+    }
+
+    public void requestWd() {
+        if (checkService()) {
+            groundStationService.sendUdpSocketCommand(SocketConstant.EXPLOSION_WD, SocketConstant.EXPLOSION_WD_HEAD);
+            groundStationService.sendUdpSocketCommand(SocketConstant.EXPLOSION_WD, SocketConstant.EXPLOSION_WD_DRIVE);
+        }
+    }
+
+    private void disCacllBack(byte[] data) {
+        if (data != null && data.length >= 5) {
+            byte msgId2 = data[3];
+            Byte v = data[4];
+            switch (msgId2) {
+                case SocketConstant.EXPLOSION_WD:
+                    Byte v2 = data[5];
+                    if (v == SocketConstant.EXPLOSION_WD_HEAD && v2 != headWdValue) {//灯头温度
+                        headWdValue = v2;
+                        if (headWdTv != null && v != null) {
+                            headWdTv.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    headWdTv.setText("灯头温度：" + v2 + " °C");
+                                }
+                            });
+                        }
+                    } else if (v == SocketConstant.EXPLOSION_WD_DRIVE && v2 != driveWdValue) {
+                        driveWdValue = v2;
+                        if (driveWdTv != null && v != null) {
+                            driveWdTv.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    driveWdTv.setText("驱动温度：" + v2 + " °C");
+                                }
+                            });
+                        }
+                    }
+                    break;
+            }
+        }
+        String s = Utils.bytesToHexFun3(data);
+        ToastUtils.showLong(s);
     }
 }

@@ -6,6 +6,7 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.example.ground_station.BuildConfig;
 
 import java.com.example.ground_station.data.service.ResultCallBack;
+import java.com.example.ground_station.data.utils.DataUtils;
 import java.com.example.ground_station.data.utils.Utils;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -23,7 +24,7 @@ public class UdpSocketClient2 {
     private DatagramPacket receivePacket;
     private volatile boolean isConnected = false;
     private Thread readThread;
-    private ResultCallBack<List<byte[]>> callBack;
+    private ResultCallBack<byte[]> callBack;
 
 //    public UdpSocketClient2(String ip, int prot) {
 //        this.ip = ip;
@@ -126,34 +127,12 @@ public class UdpSocketClient2 {
 
                     byte[] bytes = Utils.subByte(data, receivePacket.getOffset(), receivePacket.getLength());
 
-                    if (bytes != null && bytes.length > 0) {
-                        list.clear();
-                        int length = bytes.length;
-                        for (int i = 0; i < length; i++) {
-                            byte v = bytes[i];
-                            if (v == SocketConstant.HEADER) {
-                                if (i + 2 < length) {
-                                    byte dataSize = bytes[i + 1];
-                                    int sumSize = dataSize + 3;
+                    DataUtils.parse(bytes, callBack);
 
-                                    if (sumSize + i <= length) {
-                                        byte[] temp = new byte[sumSize];
-                                        for (int n = 0; n < sumSize; n++) {
-                                            temp[n] = bytes[i + n];
-                                        }
-                                        list.add(temp);
-                                    }
-                                }
-                            }
-                        }
-                        if (list.size() > 0 && callBack != null) {
-                            callBack.result(list);
-                        }
-                    }
 //                    System.arraycopy(data,0,tempArray,0,it.length)
 //                    Log.e("ReadThread","receive：${String2ByteArrayUtils.bytes2Hex(tempArray)}");
 //                    String receivedData = bytesToHex(data);
-//                    System.out.println("收到的数据：" + receivedData);
+//
                 }
             } catch (IOException e) {
                 if (isConnected) {
@@ -164,7 +143,7 @@ public class UdpSocketClient2 {
         }
     }
 
-    public void setCallBack(ResultCallBack<List<byte[]>> callBack) {
+    public void setCallBack(ResultCallBack<byte[]> callBack) {
         this.callBack = callBack;
     }
 }

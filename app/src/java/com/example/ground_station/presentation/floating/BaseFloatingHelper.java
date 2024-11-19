@@ -51,6 +51,10 @@ public class BaseFloatingHelper {
         }
     };
 
+    public boolean checkService() {
+        return groundStationService != null;
+    }
+
     public void onSuccessConnected() {
     }
 

@@ -324,9 +324,9 @@ public class FloatingLightHelper extends BaseFloatingHelper {
                             driveWdTv = view.findViewById(R.id.drive_temp_tv);
                             headWdTv = view.findViewById(R.id.lamp_holder_tempe_tv);
 
-                            UdpSocketClient2.getInstance().setCallBack(new ResultCallBack<List<byte[]>>() {
+                            UdpSocketClient2.getInstance().setCallBack(new ResultCallBack<byte[]>() {
                                 @Override
-                                public void result(List<byte[]> bytes) {
+                                public void result(byte[] bytes) {
                                     disCacllBack(bytes);
                                 }
                             });
@@ -345,42 +345,38 @@ public class FloatingLightHelper extends BaseFloatingHelper {
                 .show();
     }
 
-    private void disCacllBack(List<byte[]> list) {
-        for (byte[] data : list) {
-            if (data != null && data.length >= 5) {
-                byte msgId2 = data[3];
-                Byte v = data[4];
-                switch (msgId2) {
-                    case SocketConstant.EXPLOSION_WD:
-                        Byte v2 = data[5];
-                        if (v == SocketConstant.EXPLOSION_WD_HEAD && v2 != headWdValue) {//灯头温度
-                            headWdValue = v2;
-                            if (headWdTv != null && v != null) {
-                                headWdTv.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        headWdTv.setText("灯头温度：" + v2 + "°C");
-                                    }
-                                });
-                            }
-                        } else if (v == SocketConstant.EXPLOSION_WD_DRIVE && v2 != driveWdValue) {
-                            driveWdValue = v2;
-                            if (driveWdTv != null && v != null) {
-                                driveWdTv.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        driveWdTv.setText("驱动温度：" + v2 + "°C");
-                                    }
-                                });
-                            }
+    private void disCacllBack(byte[] data) {
+        if (data != null && data.length >= 5) {
+            byte msgId2 = data[3];
+            Byte v = data[4];
+            switch (msgId2) {
+                case SocketConstant.EXPLOSION_WD:
+                    Byte v2 = data[5];
+                    if (v == SocketConstant.EXPLOSION_WD_HEAD && v2 != headWdValue) {//灯头温度
+                        headWdValue = v2;
+                        if (headWdTv != null && v != null) {
+                            headWdTv.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    headWdTv.setText("灯头温度：" + v2 + "°C");
+                                }
+                            });
                         }
-                        break;
-                }
+                    } else if (v == SocketConstant.EXPLOSION_WD_DRIVE && v2 != driveWdValue) {
+                        driveWdValue = v2;
+                        if (driveWdTv != null && v != null) {
+                            driveWdTv.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    driveWdTv.setText("驱动温度：" + v2 + "°C");
+                                }
+                            });
+                        }
+                    }
+                    break;
             }
         }
-        int size = list.size();
-        String s = Utils.bytesToHexFun3(list);
-        s = "接收数据：" + size + " 指令：" + s;
+        String s = Utils.bytesToHexFun3(data);
         ToastUtils.showLong(s);
     }
 
@@ -397,10 +393,6 @@ public class FloatingLightHelper extends BaseFloatingHelper {
             groundStationService.sendUdpSocketCommand(SocketConstant.EXPLOSION_WD, SocketConstant.EXPLOSION_WD_HEAD);
             groundStationService.sendUdpSocketCommand(SocketConstant.EXPLOSION_WD, SocketConstant.EXPLOSION_WD_DRIVE);
         }
-    }
-
-    private boolean checkService() {
-        return groundStationService != null;
     }
 
 }
