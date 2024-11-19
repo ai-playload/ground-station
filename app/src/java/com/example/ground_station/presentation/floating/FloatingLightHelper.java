@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatSeekBar;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.example.ground_station.BuildConfig;
 import com.example.ground_station.R;
 import com.lzf.easyfloat.EasyFloat;
@@ -28,6 +29,7 @@ import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 import java.com.example.ground_station.data.service.ResultCallBack;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.data.socket.UdpSocketClient2;
+import java.com.example.ground_station.data.utils.Utils;
 import java.com.example.ground_station.presentation.util.DisplayUtils;
 import java.util.List;
 
@@ -343,8 +345,8 @@ public class FloatingLightHelper extends BaseFloatingHelper {
                 .show();
     }
 
-    private void disCacllBack(List<byte[]> bytes) {
-        for (byte[] data : bytes) {
+    private void disCacllBack(List<byte[]> list) {
+        for (byte[] data : list) {
             if (data != null && data.length >= 5) {
                 byte msgId2 = data[3];
                 Byte v = data[4];
@@ -376,6 +378,10 @@ public class FloatingLightHelper extends BaseFloatingHelper {
                 }
             }
         }
+        int size = list.size();
+        String s = Utils.bytesToHexFun3(list);
+        s = "接收数据：" + size + " 指令：" + s;
+        ToastUtils.showLong(s);
     }
 
     private int driveWdValue, headWdValue = Integer.MIN_VALUE;
