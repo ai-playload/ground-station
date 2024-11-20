@@ -407,7 +407,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             updateSwitchState();
                         }
                     } else if (zl == SocketConstant.PARACHUTE_CIRCUI_STATUS) {
-                        boolean change = circuiStatus == v;
+                        boolean change = circuiStatus != v;
                         //熔断状态
                         if (v == DeviceStatus.COMPLETE) {//完成状态恢复默认
                             v = DeviceStatus.NORMAL;
@@ -415,6 +415,9 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                         circuiStatus = v;
                         if (change) {
                             updateCiruciStatus();
+                            requestSwitchInfo();
+                            requestWeightInfo();
+                            requestLenghtInfo();
                         }
                         if (circuiStatus != DeviceStatus.LOADING) {//如果熔断完成，则取消掉固定频率问询
                             SendTaskHelper.getInstance().remove(SocketConstant.PARACHUTE_CIRCUI_STATUS);
@@ -433,7 +436,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
     private void updateCiruciStatus() {
         Application context = com.blankj.utilcode.util.Utils.getApp();
         if (circuiStatus == DeviceStatus.LOADING) {
-            circuitButton.setText(context.getString(R.string.ciruit));
+            circuitButton.setText(context.getString(R.string.ciruit_loading));
             circuitButton.setBackgroundResource(R.drawable.custom_btn_bg_fa0);
         } else {
             circuiStatus = DeviceStatus.NORMAL;
