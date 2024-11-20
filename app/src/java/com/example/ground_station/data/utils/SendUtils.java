@@ -25,7 +25,7 @@ public class SendUtils {
         return toData(v, ps);
     }
 
-    public static byte[] toData(byte msgId2, int... payload) throws IOException {
+    public static byte[] toData(byte msgId2, int... payload)  {
         int len = 2 + payload.length;
         byte lenByte = (byte) len;
 

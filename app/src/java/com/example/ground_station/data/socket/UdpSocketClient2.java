@@ -46,6 +46,7 @@ public class UdpSocketClient2 {
         this.portJs = port;
         try {
             datagramSocket = new DatagramSocket(portJs);
+            datagramSocket.setSoTimeout(3000);
             InetAddress serverAddress = InetAddress.getByName(ip);
             datagramSocket.connect(serverAddress, portJs + 1);
             isConnected = true;
@@ -116,7 +117,7 @@ public class UdpSocketClient2 {
 
     private List list = new ArrayList<Byte[]>();
 
-    private class ReadThread implements Runnable {
+    class ReadThread implements Runnable {
         @Override
         public void run() {
             try {

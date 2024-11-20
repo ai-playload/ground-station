@@ -1,5 +1,7 @@
 package java.com.example.ground_station.data.utils;
 
+import android.os.Looper;
+
 import java.util.List;
 
 public class Utils {
@@ -39,5 +41,9 @@ public class Utils {
             buf.append(String.format("%02x", new Integer(b & 0xff)));
         }
         return buf.toString();
+    }
+
+    public static boolean isMainTread() {
+        return Thread.currentThread() == Looper.getMainLooper().getThread();
     }
 }

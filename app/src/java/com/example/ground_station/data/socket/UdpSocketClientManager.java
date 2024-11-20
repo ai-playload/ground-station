@@ -16,19 +16,15 @@ public class UdpSocketClientManager {
     public UdpSocketClientManager(String serverIp, int serverPort) throws IOException {
         this.executorService = Executors.newSingleThreadExecutor(); // 创建一个具有固定线程数的线程池
 
-        this.udpSocketClient =   UdpSocketClient2.getInstance(); // 实例化 UdpSocketClient
+//        this.udpSocketClient =   UdpSocketClient2.getInstance(); // 实例化 UdpSocketClient
     }
 
     public void sendUdpCommand(byte msgId2, int payload) {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                try {
-                    udpSocketClient.sendData(SendUtils.toData(msgId2, payload)); // 调用 UdpSocketClient 的方法
-                    Log.d("UdpSocketClientManager", "msgId2: " + msgId2 + " Command sent: " + payload);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                udpSocketClient.sendData(SendUtils.toData(msgId2, payload)); // 调用 UdpSocketClient 的方法
+                Log.d("UdpSocketClientManager", "msgId2: " + msgId2 + " Command sent: " + payload);
             }
         });
     }

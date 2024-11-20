@@ -324,12 +324,12 @@ public class FloatingLightHelper extends BaseFloatingHelper {
                             driveWdTv = view.findViewById(R.id.drive_temp_tv);
                             headWdTv = view.findViewById(R.id.lamp_holder_tempe_tv);
 
-                            UdpSocketClient2.getInstance().setCallBack(new ResultCallBack<byte[]>() {
-                                @Override
-                                public void result(byte[] bytes) {
-                                    disCacllBack(bytes);
-                                }
-                            });
+//                            UdpSocketClient2.getInstance().setCallBack(new ResultCallBack<byte[]>() {
+//                                @Override
+//                                public void result(byte[] bytes) {
+//                                    disCacllBack(bytes);
+//                                }
+//                            });
 
                             reuestWd();
 

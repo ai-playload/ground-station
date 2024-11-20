@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +26,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
-import com.blankj.utilcode.util.NetworkUtils;
 import com.example.ground_station.BuildConfig;
 import com.example.ground_station.R;
 import com.iflytek.aikitdemo.tool.SPUtil;
@@ -42,6 +41,7 @@ import java.com.example.ground_station.data.model.SendFunctionProvider;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.service.GroundStationService;
 import java.com.example.ground_station.data.socket.ConnectionCallback;
+import java.com.example.ground_station.data.socket.UdpClientHelper;
 import java.com.example.ground_station.presentation.ability.IFlytekAbilityManager;
 import java.com.example.ground_station.presentation.util.AssetCopierUtil;
 import java.com.example.ground_station.presentation.util.FilePathUtils;
@@ -58,8 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText shoutPortEditText;
     private EditText controllerIpEditText;
     private EditText controllerPortEditText;
-    private EditText cloudLightIpEditText;
-    private EditText cloudLightPortEditText;
+
 
     private ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -78,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Service disconnected");
         }
     };
+    private EditText cloudLightIpEditText;
+    private EditText cloudLightPortEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +96,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void initView() {
         TextView shoutBtn = findViewById(R.id.shout_connect_btn);
-        TextView cloudBtn = findViewById(R.id.cloud_connect_btn);
+
+        initLight();
+
+
         TextView controllerBtn = findViewById(R.id.controller_connect_btn);
 
         TextView versionTv = findViewById(R.id.version_tv);
@@ -105,8 +109,7 @@ public class MainActivity extends AppCompatActivity {
         shoutPortEditText = findViewById(R.id.shout_port_input);
         controllerIpEditText = findViewById(R.id.controller_ip_input);
         controllerPortEditText = findViewById(R.id.controller_port_input);
-        cloudLightIpEditText = findViewById(R.id.cloud_light_ip_input);
-        cloudLightPortEditText = findViewById(R.id.cloud_light_port_input);
+
 
         getSpValueToEditText();
 
@@ -117,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
         };
 
         shoutBtn.setOnClickListener(click);
-        cloudBtn.setOnClickListener(click);
         controllerBtn.setOnClickListener(click);
 
         if (BuildConfig.DEBUG) {
@@ -148,15 +150,50 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void initLight() {
+        //云台灯
+        cloudLightIpEditText = findViewById(R.id.cloud_light_ip_input);
+        cloudLightPortEditText = findViewById(R.id.cloud_light_port_input);
+        String loadIp = ShoutcasterConfig.getCloudLightInfo().getIp();
+        if (!TextUtils.isEmpty(loadIp)) {
+            cloudLightIpEditText.setText(loadIp);
+        }
+        int loadPort = ShoutcasterConfig.getCloudLightInfo().getPort();
+        if (loadPort != 0) {
+            cloudLightPortEditText.setText(String.valueOf(loadPort));
+        }
+        TextView cloudBtn = findViewById(R.id.cloud_connect_btn);
+        cloudBtn.setOnClickListener(view -> {
+            requestPermissions();
+
+            updateLightConfigAndClient();
+        });
+    }
+
+    private void updateLightConfigAndClient() {
+        String cloudLightIp = cloudLightIpEditText.getText().toString().trim();
+        String cloudLightPort = cloudLightPortEditText.getText().toString().trim();
+        if (cloudLightIp.isEmpty()) {
+            cloudLightIpEditText.setError("云台灯 IP 不能为空");
+            return;
+        }
+        if (cloudLightPort.isEmpty()) {
+            cloudLightPortEditText.setError("云台灯端口不能为空");
+            return;
+        }
+        // 将 cloud light 的 IP 和端口保存到 SharedPreferences
+        ShoutcasterConfig.getCloudLightInfo().setIp(cloudLightIp);
+        ShoutcasterConfig.getCloudLightInfo().setPort(cloudLightPort);
+        // 更新 并连接
+        UdpClientHelper.getInstance().getClient().update(cloudLightIp, cloudLightPort);
+    }
+
     private void getSpValueToEditText() {
         // 从 SharedPreferences 中读取并设置 EditText 的值
         String savedShoutIp = SPUtil.INSTANCE.getString("shoutcaster_ip", "");
         String savedShoutPort = SPUtil.INSTANCE.getString("shoutcaster_port", "");
         String savedControllerIp = SPUtil.INSTANCE.getString("controller_ip", "");
         String savedControllerPort = SPUtil.INSTANCE.getString("controller_port", "");
-        String savedCloudLightIp = SPUtil.INSTANCE.getString("cloud_light_ip", "");
-        String savedCloudLightPort = SPUtil.INSTANCE.getString("cloud_light_port", "");
-
         if (!savedShoutIp.isEmpty()) {
             shoutIpEditText.setText(savedShoutIp);
         }
@@ -169,12 +206,7 @@ public class MainActivity extends AppCompatActivity {
         if (!savedControllerPort.isEmpty()) {
             controllerPortEditText.setText(savedControllerPort);
         }
-        if (!savedCloudLightIp.isEmpty()) {
-            cloudLightIpEditText.setText(savedCloudLightIp);
-        }
-        if (!savedCloudLightPort.isEmpty()) {
-            cloudLightPortEditText.setText(savedCloudLightPort);
-        }
+
     }
 
     private String getVersionName() {
@@ -202,8 +234,6 @@ public class MainActivity extends AppCompatActivity {
         String shoutPort = shoutPortEditText.getText().toString().trim();
         String controllerIp = controllerIpEditText.getText().toString().trim();
         String controllerPort = controllerPortEditText.getText().toString().trim();
-        String cloudLightIp = cloudLightIpEditText.getText().toString().trim();
-        String cloudLightPort = cloudLightPortEditText.getText().toString().trim();
 
         // 检查输入是否为空
         if (shoutIp.isEmpty()) {
@@ -226,31 +256,21 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        if (cloudLightIp.isEmpty()) {
-            cloudLightIpEditText.setError("云台灯 IP 不能为空");
-            return;
-        }
-
-        if (cloudLightPort.isEmpty()) {
-            cloudLightPortEditText.setError("云台灯端口不能为空");
-            return;
-        }
-
         // 如果所有输入都不为空，执行你的操作
-        proceedWithValidInputs(shoutIp, shoutPort, controllerIp, controllerPort, cloudLightIp, cloudLightPort);
+        proceedWithValidInputs(shoutIp, shoutPort, controllerIp, controllerPort);
     }
 
-    private void proceedWithValidInputs(String shoutIp, String shoutPort, String sjIP, String sjPort, String cloudLightIp, String cloudLightPort) {
+    private void proceedWithValidInputs(String shoutIp, String shoutPort, String sjIP, String sjPort) {
         // 将输入内容传递给服务或其他操作
         int shoutPortValue = Integer.valueOf(shoutPort);
         ShoutcasterConfig.DeviceInfo shoutcasterInfo = new ShoutcasterConfig.DeviceInfo(shoutIp, shoutPortValue);
         ShoutcasterConfig.DeviceInfo controllerInfo = new ShoutcasterConfig.DeviceInfo(shoutIp, shoutPortValue - 1);
-        ShoutcasterConfig.DeviceInfo cloudLightInfo = new ShoutcasterConfig.DeviceInfo(cloudLightIp, Integer.parseInt(cloudLightPort));
+
 
         ShoutcasterConfig.DeviceInfo sjInfo = new ShoutcasterConfig.DeviceInfo(sjIP, Integer.parseInt(sjPort));
 
 //        ShoutcasterConfig config = new ShoutcasterConfig(shoutcasterInfo, controllerInfo, cloudLightInfo);
-        ShoutcasterConfig config = new ShoutcasterConfig(shoutcasterInfo, controllerInfo, cloudLightInfo, sjInfo);
+        ShoutcasterConfig config = new ShoutcasterConfig(shoutcasterInfo, controllerInfo, sjInfo);
 
         // 将 shoutcaster 的 IP 和端口保存到 SharedPreferences
         SPUtil.INSTANCE.putBase("shoutcaster_ip", shoutcasterInfo.getIp());
@@ -259,10 +279,6 @@ public class MainActivity extends AppCompatActivity {
         // 将 controller 的 IP 和端口保存到 SharedPreferences
         SPUtil.INSTANCE.putBase("controller_ip", controllerInfo.getIp());
         SPUtil.INSTANCE.putBase("controller_port", String.valueOf(controllerInfo.getPort()));
-
-        // 将 cloud light 的 IP 和端口保存到 SharedPreferences
-        SPUtil.INSTANCE.putBase("cloud_light_ip", cloudLightIp);
-        SPUtil.INSTANCE.putBase("cloud_light_port", String.valueOf(cloudLightPort));
 
         // 索降
         SPUtil.INSTANCE.putBase("sj_ip", sjInfo.getIp());
@@ -283,6 +299,8 @@ public class MainActivity extends AppCompatActivity {
 
         //点击连接按钮直接展示悬浮窗
         requestFloatingPermissionsAndShow();
+
+        updateLightConfigAndClient();
     }
 
     private void requestPermissions() {
@@ -394,6 +412,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "onCopySuccess.....");
                 IFlytekAbilityManager.getInstance().initializeSdk(MainActivity.this);
                 checkInputsAndProceed();
+
+                updateLightConfigAndClient();
             }
 
             @Override

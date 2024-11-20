@@ -160,7 +160,7 @@ public class GroundStationService extends Service implements AbilityCallback {
         initGStreamer();
 
         executorService = Executors.newSingleThreadExecutor();
-        udpSocketClient2 = UdpSocketClient2.getInstance();
+//        udpSocketClient2 = UdpSocketClient2.getInstance();
 //        udpSocketClient2 = new UdpSocketClient2("127.0.0.1", 13551);
 //        createNotificationChannel();
 //        startForegroundService();
@@ -255,25 +255,25 @@ public class GroundStationService extends Service implements AbilityCallback {
         }
         socketClientManager.connect(controller, callback);
 
-        connectUdpSocket();
+//        connectUdpSocket();
     }
 
     public void connectUdpSocket() {
-        ShoutcasterConfig.DeviceInfo cloudLightInfo = config.getCloudLightInfo();
-        if (udpSocketClient2 != null) {
-         ThreadUtils.executeByFixed(1, new ThreadUtils.SimpleTask<Object>() {
-                @Override
-                public Object doInBackground() throws Throwable {
-                    udpSocketClient2.connect(cloudLightInfo.getIp(), cloudLightInfo.getPort(), null);
-                    return null;
-                }
-
-                @Override
-                public void onSuccess(Object result) {
-
-                }
-            });
-        }
+//        ShoutcasterConfig.DeviceInfo cloudLightInfo = config.getCloudLightInfo();
+//        if (udpSocketClient2 != null) {
+//         ThreadUtils.executeByFixed(1, new ThreadUtils.SimpleTask<Object>() {
+//                @Override
+//                public Object doInBackground() throws Throwable {
+//                    udpSocketClient2.connect(cloudLightInfo.getIp(), cloudLightInfo.getPort(), null);
+//                    return null;
+//                }
+//
+//                @Override
+//                public void onSuccess(Object result) {
+//
+//                }
+//            });
+//        }
     }
     ExecutorService fixedPool = Executors.newSingleThreadExecutor();
     public void sendUdpSocketCommand(byte msgId2, int payload) {
@@ -281,11 +281,7 @@ public class GroundStationService extends Service implements AbilityCallback {
 
             @Override
             public Object doInBackground() throws Throwable {
-                try {
-                    udpSocketClient2.sendData(SendUtils.toData(msgId2, payload));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                udpSocketClient2.sendData(SendUtils.toData(msgId2, payload));
                 return null;
             }
 

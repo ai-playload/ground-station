@@ -24,6 +24,7 @@ import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
 import java.com.example.ground_station.data.service.ResultCallBack;
 import java.com.example.ground_station.data.socket.SocketConstant;
+import java.com.example.ground_station.data.socket.UdpClientHelper;
 import java.com.example.ground_station.data.socket.UdpSocketClient2;
 import java.com.example.ground_station.data.utils.Utils;
 
@@ -38,20 +39,8 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
     private TextView headWdTv;
     private int driveWdValue, headWdValue = Integer.MIN_VALUE;
 
+
     public void showFloatingLight(Context context, CloseCallback closeCallback) {
-        startGroundStationService(context, new IServiceConnection() {
-            @Override
-            public void onServiceConnected() {
-                int progress = SPUtil.INSTANCE.getInt("light_progress", 100);
-                groundStationService.sendUdpSocketCommand(SocketConstant.BRIGHTNESS, progress);
-            }
-
-            @Override
-            public void onServiceDisconnected() {
-
-            }
-        });
-
         EasyFloat.with(context)
                 .setShowPattern(ShowPattern.ALL_TIME)
                 .setSidePattern(SidePattern.DEFAULT)
@@ -64,47 +53,40 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
 
                         view.findViewById(R.id.open_light_btn).setOnClickListener(v -> {
                             v.setSelected(!v.isSelected());
-
-                            if (isBound) {
-                                if (isLighting) {
-                                    groundStationService.sendUdpSocketCommand(SocketConstant.LIGHT, 0);
-                                } else {
-                                    groundStationService.sendUdpSocketCommand(SocketConstant.LIGHT, 1);
-                                }
-                                isLighting = !isLighting;
-                            }
+                            sendSwitchInstrunt(SocketConstant.LIGHT, v.isSelected());
                         });
 
                         view.findViewById(R.id.flashing_light_btn).setOnClickListener(v -> {
                             v.setSelected(!v.isSelected());
+                            sendSwitchInstrunt(SocketConstant.EXPLOSION_FLASH, v.isSelected());
 
-                            if (isBound) {
-                                if (isFlashing) {
-                                    groundStationService.sendUdpSocketCommand(SocketConstant.EXPLOSION_FLASH, 0);
-                                } else {
-                                    groundStationService.sendUdpSocketCommand(SocketConstant.EXPLOSION_FLASH, 1);
-                                }
-                                isFlashing = !isFlashing;
-                            }
+//                            if (isBound) {
+//                                if (isFlashing) {
+//                                    groundStationService.sendUdpSocketCommand(SocketConstant.EXPLOSION_FLASH, 0);
+//                                } else {
+//                                    groundStationService.sendUdpSocketCommand(SocketConstant.EXPLOSION_FLASH, 1);
+//                                }
+//                                isFlashing = !isFlashing;
+//                            }
                         });
 
 
                         view.findViewById(R.id.red_blue_light_btn).setOnClickListener(v -> {
                             v.setSelected(!v.isSelected());
-
-                            if (isBound) {
-                                if (isRedBlueLighting) {
-                                    groundStationService.sendUdpSocketCommand(SocketConstant.RED_BLUE_FLASH, 0);
-                                } else {
-                                    groundStationService.sendUdpSocketCommand(SocketConstant.RED_BLUE_FLASH, 1);
-                                }
-                                isRedBlueLighting = !isRedBlueLighting;
-                            }
+                            sendSwitchInstrunt(SocketConstant.RED_BLUE_FLASH, v.isSelected());
+//                            if (isBound) {
+//                                if (isRedBlueLighting) {
+//                                    groundStationService.sendUdpSocketCommand(SocketConstant.RED_BLUE_FLASH, 0);
+//                                } else {
+//                                    groundStationService.sendUdpSocketCommand(SocketConstant.RED_BLUE_FLASH, 1);
+//                                }
+//                                isRedBlueLighting = !isRedBlueLighting;
+//                            }
                         });
 
                         AppCompatSeekBar seekBar = view.findViewById(R.id.seek_bar);
-                        int progress = SPUtil.INSTANCE.getInt("light_progress", 100);
-                        seekBar.setProgress(progress);
+                        int progressLoad = SPUtil.INSTANCE.getInt("light_progress", 100);
+                        seekBar.setProgress(progressLoad);
 
                         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                             @Override
@@ -120,15 +102,12 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                             public void onStopTrackingTouch(SeekBar seekBar) {
                                 int progress = seekBar.getProgress();
                                 SPUtil.INSTANCE.putBase("light_progress", progress);
-                                if (isBound) {
-                                    groundStationService.sendUdpSocketCommand(SocketConstant.BRIGHTNESS, progress);
-                                }
+                                UdpClientHelper.getInstance().send(SocketConstant.BRIGHTNESS, progress);
                                 Log.d(TAG, "progress value: " + progress);
                             }
                         });
                         setkValueTv = view.findViewById(R.id.seekValueTv);
                         updateUISeekValueTv(seekBar.getProgress());
-
 
                         AppCompatImageButton leftRotation = view.findViewById(R.id.light_left_btn);
                         leftRotation.setOnTouchListener(new View.OnTouchListener() {
@@ -136,12 +115,12 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                             public boolean onTouch(View v, MotionEvent event) {
                                 switch (event.getAction()) {
                                     case MotionEvent.ACTION_DOWN:
-                                        groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 6);
+                                        UdpClientHelper.getInstance().send(SocketConstant.DIRECTION, 6);
                                         ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up_select);
                                         return true;
                                     case MotionEvent.ACTION_UP:
                                     case MotionEvent.ACTION_CANCEL:
-                                        groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 7);
+                                        UdpClientHelper.getInstance().send(SocketConstant.DIRECTION, 7);
                                         ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up);
                                         return true;
                                 }
@@ -155,13 +134,13 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                             public boolean onTouch(View v, MotionEvent event) {
                                 switch (event.getAction()) {
                                     case MotionEvent.ACTION_DOWN:
-                                        groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 8);
+                                        UdpClientHelper.getInstance().send(SocketConstant.DIRECTION, 8);
                                         ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up_select);
                                         return true;
                                     case MotionEvent.ACTION_UP:
                                     case MotionEvent.ACTION_CANCEL:
                                         // 松开按钮时停止定时任务
-                                        groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 9);
+                                        UdpClientHelper.getInstance().send(SocketConstant.DIRECTION, 9);
                                         ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up);
                                         return true;
                                 }
@@ -175,12 +154,12 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                             public boolean onTouch(View v, MotionEvent event) {
                                 switch (event.getAction()) {
                                     case MotionEvent.ACTION_DOWN:
-                                        groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 1);
+                                        UdpClientHelper.getInstance().send(SocketConstant.DIRECTION, 1);
                                         ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up_select);
                                         return true;
                                     case MotionEvent.ACTION_UP:
                                     case MotionEvent.ACTION_CANCEL:
-                                        groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 2);
+                                        UdpClientHelper.getInstance().send(SocketConstant.DIRECTION, 2);
                                         ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up);
                                         return true;
                                 }
@@ -194,12 +173,12 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                             public boolean onTouch(View v, MotionEvent event) {
                                 switch (event.getAction()) {
                                     case MotionEvent.ACTION_DOWN:
-                                        groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 3);
+                                        UdpClientHelper.getInstance().send(SocketConstant.DIRECTION, 3);
                                         ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up_select);
                                         return true;
                                     case MotionEvent.ACTION_UP:
                                     case MotionEvent.ACTION_CANCEL:
-                                        groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 4);
+                                        UdpClientHelper.getInstance().send(SocketConstant.DIRECTION, 4);
                                         ((AppCompatImageButton) v).setImageResource(R.drawable.ic_new_audio_up);
                                         return true;
                                 }
@@ -208,13 +187,12 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                         });
 
                         view.findViewById(R.id.light_center_btn).setOnClickListener(v -> {
-                            groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 5);
+                            UdpClientHelper.getInstance().send(SocketConstant.DIRECTION, 5);
                         });
 
                         driveWdTv = view.findViewById(R.id.drive_temp_tv);
                         headWdTv = view.findViewById(R.id.lamp_holder_tempe_tv);
-
-                        UdpSocketClient2.getInstance().setCallBack(new ResultCallBack<byte[]>() {
+                        UdpClientHelper.getInstance().getClient().setCallBack(new ResultCallBack<byte[]>() {
                             @Override
                             public void result(byte[] bytes) {
                                 disCacllBack(bytes);
@@ -269,6 +247,10 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                 .show();
     }
 
+    private void sendSwitchInstrunt(byte msgid2, boolean open) {
+        UdpClientHelper.getInstance().send(SocketConstant.LIGHT, open ? 1 : 0);
+    }
+
     @Override
     public void onSuccessConnected() {
         super.onSuccessConnected();
@@ -282,10 +264,8 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
     }
 
     public void requestWd() {
-        if (checkService()) {
-            groundStationService.sendUdpSocketCommand(SocketConstant.EXPLOSION_WD, SocketConstant.EXPLOSION_WD_HEAD);
-            groundStationService.sendUdpSocketCommand(SocketConstant.EXPLOSION_WD, SocketConstant.EXPLOSION_WD_DRIVE);
-        }
+        UdpClientHelper.getInstance().send(SocketConstant.EXPLOSION_WD, SocketConstant.EXPLOSION_WD_HEAD);
+        UdpClientHelper.getInstance().send(SocketConstant.EXPLOSION_WD, SocketConstant.EXPLOSION_WD_DRIVE);
     }
 
     private void disCacllBack(byte[] data) {
