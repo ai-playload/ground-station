@@ -101,11 +101,11 @@ android {
         }
     }
 
-    externalNativeBuild {
-        ndkBuild {
-            path 'jni/Android.mk'
-        }
-    }
+//    externalNativeBuild {
+//        ndkBuild {
+//            path 'jni/Android.mk'
+//        }
+//    }
 
 //    ndkVersion '26.1.10909125'
     ndkVersion '25.2.9519653'
