@@ -210,23 +210,30 @@ class UdpClient implements Clien {
     class ReadThread implements Runnable {
         @Override
         public void run() {
-            while (isConnected() && readThread != null && !readThread.isInterrupted()) {
-                try {
-                    datagramSocket.receive(receivePacket);
+            try {
+                while (isConnected() && readThread != null && !readThread.isInterrupted()) {
+                    try {
+                        Log.e("udp接收数据开始", " 当前线程id:" + Thread.currentThread().getId());
+                        datagramSocket.receive(receivePacket);
 
-                    byte[] data = receivePacket.getData();
+                        byte[] data = receivePacket.getData();
 
-                    byte[] bytes = Utils.subByte(data, receivePacket.getOffset(), receivePacket.getLength());
+                        byte[] bytes = Utils.subByte(data, receivePacket.getOffset(), receivePacket.getLength());
 
-                    DataUtils.parse(bytes, callBack);
-                    String receivedData = bytesToHex(data);
-                    Log.e("udp接收数据：", receivedData);
-                } catch (IOException e) {
-                    if (isConnected()) {
-                        e.printStackTrace();
-                        System.err.println("读取数据失败: " + e.getMessage());
+                        DataUtils.parse(bytes, callBack);
+                        String receivedData = bytesToHex(data);
+                        Log.e("udp接收数据：", receivedData);
+                    } catch (IOException e) {
+                        if (isConnected()) {
+                            e.printStackTrace();
+                            Log.e("udp读取数据失败IOException: " , e.getMessage());
+                        }else {
+                            Log.e("udp读取数据失败IOException 非连接上: " , e.getMessage());
+                        }
                     }
                 }
+            }catch (Exception e) {
+                Log.e("udp接收数据 Exception", e.getMessage());
             }
         }
     }
