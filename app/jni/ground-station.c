@@ -239,6 +239,7 @@ app_function (void *userdata)
     g_main_context_unref(data->context);
     gst_element_set_state(data->pipeline, GST_STATE_NULL);
     gst_object_unref(data->pipeline);
+	data->pipeline = NULL;
 
     g_mutex_lock(&thread_lock);
     thread_running = FALSE;
@@ -350,34 +351,11 @@ gst_native_pause (JNIEnv * env, jobject thiz)
 static void
 gst_native_disconnect (JNIEnv *env, jobject thiz)
 {
-    CustomData *data = GET_CUSTOM_DATA (env, thiz, custom_data_field_id);
-
-    if (data->pipeline) {
-        gst_element_set_state(data->pipeline, GST_STATE_NULL);
-        gst_object_unref(data->pipeline);
-        data->pipeline = NULL;
-    }
-
-    if (data->main_loop) {
-        g_main_loop_quit(data->main_loop);
-        data->main_loop = NULL;
-    }
-
+	CustomData *data = GET_CUSTOM_DATA (env, thiz, custom_data_field_id);
+    if (!data)
+        return;
+    g_main_loop_quit (data->main_loop);
     pthread_join (gst_app_thread, NULL);
-
-//    CustomData *data = GET_CUSTOM_DATA (env, thiz, custom_data_field_id);
-//    if (!data)
-//        return;
-//    GST_DEBUG ("Quitting main loop...");
-//    g_main_loop_quit (data->main_loop);
-//    GST_DEBUG ("Waiting for thread to finish...");
-//    pthread_join (gst_app_thread, NULL);
-//    GST_DEBUG ("Deleting GlobalRef for app object at %p", data->app);
-//    (*env)->DeleteGlobalRef (env, data->app);
-//    GST_DEBUG ("Freeing CustomData at %p", data);
-//    g_free (data);
-//    SET_CUSTOM_DATA (env, thiz, custom_data_field_id, NULL);
-//    GST_DEBUG ("Done finalizing");
 
     data->is_connected = FALSE;
 }
