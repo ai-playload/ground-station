@@ -6,44 +6,31 @@ import com.iflytek.aikitdemo.tool.SPUtil;
 
 public class ShoutcasterConfig {
 
-    private final DeviceInfo sjInfo;
-    private DeviceInfo shoutcaster;
-    private DeviceInfo controller;
-
+    private static final String TAG_MEDIA = "controller_";
+    private static final String TAG_DESCENT = "sj_";
     private static final String TAG_LIGHT = "cloud_light_";
+
+    private static DeviceInfo mediaInfo = new DeviceInfo(TAG_MEDIA);;
     private static DeviceInfo cloudLightInfo = new DeviceInfo(TAG_LIGHT);
+    private static DeviceInfo sjInfo = new DeviceInfo(TAG_DESCENT);;
 
-    public ShoutcasterConfig(DeviceInfo shoutcaster, DeviceInfo controller, DeviceInfo sjInfo) {
-        this.shoutcaster = shoutcaster;
-        this.controller = controller;
-        this.cloudLightInfo = cloudLightInfo;
-        this.sjInfo = sjInfo;
-    }
-
-    public DeviceInfo getSjInfo() {
-        return sjInfo;
+    public static DeviceInfo getMediaInfo() {
+        return mediaInfo;
     }
 
     public static DeviceInfo getCloudLightInfo() {
         return cloudLightInfo;
     }
-
-
-    public DeviceInfo getShoutcaster() {
-        return shoutcaster;
+    public static DeviceInfo getDescentInfo() {
+        return sjInfo;
     }
 
-    public void setShoutcaster(DeviceInfo shoutcaster) {
-        this.shoutcaster = shoutcaster;
+    public static DeviceInfo getShoutcaster() {
+        DeviceInfo mediaInfo = getMediaInfo();
+        // TODO: 2024/11/22
+        return new DeviceInfo(mediaInfo.getIp(), mediaInfo.getPort() + 1);
     }
 
-    public DeviceInfo getController() {
-        return controller;
-    }
-
-    public void setController(DeviceInfo controller) {
-        this.controller = controller;
-    }
 
     public static class DeviceInfo {
         private String ip;

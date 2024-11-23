@@ -1,18 +1,20 @@
 package java.com.example.ground_station.data.utils;
 
 import android.os.Looper;
+import android.widget.EditText;
 
 import java.util.List;
 
 public class Utils {
     /**
      * 截取byte数组   不改变原数组
-     * @param b 原数组
-     * @param off 偏差值（索引）
+     *
+     * @param b      原数组
+     * @param off    偏差值（索引）
      * @param length 长度
      * @return 截取后的数组
      */
-    public static byte[] subByte(byte[] b,int off,int length){
+    public static byte[] subByte(byte[] b, int off, int length) {
         byte[] b1 = new byte[length];
         System.arraycopy(b, off, b1, 0, length);
         return b1;
@@ -45,5 +47,26 @@ public class Utils {
 
     public static boolean isMainTread() {
         return Thread.currentThread() == Looper.getMainLooper().getThread();
+    }
+
+    /**
+     * 检查端口和IP
+     * @param edIp
+     * @param edPort
+     * @param tag
+     * @return
+     */
+    public static String[] checkIpProt(EditText edIp, EditText edPort, String tag) {
+        String ip = edIp.getText().toString().trim();
+        String port = edPort.getText().toString().trim();
+        if (ip.isEmpty()) {
+            edIp.setError(tag + " IP 不能为空");
+            return null;
+        }
+        if (port.isEmpty()) {
+            edPort.setError(tag + "端口不能为空");
+            return null;
+        }
+        return new String[]{ip, port};
     }
 }

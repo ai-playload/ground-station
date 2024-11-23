@@ -30,7 +30,14 @@
             style="@style/view_function_test_btn_style"
             android:text="崩溃日志" />
 
+
         <TextView
+            android:id="@+id/updateBtn"
+            style="@style/view_function_test_btn_style"
+            android:text="更新\n软件" />
+
+        <TextView
+            android:visibility="gone"
             android:id="@+id/createCrashTestView"
             style="@style/view_function_test_btn_style"
             android:text="创建崩溃日志" />
@@ -43,15 +50,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <TextView
-            android:id="@+id/ljBtn"
-            style="@style/view_function_test_btn_style"
-            android:text="更新\nIP/端口" />
 
-        <TextView
-            android:id="@+id/updateBtn"
-            style="@style/view_function_test_btn_style"
-            android:text="更新\n软件" />
+
 
     </LinearLayout>
 </LinearLayout>

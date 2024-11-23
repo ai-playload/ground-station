@@ -34,9 +34,7 @@ import java.com.example.ground_station.presentation.ability.AudioFileGenerationC
 import java.com.example.ground_station.presentation.ability.tts.TtsHelper2;
 import java.com.example.ground_station.presentation.floating.FloatingWindowHelper;
 import java.com.example.ground_station.presentation.util.GsonParser;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -248,7 +246,7 @@ public class GroundStationService extends Service implements AbilityCallback {
     }
 
     private void connectSocket(ConnectionCallback callback) {
-        ShoutcasterConfig.DeviceInfo controller = config.getController();
+        ShoutcasterConfig.DeviceInfo controller = config.getMediaInfo();
 
         if (socketClientManager == null) {
             socketClientManager = new SocketClientManager(getApplicationContext(), controller.getIp(), controller.getPort());
