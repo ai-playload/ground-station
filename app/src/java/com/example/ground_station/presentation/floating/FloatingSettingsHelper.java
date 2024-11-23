@@ -425,7 +425,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                         circuiStatus = v;
                         if (change) {
                             updateCiruciStatus();
-                            requestSwitchInfo();
+//                            requestSwitchInfo();
                             requestWeightInfo();
                             requestLenghtInfo();
                         }
