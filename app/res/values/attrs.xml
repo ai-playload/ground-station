@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MaxLayout">
+<!--        <attr name="max_height_ratio" format="float" />-->
+        <attr name="max_height" format="dimension" />
+<!--        <attr name="max_width_ratio" format="float" />-->
+        <attr name="max_width" format="dimension" />
+<!--        <attr name="first_ratio_height" format="boolean" />-->
+<!--        <attr name="first_ratio_width" format="boolean" />-->
+    </declare-styleable>
+</resources>

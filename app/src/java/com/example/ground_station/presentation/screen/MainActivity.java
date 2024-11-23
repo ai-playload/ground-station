@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -86,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_new_main);
+        setContentView(R.layout.activity_new_main_gs);
 
         Intent serviceIntent = new Intent(this, GroundStationService.class);
         startService(serviceIntent);
@@ -104,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (BuildConfig.DEBUG) {
             versionTv.setText("版本号: " + getVersionName() + "\r\nIP：" + NetworkUtils.getIPAddress(true));
-
+            ((ImageView) findViewById(R.id.bgIv)).setImageDrawable(null);
             findViewById(R.id.rfcBtn).setOnClickListener(view -> {
 //                showFloatingWindow();
                 requestFloatingPermissionsAndShow();

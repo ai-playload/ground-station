@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/bgIv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/ic_login_background" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="127dp"
+        android:orientation="vertical">
+
+        <java.com.example.ground_station.data.view.MaxLayout
+            app:max_width="445dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="215dp"
+                android:layout_weight="215"
+                android:layout_height="50dp"
+                android:background="@drawable/shape_general_bg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:text="喊话器IP"
+                    android:textColor="#ffe2e6f2"
+                    android:textSize="14sp" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="14dp"
+                    android:layout_marginLeft="6dp"
+                    android:background="#ff979797" />
+
+                <EditText
+                    android:id="@+id/shout_ip_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="6dp"
+                    android:background="@null"
+                    android:hint="请输入"
+                    android:text="192.168.0.0"
+                    android:textColor="@color/white"
+                    android:textColorHint="#BDBDBD"
+                    android:textCursorDrawable="@drawable/cursor_yellow"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="120dp"
+                android:layout_weight="120"
+                android:layout_height="50dp"
+                android:layout_marginLeft="9dp"
+                android:background="@drawable/shape_general_bg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:text="port"
+                    android:textColor="#ffe2e6f2"
+                    android:textSize="14sp" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="14dp"
+                    android:layout_marginLeft="6dp"
+                    android:background="#ff979797" />
+
+                <EditText
+                    android:id="@+id/shout_port_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="6dp"
+                    android:background="@null"
+                    android:hint="请输入"
+                    android:text="8520"
+                    android:textColor="@color/white"
+                    android:textColorHint="#BDBDBD"
+                    android:textCursorDrawable="@drawable/cursor_yellow"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/shout_connect_btn"
+                android:layout_width="110dp"
+                android:layout_weight="110"
+                android:layout_height="50dp"
+                android:layout_marginLeft="14dp"
+                android:background="@drawable/audio_loop_bg_selector"
+                android:clickable="true"
+                android:drawableLeft="@drawable/ic_connect"
+                android:drawableTint="@drawable/text_color_selector"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:gravity="center"
+                android:paddingLeft="26dp"
+                android:paddingRight="26dp"
+                android:text="连接"
+                android:textColor="#E2E6F2"
+                android:textSize="16sp" />
+
+        </java.com.example.ground_station.data.view.MaxLayout>
+
+
+        <java.com.example.ground_station.data.view.MaxLayout
+            app:max_width="445dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="215dp"
+                android:layout_weight="215"
+                android:layout_height="50dp"
+                android:background="@drawable/shape_general_bg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:text="云台灯IP"
+                    android:textColor="#ffe2e6f2"
+                    android:textSize="14sp" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="14dp"
+                    android:layout_marginLeft="6dp"
+                    android:background="#ff979797" />
+
+                <EditText
+                    android:id="@+id/cloud_light_ip_input"
+                    android:layout_width="133dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="6dp"
+                    android:background="@null"
+                    android:hint="请输入"
+                    android:text="127.0.0.1"
+                    android:textColor="@color/white"
+                    android:textColorHint="#BDBDBD"
+                    android:textCursorDrawable="@drawable/cursor_yellow"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="120dp"
+                android:layout_weight="120"
+                android:layout_height="50dp"
+                android:layout_marginLeft="9dp"
+                android:background="@drawable/shape_general_bg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:text="port"
+                    android:textColor="#ffe2e6f2"
+                    android:textSize="14sp" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="14dp"
+                    android:layout_marginLeft="6dp"
+                    android:background="#ff979797" />
+
+                <EditText
+                    android:id="@+id/cloud_light_port_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="6dp"
+                    android:background="@null"
+                    android:hint="请输入"
+                    android:text="13552"
+                    android:textColor="@color/white"
+                    android:textColorHint="#BDBDBD"
+                    android:textCursorDrawable="@drawable/cursor_yellow"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/cloud_connect_btn"
+                android:layout_width="110dp"
+                android:layout_weight="110"
+                android:layout_height="50dp"
+                android:layout_marginLeft="14dp"
+                android:background="@drawable/audio_loop_bg_selector"
+                android:clickable="true"
+                android:drawableLeft="@drawable/ic_connect"
+                android:drawableTint="@drawable/text_color_selector"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:gravity="center"
+                android:paddingLeft="26dp"
+                android:paddingRight="26dp"
+                android:text="连接"
+                android:textColor="#E2E6F2"
+                android:textSize="16sp" />
+
+        </java.com.example.ground_station.data.view.MaxLayout>
+
+        <java.com.example.ground_station.data.view.MaxLayout
+            app:max_width="445dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="215dp"
+                android:layout_weight="215"
+                android:layout_height="50dp"
+                android:background="@drawable/shape_general_bg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:text="索降器IP"
+                    android:textColor="#ffe2e6f2"
+                    android:textSize="14sp" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="14dp"
+                    android:layout_marginLeft="6dp"
+                    android:background="#ff979797" />
+
+                <EditText
+                    android:id="@+id/controller_ip_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="6dp"
+                    android:background="@null"
+                    android:hint="请输入"
+                    android:text="192.168.0.0"
+                    android:textColor="@color/white"
+                    android:textColorHint="#BDBDBD"
+                    android:textCursorDrawable="@drawable/cursor_yellow"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="120dp"
+                android:layout_weight="120"
+                android:layout_height="50dp"
+                android:layout_marginLeft="9dp"
+                android:background="@drawable/shape_general_bg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:text="port"
+                    android:textColor="#ffe2e6f2"
+                    android:textSize="14sp" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="14dp"
+                    android:layout_marginLeft="6dp"
+                    android:background="#ff979797" />
+
+                <EditText
+                    android:id="@+id/controller_port_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="6dp"
+                    android:background="@null"
+                    android:hint="请输入"
+                    android:text="8519"
+                    android:textColor="@color/white"
+                    android:textColorHint="#BDBDBD"
+                    android:textCursorDrawable="@drawable/cursor_yellow"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/controller_connect_btn"
+                android:layout_width="110dp"
+                android:layout_weight="110"
+                android:layout_height="50dp"
+                android:layout_marginLeft="14dp"
+                android:background="@drawable/audio_loop_bg_selector"
+                android:clickable="true"
+                android:drawableLeft="@drawable/ic_connect"
+                android:drawableTint="@drawable/text_color_selector"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:gravity="center"
+                android:paddingLeft="26dp"
+                android:paddingRight="26dp"
+                android:text="连接"
+                android:textColor="#E2E6F2"
+                android:textSize="16sp" />
+
+        </java.com.example.ground_station.data.view.MaxLayout>
+
+        <include
+            layout="@layout/view_function_test"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="13dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/version_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="16dp"
+        android:textColor="#ffffffff"
+        android:textSize="14sp" />
+
+</FrameLayout>
