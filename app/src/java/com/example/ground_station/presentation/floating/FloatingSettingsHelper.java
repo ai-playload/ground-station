@@ -332,7 +332,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
             requestLenghtInfo();
             requestWeightInfo();
             requestParachuteStatus();
-            SendTaskHelper.getInstance().addInsturd(SocketConstant.PARACHUTE_3C);
+            SendTaskHelper.getInstance().addInsturd(SocketConstant.PARACHUTE_3C, SocketConstant.PARACHUTE_3E);
         }
     }
 
