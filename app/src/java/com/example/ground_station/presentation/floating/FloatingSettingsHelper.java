@@ -54,7 +54,6 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
     private final int PARACHUTE_STATUS_STOP = 4;
     private TextView lenghtTv;
     private TextView weightTv;
-    private TextView hintTv;
 
     private int speedInput = 1;
     private int lenghtInput = 1;
@@ -145,7 +144,6 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             speedInputView = view.findViewById(R.id.audioInputContent);
                             lenghtInputView = view.findViewById(R.id.speedInputContent);
 
-                            hintTv = view.findViewById(R.id.hint_tv);
                             lenghtTv = view.findViewById(R.id.put_line_tv);
                             weightTv = view.findViewById(R.id.weight_tv);
                             view.findViewById(R.id.location_tv).setOnClickListener(view1 -> {
@@ -153,6 +151,11 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             });
                             updateSwitchUi();
                             safetyButton.setOnClickListener(v -> {
+                                //熔断中且是关机状态，点击开机按钮
+                                if (circuiStatus == DeviceStatus.LOADING && !isSafetyBtnEnable) {
+                                    ToastUtils.showLong("熔断过程中，需保持关机状态");
+                                    return;
+                                }
                                 isSafetyBtnEnable = !isSafetyBtnEnable;
                                 updateSwitchState();
                             });
@@ -162,10 +165,19 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             });
 
                             circuitButton.setOnClickListener(v -> {
+                                if (circuiStatus != DeviceStatus.LOADING && !isSafetyBtnEnable) {//关机状态下，不可进行熔断
+                                    ToastUtils.showLong("熔断需开机执行");
+                                    return;
+                                }
+
                                 if (circuiStatus != DeviceStatus.LOADING) {
                                     circuiStatus = DeviceStatus.LOADING;
                                     sendInstruct(SocketConstant.PARACHUTE_CONTROL, 2);//进行熔断
                                     SendTaskHelper.getInstance().addInsturd(SocketConstant.PARACHUTE_CIRCUI_STATUS);//增加固定频率问询熔断状态
+//                                    sendInstruct(SocketConstant.SERVO_SWITCH_STATUS);//询问开关状态
+
+                                    isSafetyBtnEnable = false;
+                                    updateSwitchUi();
                                 } else {
                                     circuiStatus = DeviceStatus.NORMAL;
                                     sendInstruct(SocketConstant.PARACHUTE_CONTROL, 0);//取消熔断
@@ -196,7 +208,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                                 if (!hc || !hl) {
                                     ToastUtils.showShort("速度档位设置区间为:1~10, 长度设置区间为:1~30。");
                                 }
-                                sendInstruct(SocketConstant.PARACHUTE_SPEED, Integer.parseInt(speedInputView.getText().toString()));
+//                                sendInstruct(SocketConstant.PARACHUTE_SPEED, Integer.parseInt(speedInputView.getText().toString()));
                                 sendInstruct(SocketConstant.PARACHUTE_LENGTH, Integer.parseInt(lenghtInputView.getText().toString()));
                             });
 
@@ -210,8 +222,13 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                                 if (!hc || !hl) {
                                     ToastUtils.showShort("速度档位设置区间为:1~10, 长度设置区间为:1~30。");
                                 }
-                                sendInstruct(SocketConstant.PARACHUTE_SPEED, -Integer.parseInt(speedInputView.getText().toString()));
+                                // TODO: 2024/11/23
+//                                sendInstruct(SocketConstant.PARACHUTE_SPEED, -Integer.parseInt(speedInputView.getText().toString()));
                                 sendInstruct(SocketConstant.PARACHUTE_LENGTH, -Integer.parseInt(lenghtInputView.getText().toString()));
+                            });
+
+                            view.findViewById(R.id.speedComiftBtn).setOnClickListener(view1 -> {
+                                sendInstruct(SocketConstant.PARACHUTE_SPEED, Integer.parseInt(speedInputView.getText().toString()));
                             });
 
                             //2上升 3下降 4停止
@@ -266,14 +283,15 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
             }
         }
         updateSwitchUi();
-        SPUtil.INSTANCE.putBase("sj_kg", isSafetyBtnEnable);
     }
 
     private void updateSwitchUi() {
         if (safetyButton != null) {
             safetyButton.setText(isSafetyBtnEnable ? "开机中" : "关机中");
             safetyButton.setBackgroundResource(isSafetyBtnEnable ? R.drawable.custom_btn_bg_green : R.drawable.custom_btn_bg);
+            SPUtil.INSTANCE.putBase("sj_kg", isSafetyBtnEnable);
         }
+        updateCiruciStatus();
     }
 
     private boolean isCircuiLoading() {
@@ -337,25 +355,17 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
     }
 
     private void setRevInfo(byte[] bytes) {
-        if (hintTv != null) {
-            if (bytes != null && bytes.length >= 4 && bytes[0] == SocketConstant.HEADER) {
-                byte aByte = bytes[3];
-                if (aByte == SocketConstant.HEART_BEAT) {//心跳包数据
-                    return;
-                }
-                String v = Utils.bytesToHexFun3(bytes);
-                String hintText = hintTv.getText().toString();
-                boolean hintChange = !TextUtils.equals(v, hintText);
-
-                if (hintChange) {
-                    Message message = new Message();
-                    message.what = 0;
-                    Bundle bundle = new Bundle();
-                    bundle.putByteArray("gs", bytes);
-                    message.setData(bundle);
-                    mHandler.sendMessage(message);
-                }
+        if (bytes != null && bytes.length >= 4 && bytes[0] == SocketConstant.HEADER) {
+            byte aByte = bytes[3];
+            if (aByte == SocketConstant.HEART_BEAT) {//心跳包数据
+                return;
             }
+            Message message = new Message();
+            message.what = 0;
+            Bundle bundle = new Bundle();
+            bundle.putByteArray("gs", bytes);
+            message.setData(bundle);
+            mHandler.sendMessage(message);
         }
     }
 
@@ -404,7 +414,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                         //更新开关状态
                         if (v == 1 || v == 0) {
                             isSafetyBtnEnable = v == 1;
-                            updateSwitchState();
+                            updateSwitchUi();
                         }
                     } else if (zl == SocketConstant.PARACHUTE_CIRCUI_STATUS) {
                         boolean change = circuiStatus != v;
@@ -426,7 +436,6 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
 
                     String str = Utils.bytesToHexFun3(bytes);
                     jsMap.put(TimeUtils.getNowString() + t++, str);
-                    hintTv.setText(str);
                     jsTv.setText(formartJs(jsMap));
                     break;
             }
@@ -441,7 +450,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
         } else {
             circuiStatus = DeviceStatus.NORMAL;
             circuitButton.setText(context.getString(R.string.ciruit));
-            circuitButton.setBackgroundResource(R.drawable.custom_btn_bg);
+            circuitButton.setBackgroundResource(isSafetyBtnEnable ? R.drawable.custom_btn_bg : R.drawable.custom_btn_disable_bg);
         }
     }
 

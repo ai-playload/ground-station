@@ -75,19 +75,6 @@
         android:textSize="12sp"
         android:visibility="visible" />
 
-    <TextView
-        android:id="@+id/hint_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:visibility="visible"
-        android:textSize="12sp"
-        android:text="指令： "
-        android:layout_marginTop="8dp"
-        android:paddingRight="16dp"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/weight_tv"
-        android:layout_marginLeft="16dp"/>
 <!--    <TextView-->
 <!--        android:id="@+id/location_tv"-->
 <!--        android:layout_width="wrap_content"-->
@@ -109,6 +96,7 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
+            android:gravity="center_vertical"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
@@ -147,15 +135,34 @@
                 android:text="  档位（1~10）"
                 android:textColor="@color/white" />
 
+            <TextView
+                android:id="@+id/speedComiftBtn"
+                android:text="确认"
+                android:visibility="visible"
+                android:layout_marginLeft="11dp"
+                android:background="@drawable/custom_btn_bg"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
 <!--            <TextView-->
-<!--                android:id="@+id/speedComiftBtn"-->
-<!--                android:text="确认"-->
-<!--                android:layout_marginLeft="11dp"-->
-<!--                android:background="#fa0"-->
-<!--                android:layout_marginTop="5dp"-->
-<!--                android:padding="5dp"-->
+<!--                android:id="@+id/hint_tv"-->
+<!--                android:paddingHorizontal="15dp"-->
+<!--                android:paddingVertical="10dp"-->
+<!--                android:gravity="center"-->
 <!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"/>-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:visibility="visible"-->
+<!--                android:textSize="12sp"-->
+<!--                android:background="@drawable/custom_btn_bg"-->
+<!--                android:text="确认"-->
+<!--                android:paddingRight="16dp"-->
+<!--                android:layout_alignParentRight="true"-->
+<!--                android:layout_below="@+id/weight_tv"-->
+<!--                android:layout_marginLeft="16dp"/>-->
         </LinearLayout>
 
         <LinearLayout
@@ -252,7 +259,7 @@
         android:paddingHorizontal="15dp"
         android:paddingVertical="10dp"
         android:textColor="#fff"
-        android:background="@drawable/custom_btn_bg"
+        android:background="@drawable/custom_btn_disable_bg"
         android:text="@string/ciruit"/>
 
     <TextView
