@@ -15,7 +15,7 @@ android {
         minSdk 24
         targetSdk 34
         versionCode 7
-        versionName "2.10.4"
+        versionName "2.10.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -50,6 +50,8 @@ android {
         }
     }
 
+
+
     buildTypes {
         release {
             minifyEnabled false
@@ -75,17 +77,37 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
             buildConfigField "boolean","DEBUG1","true"
-            sourceSets {
-                main {
-                    manifest.srcFile 'AndroidManifest.xml'
-                    java.srcDirs = ['src']
-                    resources.srcDirs = ['src']
-                    aidl.srcDirs = ['src']
-                    renderscript.srcDirs = ['src']
-                    res.srcDirs = ['res']
-                    assets.srcDirs = ['assets']
-                }
-            }
+            flavorDimensions 'SuoJiang'
+//            sourceSets {
+//                main {
+//                    manifest.srcFile 'AndroidManifest.xml'
+//                    java.srcDirs = ['src']
+//                    resources.srcDirs = ['src']
+//                    aidl.srcDirs = ['src']
+//                    renderscript.srcDirs = ['src']
+//                    res.srcDirs = ['res']
+//                    assets.srcDirs = ['assets']
+//                }
+//            }
+        }
+    }
+
+    productFlavors {
+        SuoJiang{
+            dimension "SuoJiang"
+//            versionCode 999
+//            versionName "9.9.9"
+            applicationId "com.gs.descent"
+            resValue "string", "app_name", "索降器"
+            manifestPlaceholders = [
+//                    app_icon     : "应用图标",
+                    package_name : "com.gs.descent"
+            ]
+////            applicationId "com.gs.descent"
+//            applicationIdSuffix "descent"
+//            versionNameSuffix "demo"
+////            name "索降控制器"
+//            version "2.11.1"
         }
     }
 
