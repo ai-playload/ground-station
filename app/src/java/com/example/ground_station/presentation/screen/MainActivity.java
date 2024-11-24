@@ -122,6 +122,8 @@ public class MainActivity extends AppCompatActivity {
             int i = 3 / 0;
         });
         ViewUtils.setVisibility(findViewById(R.id.testParentView), BuildConfig.DEBUG);
+        ViewUtils.setVisibility(findViewById(R.id.shout_input_layout), false);
+        ViewUtils.setVisibility(findViewById(R.id.cloud_light_input_layout), false);
     }
 
     private void getSpValueToEditText() {
