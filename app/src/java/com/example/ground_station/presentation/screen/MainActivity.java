@@ -25,6 +25,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
 import com.blankj.utilcode.util.NetworkUtils;
 import com.example.ground_station.BuildConfig;
 import com.example.ground_station.R;
@@ -154,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
             cloudLightPortEditText.setText(savedCloudLightPort);
         }
     }
+
     private String getVersionName() {
         String versionName = "";
         int versionCode = 0;
@@ -170,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        return  versionName;
+        return versionName;
     }
 
     private void checkInputsAndProceed() {
@@ -357,7 +359,10 @@ public class MainActivity extends AppCompatActivity {
             public void onCopySuccess() {
                 Log.d(TAG, "onCopySuccess.....");
                 IFlytekAbilityManager.getInstance().initializeSdk(MainActivity.this);
-                checkInputsAndProceed();
+                if (groundStationService != null && !groundStationService.isConnected()) {
+                    checkInputsAndProceed();
+
+                }
             }
 
             @Override
@@ -409,5 +414,10 @@ public class MainActivity extends AppCompatActivity {
         Intent serviceIntent = new Intent(this, GroundStationService.class);
         stopService(serviceIntent);
         Log.d(TAG, "Service stopped and unbound");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 }

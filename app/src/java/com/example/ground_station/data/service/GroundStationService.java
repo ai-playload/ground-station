@@ -83,6 +83,10 @@ public class GroundStationService extends Service implements AbilityCallback {
         socketClientManager.sendMsgAndCallBack(resultCallback);
     }
 
+    public boolean isConnected() {
+        return socketClientManager != null && socketClientManager.isConnected;
+    }
+
     public class LocalBinder extends Binder {
         public GroundStationService getService() {
             return GroundStationService.this;

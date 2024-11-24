@@ -16,6 +16,7 @@ import com.lzf.easyfloat.enums.ShowPattern;
 import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
+import java.com.example.ground_station.presentation.util.ViewUtils;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,6 +84,13 @@ public class FloatingWindowHelper {
                 detectorAlarmBtn = view.findViewById(R.id.detector_alarm_btn);
                 tvOptionsInputSettingsBtn = view.findViewById(R.id.tv_options_input_settings_btn);
 
+                View[] btns = {audioBtn, textToSpeechBtn, audioFileBtn, lightBtn, detectorAlarmBtn, tvOptionsInputSettingsBtn};
+                for (View btn : btns) {
+                    boolean show = btn == detectorAlarmBtn;
+                    ViewUtils.setVisibility(btn, show);
+                }
+                view.findViewById(R.id.btnParent).requestLayout();
+
                 View.OnClickListener clickListener = v -> {
                     toggleButtonSelection((ImageView) v, activity);
                 };
@@ -144,11 +152,11 @@ public class FloatingWindowHelper {
                 changeCloseBackground();
             });
         } else if (selectedBtn == detectorAlarmBtn) {
-            new FloatingDetectorHelper().showFloatingDetector(selectedBtn.getContext(), () -> {
+            new FloatingSettingsHelper().showFloatingSettings(selectedBtn.getContext(), () -> {
                 changeCloseBackground();
             });
         } else if (selectedBtn == tvOptionsInputSettingsBtn) {
-            new FloatingSettingsHelper().showFloatingSettings(selectedBtn.getContext(), () -> {
+            new FloatingDetectorHelper().showFloatingDetector(selectedBtn.getContext(), () -> {
                 changeCloseBackground();
             });
         }
