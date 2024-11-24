@@ -344,11 +344,14 @@ public class SocketClientManager {
 //        });
     }
 
+        ExecutorService singlePool = ThreadUtils.getSinglePool();
     public void send(byte msgId2, int... payload) {
-        executorService.execute(new Runnable() {
+        singlePool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
+                    long id = Thread.currentThread().getId();
+                    Log.d("send singlePool", "线程id:" +id +"");
                     socketClient.send(msgId2, payload);
                 } catch (IOException e) {
                     if (!isReconnecting) {

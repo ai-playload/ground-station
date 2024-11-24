@@ -64,12 +64,14 @@ public class SendTaskHelper {
     }
 
     public void remove(byte... ins) {
+        loop.stop();
         for (byte in : ins) {
             int index = list.indexOf(in);
             if (index >= 0) {
                 list.remove(index);
             }
         }
+        loop.start();
     }
 
     private SocketClient socketClient;

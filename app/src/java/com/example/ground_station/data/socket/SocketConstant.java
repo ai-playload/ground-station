@@ -59,6 +59,7 @@ public class SocketConstant {
 
 
     public static final byte HEART_BEAT = (byte) 0x50;  // Heartbeat 心跳包
+    public static String DELETE_INIT_WEIGHT = "delete_init_weight";
 
 //    public static final byte SERVO_UP = (byte) 0x30;                  // 舵机 up
 //    public static final byte SERVO_DOWN = (byte) 0x30;                // 舵机 down

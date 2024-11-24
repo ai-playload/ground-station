@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.Message;
-import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,6 +19,7 @@ import androidx.core.math.MathUtils;
 
 import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.example.ground_station.BuildConfig;
 import com.example.ground_station.R;
 import com.google.android.material.textfield.TextInputEditText;
 import com.iflytek.aikitdemo.tool.SPUtil;
@@ -37,6 +37,7 @@ import java.com.example.ground_station.presentation.helper.RecvTaskHelper;
 import java.com.example.ground_station.presentation.helper.SendTaskHelper;
 import java.com.example.ground_station.presentation.util.DisplayUtils;
 import java.com.example.ground_station.presentation.util.Utils;
+import java.com.example.ground_station.presentation.util.ViewUtils;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -146,8 +147,10 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
 
                             lenghtTv = view.findViewById(R.id.put_line_tv);
                             weightTv = view.findViewById(R.id.weight_tv);
-                            view.findViewById(R.id.location_tv).setOnClickListener(view1 -> {
-                                requestWeightInfo();
+                            View testUpdateBtn = view.findViewById(R.id.location_tv);
+                            testUpdateBtn.setOnClickListener(view1 -> {
+//                                requestWeightInfo();
+                                requestSwitchInfo();
                             });
                             updateSwitchUi();
                             safetyButton.setOnClickListener(v -> {
@@ -172,27 +175,30 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
 
                                 if (circuiStatus != DeviceStatus.LOADING) {
                                     circuiStatus = DeviceStatus.LOADING;
-                                    sendInstruct(SocketConstant.PARACHUTE_CONTROL, 2);//进行熔断
-                                    SendTaskHelper.getInstance().addInsturd(SocketConstant.PARACHUTE_CIRCUI_STATUS);//增加固定频率问询熔断状态
-//                                    sendInstruct(SocketConstant.SERVO_SWITCH_STATUS);//询问开关状态
 
                                     isSafetyBtnEnable = false;
                                     updateSwitchUi();
+                                    sendInstruct(SocketConstant.PARACHUTE, PARACHUTE_STATUS_CLOSE);
+                                    sendInstruct(SocketConstant.PARACHUTE_CONTROL, 2);//进行熔断
+                                    SendTaskHelper.getInstance().addInsturd(SocketConstant.PARACHUTE_CIRCUI_STATUS);//增加固定频率问询熔断状态
+//                                    sendInstruct(SocketConstant.SERVO_SWITCH_STATUS);//询问开关状态
                                 } else {
+                                    SendTaskHelper.getInstance().remove(SocketConstant.PARACHUTE_CIRCUI_STATUS);
                                     circuiStatus = DeviceStatus.NORMAL;
                                     sendInstruct(SocketConstant.PARACHUTE_CONTROL, 0);//取消熔断
-                                    SendTaskHelper.getInstance().remove(SocketConstant.PARACHUTE_CIRCUI_STATUS);
+                                    sendInstruct(SocketConstant.PARACHUTE_CIRCUI_STATUS);//取消熔断
+                                    sendInstruct(SocketConstant.PARACHUTE, PARACHUTE_STATUS_CLOSE);//开机
+//                                    circuitButton.setText(context.getString(R.string.ciruit_loading_cancel));
                                 }
                                 updateCiruciStatus();
                             });
-
 
                             relieveButton.setOnClickListener(v -> {
                                 requestLenghtInfo();
                             });
 
-
-                            view.findViewById(R.id.zoneTv).setOnClickListener(view1 -> {
+                            View zoneTv = view.findViewById(R.id.zoneTv);
+                            zoneTv.setOnClickListener(view1 -> {
                                 //零位学习
                                 sendInstruct(SocketConstant.PARACHUTE_CONTROL, 5);
                             });
@@ -246,7 +252,8 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             jsTv = view.findViewById(R.id.jsTv);
                             fsTv = view.findViewById(R.id.fsTv);
 
-                            view.findViewById(R.id.textSendBtn).setOnClickListener(view1 -> {
+                            View textSendMuiltBtn = view.findViewById(R.id.textSendBtn);
+                            textSendMuiltBtn.setOnClickListener(view1 -> {
                                 try {
                                     boolean hc = checkSpeed();
                                     boolean hc1 = checkLenght();
@@ -262,12 +269,22 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             });
 
                             view.findViewById(R.id.removePeelBtn).setOnClickListener(view1 -> {
-                                sendInstruct(SocketConstant.SERVO_WEIGHT_REMOVE_PEEL);
-                                requestWeightInfo();
+//                                sendInstruct(SocketConstant.SERVO_WEIGHT_REMOVE_PEEL);
+//                                requestWeightInfo();
+                                SPUtil.INSTANCE.putBase(SocketConstant.DELETE_INIT_WEIGHT, weightValue);
+                                updateWeightUI();
                             });
 
                             SendTaskHelper.getInstance().getLoop().setTime(3000);
                             SendTaskHelper.getInstance().getLoop().start();
+
+                            boolean debug = BuildConfig.DEBUG;
+
+                            ViewUtils.setVisibility(zoneTv, debug);
+                            ViewUtils.setVisibility(testUpdateBtn, debug);
+                            ViewUtils.setVisibility(relieveButton, debug);
+                            ViewUtils.setVisibility(textSendMuiltBtn, debug);
+                            ViewUtils.setVisibility(view.findViewById(R.id.testHintRoot), debug);
                         }
                     }
                 })
@@ -337,15 +354,17 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
     @Override
     protected void onConnectedSuccess() {
         if (checkSerrvice()) {
-            groundStationService.setResultCallback(new ResultCallback<Map<String, String>>() {
+            if (BuildConfig.DEBUG) {
+                groundStationService.setResultCallback(new ResultCallback<Map<String, String>>() {
 
-                @Override
-                public void result(Map<String, String> fsMap) {
-                    if (fsTv != null) {
-                        fsTv.setText(formartJs(fsMap));
+                    @Override
+                    public void result(Map<String, String> fsMap) {
+                        if (fsTv != null) {
+                            fsTv.setText(formartJs(fsMap));
+                        }
                     }
-                }
-            });
+                });
+            }
             requestSwitchInfo();
             requestLenghtInfo();
             requestWeightInfo();
@@ -396,6 +415,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
     }
 
     int t;
+    private int weightValue;
     android.os.Handler mHandler = new android.os.Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -404,12 +424,12 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                 case 0:
                     byte[] bytes = msg.getData().getByteArray("gs");
                     int v = bytes[4];
-                    ;
                     byte zl = bytes[3];
                     if (zl == SocketConstant.PARACHUTE_3E) {
                         lenghtTv.setText("当前放线长度：" + v + "m");
                     } else if (zl == SocketConstant.PARACHUTE_3C) {
-                        weightTv.setText("重量：" + v + "kg");
+                        weightValue = v;
+                        updateWeightUI();
                     } else if (zl == SocketConstant.SERVO_SWITCH_STATUS) {
                         //更新开关状态
                         if (v == 1 || v == 0) {
@@ -434,13 +454,33 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                         }
                     }
 
-                    String str = Utils.bytesToHexFun3(bytes);
-                    jsMap.put(TimeUtils.getNowString() + t++, str);
-                    jsTv.setText(formartJs(jsMap));
+
+                    if (BuildConfig.DEBUG && !isIgonreIn(zl)) {
+                        String str = Utils.bytesToHexFun3(bytes);
+                        jsMap.put(TimeUtils.getNowString() + t++, str);
+
+                        jsTv.setText(formartJs(jsMap));
+                    }
                     break;
             }
         }
     };
+
+    private byte[] ignoreIn = {SocketConstant.PARACHUTE_3C, SocketConstant.PARACHUTE_3E};
+
+    public boolean isIgonreIn(int v) {
+        for (byte b : ignoreIn) {
+            if (b == v) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void updateWeightUI() {
+        int v = weightValue - SPUtil.INSTANCE.getInt(SocketConstant.DELETE_INIT_WEIGHT, 0);
+        weightTv.setText("重量：" + v + "kg");
+    }
 
     private void updateCiruciStatus() {
         Application context = com.blankj.utilcode.util.Utils.getApp();
@@ -469,7 +509,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
         @Override
         protected boolean removeEldestEntry(Entry<String, String> eldest) {
             super.removeEldestEntry(eldest);
-            return this.size() > 8;
+            return this.size() > 10;
         }
     };
 

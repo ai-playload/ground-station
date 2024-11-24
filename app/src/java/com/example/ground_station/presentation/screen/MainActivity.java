@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.example.ground_station.BuildConfig;
 import com.example.ground_station.R;
 import com.google.android.material.textfield.TextInputLayout;
 import com.iflytek.aikitdemo.tool.SPUtil;
@@ -40,6 +41,7 @@ import java.com.example.ground_station.presentation.floating.FloatingAudioFileHe
 import java.com.example.ground_station.presentation.util.AssetCopierUtil;
 import java.com.example.ground_station.presentation.util.FilePathUtils;
 import java.com.example.ground_station.presentation.util.TCPFileUploader;
+import java.com.example.ground_station.presentation.util.ViewUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
             //创建崩溃日志
             int i = 3 / 0;
         });
+        ViewUtils.setVisibility(findViewById(R.id.testParentView), BuildConfig.DEBUG);
     }
 
     private void getSpValueToEditText() {

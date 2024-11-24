@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.example.ground_station.BuildConfig;
 import com.iflytek.aikitdemo.tool.ThreadExtKt;
 import com.lzf.easyfloat.EasyFloat;
 
@@ -230,7 +231,7 @@ public class GroundStationService extends Service implements AbilityCallback {
 
 //            socketClientManager = new SocketClientManager(getApplicationContext(), controller.getIp(), controller.getPort());
         }
-        socketClientManager =   SocketClientManager.getInstance();
+        socketClientManager = SocketClientManager.getInstance();
         socketClientManager.connect(controller, callback);
 
         try {
@@ -333,25 +334,27 @@ public class GroundStationService extends Service implements AbilityCallback {
         if (!filtSend(msgId2)) {
             socketClientManager.send(msgId2, payload);
 
-            try {
-                String hexString = Integer.toHexString(msgId2);
-                ToastUtils.showShort("" + hexString);
+            if (BuildConfig.DEBUG) {
+                try {
+                    String hexString = Integer.toHexString(msgId2);
+                    ToastUtils.showShort("" + hexString);
 
-                String pv = "";
-                if (payload != null && payload.length > 0) {
-                    int p = payload[0];
-                    pv = Integer.toHexString(Math.abs(p));
-                    if (pv.length() == 1) {
-                        pv = "0" + pv;
+                    String pv = "";
+                    if (payload != null && payload.length > 0) {
+                        int p = payload[0];
+                        pv = Integer.toHexString(Math.abs(p));
+                        if (pv.length() == 1) {
+                            pv = "0" + pv;
+                        }
+                        if (p < 0) {
+                            pv = "-" + pv;
+                        }
                     }
-                    if (p < 0) {
-                        pv = "-" + pv;
-                    }
+                    fsMap.put(TimeUtils.getNowString() + t++, hexString + pv);
+
+                    resultCallback.result(fsMap);
+                } catch (Exception e) {
                 }
-                fsMap.put(TimeUtils.getNowString() + t++, hexString + pv);
-
-                resultCallback.result(fsMap);
-            } catch (Exception e) {
             }
         }
     }
