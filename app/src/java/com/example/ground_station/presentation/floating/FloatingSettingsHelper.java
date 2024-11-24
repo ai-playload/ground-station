@@ -187,7 +187,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                                     circuiStatus = DeviceStatus.NORMAL;
                                     sendInstruct(SocketConstant.PARACHUTE_CONTROL, 0);//取消熔断
                                     sendInstruct(SocketConstant.PARACHUTE_CIRCUI_STATUS);//取消熔断
-                                    sendInstruct(SocketConstant.PARACHUTE, PARACHUTE_STATUS_CLOSE);//开机
+//                                    sendInstruct(SocketConstant.PARACHUTE, PARACHUTE_STATUS_CLOSE);//关机
 //                                    circuitButton.setText(context.getString(R.string.ciruit_loading_cancel));
                                 }
                                 updateCiruciStatus();

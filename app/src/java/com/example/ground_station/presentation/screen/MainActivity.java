@@ -25,7 +25,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
+import com.blankj.utilcode.util.NetworkUtils;
 import com.example.ground_station.BuildConfig;
 import com.example.ground_station.R;
 import com.google.android.material.textfield.TextInputLayout;
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
         @SuppressLint({"MissingInflatedId", "LocalSuppress"}) ImageView imageView = findViewById(R.id.start_up_btn);
         TextView versionTv = findViewById(R.id.version_tv);
-        versionTv.setText("version: " + getVersionName());
+        versionTv.setText("version: " + getVersionName() + "\r\n遥控器IP：" + NetworkUtils.getIPAddress(true));
 
         shoutIpEditText = ((TextInputLayout) findViewById(R.id.shout_ip_input)).getEditText();
         shoutPortEditText = ((TextInputLayout) findViewById(R.id.shout_port_input)).getEditText();

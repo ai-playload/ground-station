@@ -11,6 +11,7 @@
 
     <LinearLayout
         android:id="@+id/testHintRoot"
+        android:visibility="gone"
         android:layout_width="111dp"
         android:layout_height="match_parent"
         android:background="#999"
