@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,12 +40,14 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.com.example.ground_station.data.common.Const;
 import java.com.example.ground_station.data.crash.CrashInfoListActivity;
 import java.com.example.ground_station.data.model.CommonConstants;
 import java.com.example.ground_station.data.model.SendFunctionProvider;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.service.GroundStationService;
 import java.com.example.ground_station.data.socket.ConnectionCallback;
+import java.com.example.ground_station.data.utils.ViewUtils;
 import java.com.example.ground_station.presentation.ability.IFlytekAbilityManager;
 import java.com.example.ground_station.presentation.util.AssetCopierUtil;
 import java.com.example.ground_station.presentation.util.FilePathUtils;
@@ -113,9 +116,9 @@ public class MainActivity extends AppCompatActivity {
         getSpValueToEditText();
 
         imageView.setOnClickListener(v -> {
-            requestPermissions();
-//            requestFloatingPermissionsAndShow();
-//            checkInputsAndProceed();
+//            requestPermissions();
+            requestFloatingPermissionsAndShow();
+            checkInputsAndProceed();
         });
         findViewById(R.id.rfcBtn).setOnClickListener(view -> {
             showFloatingWindow();
@@ -132,6 +135,13 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, TestInstructActivity.class));
         });
         ((ViewGroup) findViewById(R.id.testParentView)).setVisibility(BuildConfig.DEBUG ? View.VISIBLE : View.GONE);
+
+        String flavor = BuildConfig.FLAVOR;
+        ViewUtils.setVisibility(findViewById(R.id.shout_input_layout), TextUtils.equals(flavor, Const.FLAVOR_HANHUAQI));
+        ViewUtils.setVisibility(findViewById(R.id.controller_input_layout), TextUtils.equals(flavor, Const.FLAVOR_HANHUAQI)
+                || TextUtils.equals(flavor, Const.FLAVOR_SUOJIANG));
+        ViewUtils.setVisibility(findViewById(R.id.cloud_light_input_layout), TextUtils.equals(flavor, Const.FLAVOR_LIGHT));
+
     }
 
     private void getSpValueToEditText() {

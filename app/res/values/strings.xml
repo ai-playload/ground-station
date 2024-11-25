@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Ai Payload</string>
+    <string name="HanHuaQi">HanHuaQi</string>
+    <string name="ALL">ALL</string>
+    <string name="SuoJiang">SuoJiang</string>
+    <string name="Light">Light</string>
 </resources>

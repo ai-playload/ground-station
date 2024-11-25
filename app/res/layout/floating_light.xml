@@ -109,7 +109,7 @@
     <CheckBox
         android:id="@+id/check_box"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_below="@+id/seek_bar"
         android:layout_marginLeft="16dp"
         android:text="开启调仓跟随"
@@ -124,6 +124,7 @@
         android:layout_marginLeft="16dp"
         android:layout_toRightOf="@+id/check_box"
         android:text="驱动温度："
+        android:visibility="gone"
         android:textColor="@color/gray_white"
         android:textSize="12sp" />
 
@@ -205,6 +206,7 @@
     <RelativeLayout
         android:id="@+id/direction_layout"
         android:layout_width="wrap_content"
+        android:layout_marginTop="22dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/controller_title"
         android:layout_marginLeft="16dp">
