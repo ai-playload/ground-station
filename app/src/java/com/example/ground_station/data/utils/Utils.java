@@ -1,8 +1,10 @@
 package java.com.example.ground_station.data.utils;
 
 import android.os.Looper;
+import android.text.TextUtils;
 import android.widget.EditText;
 
+import java.com.example.ground_station.data.common.Const;
 import java.util.List;
 
 public class Utils {
@@ -68,5 +70,9 @@ public class Utils {
             return null;
         }
         return new String[]{ip, port};
+    }
+
+    public static boolean flavorVisible(String flavor, String tagFlavor) {
+        return TextUtils.equals(flavor, Const.FLAVOR_ALL) || TextUtils.equals(flavor, tagFlavor);
     }
 }

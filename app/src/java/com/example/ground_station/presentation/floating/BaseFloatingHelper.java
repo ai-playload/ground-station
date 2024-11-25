@@ -10,13 +10,14 @@ import android.view.View;
 import android.widget.SeekBar;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatSeekBar;
 
 import com.example.ground_station.R;
 import com.iflytek.aikitdemo.tool.SPUtil;
 import com.lzf.easyfloat.EasyFloat;
 
 import java.com.example.ground_station.data.service.GroundStationService;
+import java.com.example.ground_station.data.socket.SocketClientHelper;
+import java.com.example.ground_station.data.socket.SocketConstant;
 
 public class BaseFloatingHelper {
 
@@ -79,9 +80,11 @@ public class BaseFloatingHelper {
     }
 
     public void settingAudioSize(@NonNull View view) {
-        SeekBar seekBar = view.findViewById(R.id.seek_bar);
+        SeekBar seekBar = view.findViewById(R.id.audio_progressBar);
         if (seekBar != null) {
-            int volume = SPUtil.INSTANCE.getInt("audio_volume", 100);
+            SocketClientHelper helper = SocketClientHelper.getMedia();
+            int volume = SPUtil.INSTANCE.getInt("audio_volume", 60);
+            helper.send(SocketConstant.SET_VOLUME, volume);
             seekBar.setProgress(volume);
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
@@ -96,7 +99,7 @@ public class BaseFloatingHelper {
                 public void onStopTrackingTouch(SeekBar seekBar) {
                     int volume = seekBar.getProgress();
                     if (isBound) {
-                        groundStationService.sendSetVolumeCommand(volume);
+                        helper.send(SocketConstant.SET_VOLUME, volume);
                         SPUtil.INSTANCE.putBase("audio_volume", volume);
                     }
                     Log.d("Audio setting", "volume value: " + volume);

@@ -25,6 +25,7 @@ import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
 import java.com.example.ground_station.data.model.AudioModel;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
+import java.com.example.ground_station.data.socket.SocketClientHelper;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 import java.com.example.ground_station.presentation.floating.adapter.AudioAdapter;
@@ -50,14 +51,12 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
     private boolean isSingleLoopStatus = false;
     private boolean isListLoopStatus = false;
 
+    SocketClientHelper helper = SocketClientHelper.getMedia();
+
     public void showFloatingAudioFile(AppCompatActivity activity, CloseCallback closeCallback) {
         startGroundStationService(activity, new IServiceConnection() {
             @Override
             public void onServiceConnected() {
-                int volume = SPUtil.INSTANCE.getInt("audio_volume", 100);
-                groundStationService.sendSetVolumeCommand(volume);
-//                ...
-
                 getRemoteAudioList();
             }
 
@@ -113,12 +112,12 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
                     public void dismiss() {
                         if (isBound) {
                             groundStationService.cancelGstreamerAudioCommand();
-//                            groundStationService.sendSocketCommand(SocketConstant.AMPLIFIER, 2);
+//                            send(SocketConstant.AMPLIFIER, 2);
 
                             if (isRemotePlay) {
                                 groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, currentRemoteAudioPosition, 2);
                             } else {
-                                groundStationService.sendSocketCommand(SocketConstant.STREAMER, 2);//停止播放
+                                send(SocketConstant.STREAMER, 2);//停止播放
                             }
                         }
                     }
@@ -297,7 +296,7 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
 
             if (isBound) {
                 groundStationService.setPlaybackCallback(() -> {
-//                    groundStationService.sendSocketCommand(SocketConstant.AMPLIFIER, 2);
+//                    send(SocketConstant.AMPLIFIER, 2);
 
                     if (isListLoopStatus) {
                         adapter.playNextAudio();
@@ -316,15 +315,15 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
                 //0x9b  0x01 创建播放 0x02 停止播放，0x03 暂停播放 ， 0x04 恢复播放
                 if (!isPlaying && !isPlayingPosition || isAudioPlayEnding) {
                     groundStationService.sendMusicCommand(command);
-//                    groundStationService.sendSocketCommand(SocketConstant.AMPLIFIER, 1);
-                    groundStationService.sendSocketCommand(SocketConstant.STREAMER, 1);
+//                    send(SocketConstant.AMPLIFIER, 1);
+                    send(SocketConstant.STREAMER, 1);
                     isAudioPlayEnding = false;
                 } else if (!isPlaying) {
                     groundStationService.pause();
-                    groundStationService.sendSocketCommand(SocketConstant.STREAMER, 3);
+                    send(SocketConstant.STREAMER, 3);
                 } else if (isPlayingPosition) {
                     groundStationService.play();
-                    groundStationService.sendSocketCommand(SocketConstant.STREAMER, 4);
+                    send(SocketConstant.STREAMER, 4);
                 }
             }
         });
@@ -400,5 +399,9 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
         intent.setType("audio/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         activity.startActivityForResult(Intent.createChooser(intent, "选择音频文件"), AUDIO_REQUEST_CODE);
+    }
+    
+    public void send(byte msgId2, int... payload) {
+        helper.send(msgId2, payload);
     }
 }

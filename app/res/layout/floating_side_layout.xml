@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="309dp"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical">
 
@@ -11,9 +11,12 @@
 <!--        android:src="@drawable/ic_arrow_right"/>-->
 
     <LinearLayout
+        android:id="@+id/btnParent"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:paddingLeft="12dp"
+        android:divider="@drawable/divider_float_btn"
+        android:showDividers="middle"
         android:paddingRight="12dp"
         android:paddingTop="14dp"
         android:paddingBottom="14dp"
@@ -24,35 +27,35 @@
             android:id="@+id/audio_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginBottom="20dp"
+            android:tag="@string/HanHuaQi"
             android:src="@drawable/ic_shout_unselected"/>
 
         <ImageView
             android:id="@+id/text_to_speech_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginBottom="20dp"
+            android:tag="@string/HanHuaQi"
             android:src="@drawable/ic_tts_unselected"/>
 
         <ImageView
             android:id="@+id/audio_file_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginBottom="20dp"
+            android:tag="@string/HanHuaQi"
             android:src="@drawable/ic_audio_unselected"/>
 
         <ImageView
             android:id="@+id/light_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginBottom="20dp"
+            android:tag="@string/Light"
             android:src="@drawable/ic_light_unselected"/>
 
         <ImageView
             android:id="@+id/detector_alarm_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginBottom="20dp"
+            android:tag="@string/SuoJiang"
             android:src="@drawable/ic_descent_unselected"/>
 
         <ImageView
@@ -62,5 +65,9 @@
             android:src="@drawable/ic_back_to_home"/>
 
     </LinearLayout>
+
+
+
+
 
 </LinearLayout>

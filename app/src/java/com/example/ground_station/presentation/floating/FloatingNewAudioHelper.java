@@ -30,18 +30,12 @@ import kotlin.Unit;
 
 public class FloatingNewAudioHelper extends BaseFloatingHelper {
     private final String tag = "audio_tag";
-    private final String TAG = "FloatingAudioHelper";
     private SocketClientHelper helper = SocketClientHelper.getMedia();
 
     public void showFloatingNewAudio(Context context, CloseCallback closeCallback) {
         startGroundStationService(context, new IServiceConnection() {
             @Override
             public void onServiceConnected() {
-                ThreadExtKt.mainThread(300, () -> {
-                    int volume = SPUtil.INSTANCE.getInt("audio_volume", 100);
-                    helper.send(SocketConstant.SET_VOLUME, volume);
-                    return Unit.INSTANCE;
-                });
             }
 
             @Override
@@ -61,30 +55,6 @@ public class FloatingNewAudioHelper extends BaseFloatingHelper {
                         initFloatingView(view, tag, closeCallback);
                         AppCompatImageButton shoutButton = view.findViewById(R.id.audio_shout_btn);
                         TextView shoutTv = view.findViewById(R.id.audio_shout_tv);
-
-                        AppCompatSeekBar seekBar = view.findViewById(R.id.progressBar);
-                        int volume = SPUtil.INSTANCE.getInt("audio_volume", 100);
-
-                        seekBar.setProgress(volume);
-                        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                            @Override
-                            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            }
-
-                            @Override
-                            public void onStartTrackingTouch(SeekBar seekBar) {
-                            }
-
-                            @Override
-                            public void onStopTrackingTouch(SeekBar seekBar) {
-                                int volume = seekBar.getProgress();
-                                if (isBound) {
-                                    helper.send(SocketConstant.SET_VOLUME, volume);
-                                    SPUtil.INSTANCE.putBase("audio_volume", volume);
-                                }
-                                Log.d(TAG, "volume value: " + volume);
-                            }
-                        });
 
                         shoutButton.setOnClickListener(v -> {
                             if (isBound) {
@@ -118,7 +88,6 @@ public class FloatingNewAudioHelper extends BaseFloatingHelper {
                         view.findViewById(R.id.audio_down_btn).setOnClickListener(v -> {
                             helper.send(SocketConstant.SERVO, 2);
                         });
-
                     }
                 })
                 .registerCallbacks(new OnFloatCallbacks() {
@@ -163,6 +132,5 @@ public class FloatingNewAudioHelper extends BaseFloatingHelper {
                     }
                 })
                 .show();
-
     }
 }

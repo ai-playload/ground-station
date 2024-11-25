@@ -37,6 +37,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.com.example.ground_station.data.common.Const;
 import java.com.example.ground_station.data.crash.CrashInfoListActivity;
 import java.com.example.ground_station.data.model.CommonConstants;
 import java.com.example.ground_station.data.model.SendFunctionProvider;
@@ -44,6 +45,7 @@ import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.service.GroundStationService;
 import java.com.example.ground_station.data.socket.Clien;
 import java.com.example.ground_station.data.socket.ConnectionCallback;
+import java.com.example.ground_station.data.utils.ViewUtils;
 import java.com.example.ground_station.data.socket.SocketClientHelper;
 import java.com.example.ground_station.data.socket.UdpClientHelper;
 import java.com.example.ground_station.data.utils.Utils;
@@ -140,32 +142,39 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, SettingActivity.class));
             });
         }
-        ((ViewGroup) findViewById(R.id.testParentView)).setVisibility(BuildConfig.DEBUG ? View.VISIBLE : View.GONE);
+        ViewUtils.setVisibility(findViewById(R.id.testParentView), BuildConfig.DEBUG);
+
+        String flavor = BuildConfig.FLAVOR;
+        ViewUtils.setVisibility(findViewById(R.id.shout_input_layout), Utils.flavorVisible(flavor, Const.FLAVOR_HANHUAQI));
+        ViewUtils.setVisibility(findViewById(R.id.cloud_light_input_layout), Utils.flavorVisible(flavor, Const.FLAVOR_LIGHT));
+        ViewUtils.setVisibility(findViewById(R.id.controller_input_layout), Utils.flavorVisible(flavor, Const.FLAVOR_SUOJIANG));
     }
 
     private void initMedia() {
+        ShoutcasterConfig.DeviceInfo mediaInfo = ShoutcasterConfig.getMediaInfo();
         shoutIpEditText = findViewById(R.id.shout_ip_input);
         shoutPortEditText = findViewById(R.id.shout_port_input);
-        initIpAndPort(shoutIpEditText, shoutPortEditText, ShoutcasterConfig.getMediaInfo());
+        initIpAndPort(shoutIpEditText, shoutPortEditText, mediaInfo);
 
         TextView clientBtn = findViewById(R.id.shout_connect_btn);
         clientBtn.setOnClickListener(view -> {
             requestPermissions();
             String[] info = Utils.checkIpProt(shoutIpEditText, shoutPortEditText, "喊话器");
-            updateLoadInfoAndConnect(info, ShoutcasterConfig.getDescentInfo(), SocketClientHelper.getMedia().getClient());
+            updateLoadInfoAndConnect(info, mediaInfo, SocketClientHelper.getMedia().getClient());
         });
     }
 
     private void initDescent() {
+        ShoutcasterConfig.DeviceInfo deviceInfo = ShoutcasterConfig.getDescentInfo();
         descentEdIp = findViewById(R.id.controller_ip_input);
         descentEdPort = findViewById(R.id.controller_port_input);
-        initIpAndPort(descentEdIp, descentEdPort, ShoutcasterConfig.getDescentInfo());
+        initIpAndPort(descentEdIp, descentEdPort, deviceInfo);
 
         TextView clientBtn = findViewById(R.id.controller_connect_btn);
         clientBtn.setOnClickListener(view -> {
             requestPermissions();
             String[] info = Utils.checkIpProt(descentEdIp, descentEdPort, "索降");
-            updateLoadInfoAndConnect(info, ShoutcasterConfig.getDescentInfo(), SocketClientHelper.getDessent().getClient());
+            updateLoadInfoAndConnect(info, deviceInfo, SocketClientHelper.getDessent().getClient());
         });
     }
 

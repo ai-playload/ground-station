@@ -88,6 +88,42 @@ android {
         }
     }
 
+    flavorDimensions 'gs'
+    productFlavors {
+        All {
+            dimension "gs"
+            applicationId "com.gs.ai"
+            resValue "string", "app_name", "Ai Payload"
+            manifestPlaceholders = [
+                    package_name: "com.gs.ai"
+            ]
+        }
+        HanHuaQi {
+            dimension "gs"
+            applicationId "com.gs.media"
+            resValue "string", "app_name", "喊话器"
+            manifestPlaceholders = [
+                    package_name: "com.gs.media"
+            ]
+        }
+        SuoJiang {
+            dimension "gs"
+            applicationId "com.gs.descent"
+            resValue "string", "app_name", "索降器"
+            manifestPlaceholders = [
+                    package_name: "com.gs.descent"
+            ]
+        }
+        Light {
+            dimension "gs"
+            applicationId "com.gs.light"
+            resValue "string", "app_name", "探照灯"
+            manifestPlaceholders = [
+                    package_name: "com.gs.light"
+            ]
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -121,19 +157,17 @@ dependencies {
     implementation libs.activity
     implementation libs.constraintlayout
     implementation libs.core.ktx
-    testImplementation libs.junit
-    androidTestImplementation libs.ext.junit
-    androidTestImplementation libs.espresso.core
 
     implementation libs.room.runtime
     annotationProcessor libs.room.compiler
 
     implementation "com.squareup.okio:okio:2.9.0"
     implementation files('libs/AIKit.aar')
-    implementation files('libs/sardine-android-debug.aar')
+//    implementation files('libs/sardine-android-debug.aar')
+    implementation("com.github.thegrizzlylabs:sardine-android:0.9")
     implementation "androidx.multidex:multidex:2.0.1"
     implementation "com.github.princekin-f:EasyFloat:2.0.4"
-    implementation 'com.google.code.gson:gson:2.10.1'  // Use the latest version
+    implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'com.jcraft:jsch:0.1.55'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.68'
     implementation 'com.blankj:utilcodex:1.31.1'

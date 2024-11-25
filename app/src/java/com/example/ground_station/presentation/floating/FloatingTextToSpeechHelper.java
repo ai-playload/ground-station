@@ -34,6 +34,7 @@ import com.lzf.easyfloat.utils.InputMethodUtils;
 import java.com.example.ground_station.data.model.AudioModel;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.service.ResultCallback;
+import java.com.example.ground_station.data.socket.SocketClientHelper;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 import java.com.example.ground_station.presentation.ability.AudioFileGenerationCallback;
@@ -50,21 +51,20 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
     private Runnable delayedTask;
     private CheckBox checkBox;
     private static int fileNameFlag = 0;
+    private SocketClientHelper helper = SocketClientHelper.getMedia();
 
     public void showFloatingTextToSpeech(Context context, CloseCallback closeCallback) {
         startGroundStationService(context, new IServiceConnection() {
             @Override
             public void onServiceConnected() {
-                int volume = SPUtil.INSTANCE.getInt("audio_volume", 100);
-                groundStationService.sendSetVolumeCommand(volume);
 
                 groundStationService.getAiSoundHelper().setVCN("xiaofeng");
                 groundStationService.setPlaybackCallback(() -> {
 //                    if (isCheckedLoop) {
 //                        playGstreamerMusic();
 //                    } else {
-//                        groundStationService.sendSocketCommand(SocketConstant.STREAMER, 2);
-//                        groundStationService.sendSocketCommand(SocketConstant.STOP_TALK, 0);
+//                        send(SocketConstant.STREAMER, 2);
+//                        send(SocketConstant.STOP_TALK, 0);
 //                    }
                 });
             }
@@ -83,26 +83,6 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                 .hasEditText(true)
                 .setTag(tag)
                 .setLayout(R.layout.floating_new_text_to_speech, view -> {
-                    if (view == null) {
-                        return;
-                    }
-//                    RelativeLayout content = view.findViewById(R.id.rlContent);
-//                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) content.getLayoutParams();
-//
-//                    ScaleImage scaleImage = view.findViewById(R.id.ivScale);
-//                    scaleImage.setOnScaledListener(new ScaleImage.OnScaledListener() {
-//                        @Override
-//                        public void onScaled(float x, float y, MotionEvent event) {
-//                            params.width = Math.max(params.width + (int) x, DisplayUtils.dpToPx(164));
-//                            params.height = Math.max(params.height + (int) y, DisplayUtils.dpToPx(320));
-//                            // Update the size of the floating window
-//                            content.setLayoutParams(params);
-//                            // Force redraw the view
-////                            content.postInvalidate();
-//
-//                            EasyFloat.updateFloat(TAG, params.width, params.height);
-//                        }
-//                    });
                 })
                 .registerCallbacks(new OnFloatCallbacks() {
 
@@ -125,7 +105,7 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                     @Override
                     public void dismiss() {
                         if (isBound) {
-                            groundStationService.sendSocketCommand(SocketConstant.STREAMER, 2);
+                            send(SocketConstant.STREAMER, 2);
                             groundStationService.cancelGstreamerAudioCommand();
 
                             groundStationService.getAiSoundHelper().stop();
@@ -179,7 +159,7 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                     isCheckedLoop = isChecked;
                                     if (!isChecked) {
-//                                        groundStationService.sendSocketCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, 2);
+//                                        send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, 2);
                                         groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, 0, 2);
                                     }
                                 }
@@ -247,11 +227,11 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                                             @Override
                                             public void run() {
 //                                                if (isCheckedLoop) {
-//                                                    groundStationService.sendSocketCommand(SocketConstant.TEXT_TO_SPEECH_LOOP, 0);
+//                                                    send(SocketConstant.TEXT_TO_SPEECH_LOOP, 0);
 //                                                }
 //
-//                                                groundStationService.sendSocketCommand(SocketConstant.STREAMER, 1);
-//                                                groundStationService.sendSocketCommand(SocketConstant.START_TALK, 0);
+//                                                send(SocketConstant.STREAMER, 1);
+//                                                send(SocketConstant.START_TALK, 0);
 //                                        playGstreamerMusic();
                                             }
                                         };
@@ -274,7 +254,7 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
         File recordFile = groundStationService.getAiSoundHelper().getRecordFile();
         if (recordFile != null && shoutcasterConfig.getShoutcaster() != null) {
             if (!checkBox.isChecked()) {
-                groundStationService.sendSocketCommand(SocketConstant.STREAMER, 1);
+                send(SocketConstant.STREAMER, 1);
                 String filePath = recordFile.getPath();
                 String command = String.format(GstreamerCommandConstant.TEXT_TO_SPEECH_COMMAND, filePath, shoutcasterConfig.getShoutcaster().getIp(), shoutcasterConfig.getShoutcaster().getPort());
                 groundStationService.sendMusicCommand(command);
@@ -310,7 +290,7 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                         String audioFileName = audioModel.getAudioFileName();
                         if (StringUtils.equals(audioFileName, name)) {
                             int fileIndex = i;
-                            groundStationService.sendSocketCommand(SocketConstant.PLAY_RECORD_Bp, fileIndex);
+                            send(SocketConstant.PLAY_RECORD_Bp, fileIndex);
                             Log.d("uploadAudioFile", "文件：" + name + "  循环播放指令fileIndex: " + fileIndex);
                             return;
                         }
@@ -322,6 +302,10 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                 }
             }
         });
+    }
+
+    public void send(byte msgId2, int... payload) {
+        helper.send(msgId2, payload);
     }
 
 }

@@ -73,7 +73,7 @@
             android:textSize="13sp" />
 
         <SeekBar
-            android:id="@+id/progressBar"
+            android:id="@+id/audio_progressBar"
             android:layout_width="226dp"
             android:layout_height="16dp"
             android:layout_marginLeft="32dp"

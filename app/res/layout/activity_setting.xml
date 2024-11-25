@@ -25,4 +25,18 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/op_item_height"/>
 
+    <View
+        android:background="#999"
+        android:layout_width="match_parent"
+        android:layout_height="1px"/>
+
+
+    <TextView
+        android:id="@+id/playPath"
+        android:text="远程音频文件夹 >"
+        android:paddingLeft="11dp"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/op_item_height"/>
+
 </LinearLayout>

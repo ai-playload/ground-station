@@ -3,6 +3,7 @@ package java.com.example.ground_station.presentation.floating;
 import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -12,12 +13,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.ground_station.BuildConfig;
 import com.example.ground_station.R;
 import com.lzf.easyfloat.EasyFloat;
 import com.lzf.easyfloat.enums.ShowPattern;
 import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
+import java.com.example.ground_station.data.utils.Utils;
+import java.com.example.ground_station.data.utils.ViewUtils;
 import java.com.example.ground_station.presentation.screen.MainActivity;
 import java.com.example.ground_station.presentation.floating.autdio.FloatingAudioFileHelper2;
 import java.util.HashMap;
@@ -86,6 +90,18 @@ public class FloatingWindowHelper {
                 lightBtn = view.findViewById(R.id.light_btn);
                 detectorAlarmBtn = view.findViewById(R.id.detector_alarm_btn);
                 topMainActivityBtn = view.findViewById(R.id.tv_options_to_main_btn);
+
+                View[] btns = {audioBtn, textToSpeechBtn, audioFileBtn, lightBtn, detectorAlarmBtn, topMainActivityBtn};
+                for (View btn : btns) {
+                    Object tag = btn.getTag();
+                    if (tag != null) {
+                     String str = tag.toString();
+                     boolean show = Utils.flavorVisible(BuildConfig.FLAVOR, str);//不同的
+                     ViewUtils.setVisibility(btn, show);
+                    }
+                }
+
+                view.findViewById(R.id.btnParent).requestLayout();
 
                 View.OnClickListener clickListener = v -> {
                     toggleButtonSelection((ImageView) v, activity);
@@ -173,18 +189,12 @@ public class FloatingWindowHelper {
             int[] images = imageMap.get(id);
             currentSelectedBtn.setImageResource(isSelected ? images[0] : images[1]);
         }
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        });
-        thread.run();
     }
 
     private void changeCloseBackground() {
         if (currentSelectedBtn != null) {
             setSelectedImage(currentSelectedBtn.getId(), currentSelectedBtn, false);
+//            currentSelectedBtn.setBackgroundResource(R.drawable.floating_bg_shape); // Deselect the button
             currentSelectedBtn = null;
         }
     }

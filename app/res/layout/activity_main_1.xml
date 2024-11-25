@@ -153,7 +153,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="textMultiLine"
                         android:maxLines="1"
-                        android:text="192.168.1.3" />
+                        android:text="127.0.0.1" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -176,7 +176,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="number"
                         android:maxLines="1"
-                        android:text="8519" />
+                        android:text="13551" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
