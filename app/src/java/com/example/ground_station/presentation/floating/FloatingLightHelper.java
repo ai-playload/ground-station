@@ -281,7 +281,7 @@ public class FloatingLightHelper extends BaseFloatingHelper {
 //                                        ((TextView) v).setText("爆闪灯关");
                                     }
                                     isFlashing = !isFlashing;
-                                    v.setBackgroundResource(isLighting ? R.drawable.custom_btn_bg_green : R.drawable.custom_btn_bg);
+                                    v.setBackgroundResource(isFlashing ? R.drawable.custom_btn_bg_green : R.drawable.custom_btn_bg);
                                 }
                             });
 
@@ -296,7 +296,7 @@ public class FloatingLightHelper extends BaseFloatingHelper {
 //                                        ((TextView) v).setText("红蓝灯关");
                                     }
                                     isRedBlueLighting = !isRedBlueLighting;
-                                    v.setBackgroundResource(isLighting ? R.drawable.custom_btn_bg_green : R.drawable.custom_btn_bg);
+                                    v.setBackgroundResource(isRedBlueLighting ? R.drawable.custom_btn_bg_green : R.drawable.custom_btn_bg);
                                 }
                             });
 

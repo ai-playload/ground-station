@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 
 
 @Database(entities = {TtsKeyModel.class}, version = 1)
-public abstract class AppDatabase extends RoomDatabase {
+public abstract  class AppDatabase extends RoomDatabase {
 
     public abstract TtsKeyDao ttsKeyDao();
 
