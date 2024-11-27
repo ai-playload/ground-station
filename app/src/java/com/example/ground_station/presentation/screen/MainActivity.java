@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -40,6 +41,7 @@ import java.com.example.ground_station.data.socket.ConnectionCallback;
 import java.com.example.ground_station.presentation.ability.IFlytekAbilityManager;
 import java.com.example.ground_station.presentation.floating.FloatingAudioFileHelper;
 import java.com.example.ground_station.presentation.util.AssetCopierUtil;
+import java.com.example.ground_station.data.common.Const;
 import java.com.example.ground_station.presentation.util.FilePathUtils;
 import java.com.example.ground_station.presentation.util.TCPFileUploader;
 import java.com.example.ground_station.presentation.util.ViewUtils;
@@ -123,8 +125,12 @@ public class MainActivity extends AppCompatActivity {
             int i = 3 / 0;
         });
         ViewUtils.setVisibility(findViewById(R.id.testParentView), BuildConfig.DEBUG);
-        ViewUtils.setVisibility(findViewById(R.id.shout_input_layout), false);
-        ViewUtils.setVisibility(findViewById(R.id.cloud_light_input_layout), false);
+
+        String flavor = BuildConfig.FLAVOR;
+        ViewUtils.setVisibility(findViewById(R.id.shout_input_layout), TextUtils.equals(flavor, Const.FLAVOR_HANHUAQI));
+        ViewUtils.setVisibility(findViewById(R.id.controller_input_layout), TextUtils.equals(flavor, Const.FLAVOR_HANHUAQI)
+                || TextUtils.equals(flavor, Const.FLAVOR_SUOJIANG));
+        ViewUtils.setVisibility(findViewById(R.id.cloud_light_input_layout), TextUtils.equals(flavor, Const.FLAVOR_LIGHT));
     }
 
     private void getSpValueToEditText() {

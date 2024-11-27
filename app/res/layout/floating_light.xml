@@ -91,6 +91,7 @@
         android:id="@+id/drive_temp_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:text="驱动温度："
         android:textSize="12sp"
         android:textColor="@color/gray_white"

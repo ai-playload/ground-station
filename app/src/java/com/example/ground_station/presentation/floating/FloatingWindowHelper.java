@@ -1,6 +1,7 @@
 package java.com.example.ground_station.presentation.floating;
 
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -10,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.ground_station.BuildConfig;
 import com.example.ground_station.R;
 import com.lzf.easyfloat.EasyFloat;
 import com.lzf.easyfloat.enums.ShowPattern;
@@ -86,9 +88,11 @@ public class FloatingWindowHelper {
 
                 View[] btns = {audioBtn, textToSpeechBtn, audioFileBtn, lightBtn, detectorAlarmBtn, tvOptionsInputSettingsBtn};
                 for (View btn : btns) {
-                    boolean show = btn == detectorAlarmBtn;
+                    String str = btn.getTag().toString();
+                    boolean show = TextUtils.equals(str, BuildConfig.FLAVOR);//不同的
                     ViewUtils.setVisibility(btn, show);
                 }
+
                 view.findViewById(R.id.btnParent).requestLayout();
 
                 View.OnClickListener clickListener = v -> {

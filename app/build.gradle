@@ -11,13 +11,11 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.ground_station"
+        applicationId "com.gs.ai"
         minSdk 24
         targetSdk 34
         versionCode 7
         versionName "2.10.5"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         externalNativeBuild {
             ndkBuild {
@@ -36,7 +34,7 @@ android {
                 targets "ground-station"
 
                 // All archs except MIPS and MIPS64 are supported
-                abiFilters  'armeabi-v7a', 'arm64-v8a'
+                abiFilters 'armeabi-v7a', 'arm64-v8a'
             }
         }
     }
@@ -51,13 +49,12 @@ android {
     }
 
 
-
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
-            buildConfigField "boolean","DEBUG1","false"
+            buildConfigField "boolean", "DEBUG1", "false"
 
             sourceSets {
                 main {
@@ -76,8 +73,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
-            buildConfigField "boolean","DEBUG1","true"
-            flavorDimensions 'SuoJiang'
+            buildConfigField "boolean", "DEBUG1", "true"
 //            sourceSets {
 //                main {
 //                    manifest.srcFile 'AndroidManifest.xml'
@@ -92,22 +88,31 @@ android {
         }
     }
 
+    flavorDimensions 'gs'
     productFlavors {
-        SuoJiang{
-            dimension "SuoJiang"
-//            versionCode 999
-//            versionName "9.9.9"
+        HanHuaQi {
+            dimension "gs"
+            applicationId "com.gs.media"
+            resValue "string", "app_name", "喊话器"
+            manifestPlaceholders = [
+                    package_name: "com.gs.media"
+            ]
+        }
+        SuoJiang {
+            dimension "gs"
             applicationId "com.gs.descent"
             resValue "string", "app_name", "索降器"
             manifestPlaceholders = [
-//                    app_icon     : "应用图标",
-                    package_name : "com.gs.descent"
+                    package_name: "com.gs.descent"
             ]
-////            applicationId "com.gs.descent"
-//            applicationIdSuffix "descent"
-//            versionNameSuffix "demo"
-////            name "索降控制器"
-//            version "2.11.1"
+        }
+        Light {
+            dimension "gs"
+            applicationId "com.gs.light"
+            resValue "string", "app_name", "探照灯"
+            manifestPlaceholders = [
+                    package_name: "com.gs.light"
+            ]
         }
     }
 

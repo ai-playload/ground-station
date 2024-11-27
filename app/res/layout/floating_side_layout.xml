@@ -28,36 +28,42 @@
             android:id="@+id/audio_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:tag="@string/HanHuaQi"
             android:src="@drawable/ic_shout_unselected" />
 
         <ImageView
             android:id="@+id/text_to_speech_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:tag="@string/HanHuaQi"
             android:src="@drawable/ic_tts_unselected" />
 
         <ImageView
             android:id="@+id/audio_file_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:tag="@string/HanHuaQi"
             android:src="@drawable/ic_audio_unselected" />
 
         <ImageView
             android:id="@+id/light_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:tag="@string/Light"
             android:src="@drawable/ic_light_unselected" />
 
         <ImageView
             android:id="@+id/detector_alarm_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:tag="@string/SuoJiang"
             android:src="@drawable/ic_descent_unselected" />
 
         <ImageView
             android:id="@+id/tv_options_input_settings_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:tag="@string/HanHuaQi"
             android:src="@drawable/ic_settings_unselected" />
 
 
