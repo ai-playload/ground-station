@@ -157,11 +157,11 @@ public class FloatingWindowHelper {
                 changeCloseBackground();
             });
         } else if (selectedBtn == detectorAlarmBtn) {
-            new FloatingDetectorHelper().showFloatingDetector(selectedBtn.getContext(), () -> {
+            new FloatingSettingsHelper().showFloatingSettings(selectedBtn.getContext(), () -> {
                 changeCloseBackground();
             });
         } else if (selectedBtn == tvOptionsInputSettingsBtn) {
-            new FloatingSettingsHelper().showFloatingSettings(selectedBtn.getContext(), () -> {
+            new FloatingDetectorHelper().showFloatingDetector(selectedBtn.getContext(), () -> {
                 changeCloseBackground();
             });
         }
