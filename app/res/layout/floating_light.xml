@@ -27,46 +27,45 @@
         android:textColor="@color/white"
         android:textSize="12sp" />
 
-    <Button
+    <TextView
         android:id="@+id/open_light_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:text="开灯"
         android:layout_below="@+id/light_title"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="4dp"
-        android:text="开灯" />
+        style="@style/btn_style" />
 
-    <Button
+    <TextView
         android:id="@+id/flashing_light_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/btn_style"
         android:layout_alignTop="@+id/open_light_btn"
         android:layout_marginLeft="8dp"
         android:layout_toRightOf="@+id/open_light_btn"
-        android:text="爆闪灯开" />
+        android:text="爆闪灯" />
 
-    <Button
+    <TextView
         android:id="@+id/red_blue_light_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/btn_style"
+        android:layout_marginTop="5dp"
         android:layout_below="@+id/open_light_btn"
         android:layout_marginLeft="16dp"
-        android:text="红蓝灯开" />
+        android:text="红蓝灯" />
 
     <TextView
         android:id="@+id/testLightBtn"
-        android:paddingHorizontal="11dp"
-        android:paddingVertical="8dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/red_blue_light_btn"
         android:layout_below="@+id/open_light_btn"
         android:layout_marginLeft="16dp"
-        android:background="#fa0"
         android:layout_marginTop="4dp"
+        android:layout_toRightOf="@+id/red_blue_light_btn"
+        android:background="#fa0"
+        android:paddingHorizontal="11dp"
+        android:paddingVertical="8dp"
         android:text="获取温度"
         android:textColor="@color/white"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/brightness_title"
@@ -83,11 +82,11 @@
         android:id="@+id/seekValueTv"
         android:layout_width="50dp"
         android:layout_height="24dp"
-        android:gravity="center_vertical"
-        android:includeFontPadding="true"
-        android:layout_marginTop="4dp"
         android:layout_below="@+id/brightness_title"
         android:layout_alignParentRight="true"
+        android:layout_marginTop="4dp"
+        android:gravity="center_vertical"
+        android:includeFontPadding="true"
         android:textColor="@color/white"
         tools:text="100%" />
 
@@ -120,21 +119,21 @@
         android:id="@+id/drive_temp_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/seek_bar"
+        android:layout_alignTop="@+id/controller_title"
         android:layout_marginLeft="16dp"
         android:layout_toRightOf="@+id/check_box"
         android:text="驱动温度："
-        android:visibility="gone"
         android:textColor="@color/gray_white"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/lamp_holder_tempe_tv"
-        android:layout_marginTop="3dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/drive_temp_tv"
+        android:layout_alignTop="@+id/controller_title"
         android:layout_marginLeft="16dp"
+        android:layout_marginTop="3dp"
         android:layout_toRightOf="@+id/check_box"
         android:text="灯头温度："
         android:textColor="@color/gray_white"
@@ -146,6 +145,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/check_box"
         android:layout_marginLeft="16dp"
+        android:layout_marginTop="11dp"
         android:text="云台控制"
         android:textColor="@color/white"
         android:textSize="12sp" />
@@ -176,7 +176,9 @@
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_below="@+id/controller_title"
+        android:layout_alignTop="@+id/direction_layout"
         android:layout_marginLeft="184dp"
+        android:layout_marginTop="31dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:src="@drawable/ic_control_camera" />
@@ -190,7 +192,8 @@
         android:layout_marginLeft="8dp"
         android:text="俯仰："
         android:textColor="@color/gray_white"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/pitch_tv"
@@ -201,15 +204,16 @@
         android:layout_marginLeft="8dp"
         android:text="航向："
         android:textColor="@color/gray_white"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:visibility="gone" />
 
     <RelativeLayout
         android:id="@+id/direction_layout"
         android:layout_width="wrap_content"
-        android:layout_marginTop="22dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/controller_title"
-        android:layout_marginLeft="16dp">
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="22dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -259,6 +263,7 @@
     <com.lzf.easyfloat.example.widget.ScaleImage
         android:id="@+id/ivScale"
         android:layout_width="36dp"
+        android:visibility="gone"
         android:layout_height="36dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"

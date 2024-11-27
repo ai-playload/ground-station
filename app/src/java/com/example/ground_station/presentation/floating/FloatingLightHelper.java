@@ -209,7 +209,6 @@ public class FloatingLightHelper extends BaseFloatingHelper {
 
                     view.findViewById(R.id.center).setOnClickListener(v -> {
                         groundStationService.sendUdpSocketCommand(SocketConstant.DIRECTION, 5);
-
 //                        groundStationService.sendServoCommand(CENTER);
                     });
 
@@ -262,12 +261,13 @@ public class FloatingLightHelper extends BaseFloatingHelper {
                                 if (isBound) {
                                     if (isLighting) {
                                         groundStationService.sendUdpSocketCommand(SocketConstant.LIGHT, 0);
-                                        ((TextView) v).setText("开灯");
+//                                        ((TextView) v).setText("开灯");
                                     } else {
                                         groundStationService.sendUdpSocketCommand(SocketConstant.LIGHT, 1);
-                                        ((TextView) v).setText("关灯");
+//                                        ((TextView) v).setText("关灯");
                                     }
                                     isLighting = !isLighting;
+                                    v.setBackgroundResource(isLighting ? R.drawable.custom_btn_bg_green : R.drawable.custom_btn_bg);
                                 }
                             });
 
@@ -275,12 +275,13 @@ public class FloatingLightHelper extends BaseFloatingHelper {
                                 if (isBound) {
                                     if (isFlashing) {
                                         groundStationService.sendUdpSocketCommand(SocketConstant.EXPLOSION_FLASH, 0);
-                                        ((TextView) v).setText("爆闪灯开");
+//                                        ((TextView) v).setText("爆闪灯开");
                                     } else {
                                         groundStationService.sendUdpSocketCommand(SocketConstant.EXPLOSION_FLASH, 1);
-                                        ((TextView) v).setText("爆闪灯关");
+//                                        ((TextView) v).setText("爆闪灯关");
                                     }
                                     isFlashing = !isFlashing;
+                                    v.setBackgroundResource(isLighting ? R.drawable.custom_btn_bg_green : R.drawable.custom_btn_bg);
                                 }
                             });
 
@@ -289,12 +290,13 @@ public class FloatingLightHelper extends BaseFloatingHelper {
                                 if (isBound) {
                                     if (isRedBlueLighting) {
                                         groundStationService.sendUdpSocketCommand(SocketConstant.RED_BLUE_FLASH, 0);
-                                        ((TextView) v).setText("红蓝灯开");
+//                                        ((TextView) v).setText("红蓝灯开");
                                     } else {
                                         groundStationService.sendUdpSocketCommand(SocketConstant.RED_BLUE_FLASH, 1);
-                                        ((TextView) v).setText("红蓝灯关");
+//                                        ((TextView) v).setText("红蓝灯关");
                                     }
                                     isRedBlueLighting = !isRedBlueLighting;
+                                    v.setBackgroundResource(isLighting ? R.drawable.custom_btn_bg_green : R.drawable.custom_btn_bg);
                                 }
                             });
 
@@ -316,6 +318,9 @@ public class FloatingLightHelper extends BaseFloatingHelper {
                                     int volume = seekBar.getProgress();
                                     if (isBound) {
                                         groundStationService.sendUdpSocketCommand(SocketConstant.BRIGHTNESS, volume);
+                                        if (headWdValue > 60 && volume > 40) {
+                                            ToastUtils.showLong("温度过高，降低亮度");
+                                        }
                                     }
                                     Log.d(TAG, "volume value: " + volume);
                                 }
@@ -355,6 +360,9 @@ public class FloatingLightHelper extends BaseFloatingHelper {
                         Byte v2 = data[5];
                         if (v == SocketConstant.EXPLOSION_WD_HEAD && v2 != headWdValue) {//灯头温度
                             headWdValue = v2;
+                            if (headWdValue > 60) {
+                                ToastUtils.showLong("温度过高，降低亮度");
+                            }
                             if (headWdTv != null && v != null) {
                                 headWdTv.post(new Runnable() {
                                     @Override
@@ -381,7 +389,9 @@ public class FloatingLightHelper extends BaseFloatingHelper {
         int size = list.size();
         String s = Utils.bytesToHexFun3(list);
         s = "接收数据：" + size + " 指令：" + s;
-        ToastUtils.showLong(s);
+        if (BuildConfig.DEBUG) {
+            ToastUtils.showLong(s);
+        }
     }
 
     private int driveWdValue, headWdValue = Integer.MIN_VALUE;
