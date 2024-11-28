@@ -15,6 +15,8 @@ import com.lzf.easyfloat.enums.ShowPattern;
 import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
+import java.com.example.ground_station.data.model.ShoutcasterConfig;
+import java.com.example.ground_station.data.socket.SocketClientHelper;
 import java.com.example.ground_station.data.socket.SocketConstant;
 
 public class FloatingNewDescentHelper extends BaseFloatingHelper {
@@ -34,6 +36,8 @@ public class FloatingNewDescentHelper extends BaseFloatingHelper {
     private int speedValue = 1;
     private int lengthValue = 1;
 
+    SocketClientHelper helper = SocketClientHelper.getDessent();
+
     private int calculateSpeedValue(int progress) {
         return progress == 0 ? MIN_SPEED : progress * SPEED_MULTIPLIER;
     }
@@ -43,7 +47,13 @@ public class FloatingNewDescentHelper extends BaseFloatingHelper {
     }
 
     public void showFloatingSettings(Context context, CloseCallback closeCallback) {
-        startGroundStationService(context, null);
+//        startGroundStationService(context, null);
+
+
+        if (!helper.getClient().isConnected()) {
+            ShoutcasterConfig.DeviceInfo config = ShoutcasterConfig.getCloudLightInfo();
+            helper.getClient().update(config.getIp(), config.getPort());
+        }
 
         EasyFloat.with(context)
                 .setShowPattern(ShowPattern.ALL_TIME)
