@@ -274,6 +274,9 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                                 SPUtil.INSTANCE.putBase(SocketConstant.DELETE_INIT_WEIGHT, weightValue);
                                 updateWeightUI();
                             });
+                            view.findViewById(R.id.lenghtResetBtn).setOnClickListener(view1 -> {
+                                sendInstruct(SocketConstant.SERVO_WEIGHT_RESET_LENGHT);
+                            });
 
                             SendTaskHelper.getInstance().getLoop().setTime(3000);
                             SendTaskHelper.getInstance().getLoop().start();
