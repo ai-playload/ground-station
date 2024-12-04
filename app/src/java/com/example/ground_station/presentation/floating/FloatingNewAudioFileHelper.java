@@ -56,6 +56,7 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
             public void onServiceConnected() {
                 int volume = SPUtil.INSTANCE.getInt("audio_volume", 100);
                 groundStationService.sendSetVolumeCommand(volume);
+//                ...
 
                 getRemoteAudioList();
             }

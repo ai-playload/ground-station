@@ -174,10 +174,10 @@ public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioView
             playImg = itemView.findViewById(R.id.audio_play_img);
 
             itemView.setOnClickListener(view -> {
-                if (connectStateListener != null && !connectStateListener.isConnectedSocket()) {
-                    ToastUtils.showShort("未成功连接");
-                    return;
-                }
+//                if (connectStateListener != null && !connectStateListener.isConnectedSocket()) {
+//                    ToastUtils.showShort("未成功连接");
+//                    return;
+//                }
                 int position = getAdapterPosition();
                 currentPosition = position;
 

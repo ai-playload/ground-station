@@ -22,6 +22,7 @@ import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
+import java.com.example.ground_station.data.socket.SocketClientHelper;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 
@@ -31,13 +32,16 @@ public class FloatingNewAudioHelper extends BaseFloatingHelper {
     private final String tag = "audio_tag";
     private final String TAG = "FloatingAudioHelper";
 
+
+    SocketClientHelper helper = SocketClientHelper.getMedia();
+
     public void showFloatingNewAudio(Context context, CloseCallback closeCallback) {
         startGroundStationService(context, new IServiceConnection() {
             @Override
             public void onServiceConnected() {
                 ThreadExtKt.mainThread(300, () -> {
                     int volume = SPUtil.INSTANCE.getInt("audio_volume", 100);
-                    groundStationService.sendSetVolumeCommand(volume);
+                    helper.send(SocketConstant.SET_VOLUME, volume);
                     return Unit.INSTANCE;
                 });
             }
@@ -77,7 +81,7 @@ public class FloatingNewAudioHelper extends BaseFloatingHelper {
                             public void onStopTrackingTouch(SeekBar seekBar) {
                                 int volume = seekBar.getProgress();
                                 if (isBound) {
-                                    groundStationService.sendSetVolumeCommand(volume);
+                                    helper.send(SocketConstant.SET_VOLUME, volume);
                                     SPUtil.INSTANCE.putBase("audio_volume", volume);
                                 }
                                 Log.d(TAG, "volume value: " + volume);

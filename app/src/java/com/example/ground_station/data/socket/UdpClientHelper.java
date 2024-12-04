@@ -51,19 +51,15 @@ class UdpClient implements Clien {
 
     private DatagramSocket datagramSocket;
     private DatagramPacket receivePacket;
-    private volatile boolean isConnected = false;
 
+    private volatile boolean isConnected = false;
     private Thread readThread;
+    private ExecutorService executorService = Executors.newSingleThreadExecutor(); // 创建一个具有固定线程数的线程池;
+    private boolean adsChange;
+    private ConnectionCallback connectCallBack;
     private ResultCallBack<byte[]> callBack;
 
-    private ExecutorService executorService = Executors.newSingleThreadExecutor(); // 创建一个具有固定线程数的线程池;
-    private ConnectionCallback connectCallBack;
-    private boolean adsChange;
-    private ResultCallBack<byte[]> callBack1;
-
     public UdpClient() {
-//        readThread = new Thread(new ReadThread());
-//        readThread.start();
     }
 
     @Override

@@ -43,6 +43,7 @@ import java.com.example.ground_station.data.model.SendFunctionProvider;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.service.GroundStationService;
 import java.com.example.ground_station.data.socket.Clien;
+import java.com.example.ground_station.data.socket.ConnectionCallback;
 import java.com.example.ground_station.data.socket.SocketClientHelper;
 import java.com.example.ground_station.data.socket.UdpClientHelper;
 import java.com.example.ground_station.data.utils.Utils;
@@ -70,6 +71,17 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             GroundStationService.LocalBinder binder = (GroundStationService.LocalBinder) service;
             groundStationService = binder.getService();
+            groundStationService.setShoutcasterConfig(new ConnectionCallback() {
+                @Override
+                public void onConnectionSuccess() {
+
+                }
+
+                @Override
+                public void onConnectionFailure(Exception e) {
+
+                }
+            });
             isBound = true;
 
             requestPermissions();

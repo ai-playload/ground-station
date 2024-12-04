@@ -16,7 +16,7 @@ public class SendUtils {
      * @return
      * @throws IOException
      */
-    public static byte[] toData(String msgId2, String... payload) throws IOException {
+    public static byte[] toData(String msgId2, String... payload)  {
         byte v = (byte) Integer.parseInt(msgId2, 16);
         int[] ps = new int[payload.length];
         for (int i = 0; i < payload.length; i++) {

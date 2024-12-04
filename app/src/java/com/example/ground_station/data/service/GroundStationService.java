@@ -113,9 +113,7 @@ public class GroundStationService extends Service implements AbilityCallback {
         return udpSocketClientManager;
     }
 
-    public void setShoutcasterConfig(ShoutcasterConfig config, ConnectionCallback callback) {
-        this.config = config;
-
+    public void setShoutcasterConfig(ConnectionCallback callback) {
         connectSocket(callback);
     }
 
