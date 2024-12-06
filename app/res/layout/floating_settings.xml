@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rlContent"
     android:layout_width="300dp"
-    android:layout_height="374dp"
+    android:layout_height="wrap_content"
     android:background="@drawable/floating_layout_bg_shape"
     android:orientation="vertical">
 
@@ -267,21 +267,6 @@
         android:textColor="#fff" />
 
     <TextView
-        android:id="@+id/zoneTv"
-        android:layout_width="88dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/up_action"
-        android:layout_marginLeft="13dp"
-        android:layout_toRightOf="@+id/circuit_tv"
-        android:background="@drawable/custom_btn_bg"
-        android:gravity="center"
-        android:paddingHorizontal="15dp"
-        android:paddingVertical="10dp"
-        android:text="零位学习"
-        android:textColor="#fff"
-        android:visibility="gone" />
-
-    <TextView
         android:id="@+id/removePeelBtn"
         android:layout_width="88dp"
         android:gravity="center"
@@ -289,7 +274,7 @@
         android:layout_below="@+id/up_action"
         android:layout_marginLeft="4dp"
         android:layout_marginTop="11dp"
-        android:layout_toRightOf="@+id/zoneTv"
+        android:layout_toRightOf="@+id/circuit_tv"
         android:background="@drawable/custom_btn_bg"
         android:paddingHorizontal="11dp"
         android:paddingVertical="10dp"
@@ -312,13 +297,27 @@
 
     <Button
         android:id="@+id/relieve_tv"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/circuit_tv"
         android:layout_marginLeft="16dp"
         android:text="更新长度"
-        android:visibility="gone" />
+        android:visibility="visible" />
+    <TextView
+        android:id="@+id/zoneTv"
+        android:layout_width="88dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="23dp"
+        android:layout_toRightOf="@+id/circuit_tv"
+        android:background="@drawable/custom_btn_bg"
+        android:layout_below="@+id/circuit_tv"
+        android:gravity="center"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="10dp"
+        android:layout_marginTop="5dp"
+        android:text="零位学习"
+        android:textColor="#fff"
+        android:visibility="visible" />
 
     <Button
         android:id="@+id/textSendBtn"
