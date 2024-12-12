@@ -31,9 +31,7 @@ import kotlin.Unit;
 public class FloatingNewAudioHelper extends BaseFloatingHelper {
     private final String tag = "audio_tag";
     private final String TAG = "FloatingAudioHelper";
-
-
-    SocketClientHelper helper = SocketClientHelper.getMedia();
+    private SocketClientHelper helper = SocketClientHelper.getMedia();
 
     public void showFloatingNewAudio(Context context, CloseCallback closeCallback) {
         startGroundStationService(context, new IServiceConnection() {
@@ -110,15 +108,15 @@ public class FloatingNewAudioHelper extends BaseFloatingHelper {
                         });
 
                         view.findViewById(R.id.audio_up_btn).setOnClickListener(v -> {
-                            groundStationService.sendServoCommand(1);
+                            helper.send(SocketConstant.SERVO, 1);
                         });
 
                         view.findViewById(R.id.audio_center_btn).setOnClickListener(v -> {
-                            groundStationService.sendServoCommand(5);
+                            helper.send(SocketConstant.SERVO, 5);
                         });
 
                         view.findViewById(R.id.audio_down_btn).setOnClickListener(v -> {
-                            groundStationService.sendServoCommand(2);
+                            helper.send(SocketConstant.SERVO, 2);
                         });
 
                     }
@@ -148,8 +146,6 @@ public class FloatingNewAudioHelper extends BaseFloatingHelper {
                     public void dismiss() {
 
                         if (isBound) {
-//                            groundStationService.isShouting = true;
-//                            groundStationService.sendShoutCommand("");
                             groundStationService.cancelGstreamerAudioCommand();
                             groundStationService.sendSocketCommand(SocketConstant.STREAMER, 2);
                         }
