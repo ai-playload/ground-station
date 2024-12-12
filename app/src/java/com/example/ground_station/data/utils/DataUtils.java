@@ -2,14 +2,13 @@ package java.com.example.ground_station.data.utils;
 
 import android.util.Log;
 
-import java.com.example.ground_station.data.service.ResultCallBack;
+import java.com.example.ground_station.data.service.ResultCallback;
 import java.com.example.ground_station.data.socket.SocketConstant;
-import java.util.List;
 
 public class DataUtils {
 
 
-    public static void parse(byte[] bytes, ResultCallBack<byte[]> callBack) {
+    public static void parse(byte[] bytes, ResultCallback<byte[]> callBack) {
         if (bytes != null && bytes.length > 0) {
             int length = bytes.length;
             for (int i = 0; i < length; i++) {

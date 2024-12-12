@@ -2,4 +2,5 @@
 <resources>
     <dimen name="toolbar_height">45dp</dimen>
     <dimen name="op_item_height">55dp</dimen>
+    <dimen name="sj_hint_name_width">140dp</dimen>
 </resources>

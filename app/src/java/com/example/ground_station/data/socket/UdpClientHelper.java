@@ -5,7 +5,7 @@ import android.util.Log;
 import com.blankj.utilcode.util.ToastUtils;
 import com.example.ground_station.BuildConfig;
 
-import java.com.example.ground_station.data.service.ResultCallBack;
+import java.com.example.ground_station.data.service.ResultCallback;
 import java.com.example.ground_station.data.utils.DataUtils;
 import java.com.example.ground_station.data.utils.SendUtils;
 import java.com.example.ground_station.data.utils.Utils;
@@ -57,7 +57,7 @@ class UdpClient implements Clien {
     private ExecutorService executorService = Executors.newSingleThreadExecutor(); // 创建一个具有固定线程数的线程池;
     private boolean adsChange;
     private ConnectionCallback connectCallBack;
-    private ResultCallBack<byte[]> callBack;
+    private ResultCallback<byte[]> callBack;
 
     public UdpClient() {
     }
@@ -199,7 +199,7 @@ class UdpClient implements Clien {
     }
 
     @Override
-    public void setCallBack(ResultCallBack<byte[]> callBack) {
+    public void setCallBack(ResultCallback<byte[]> callBack) {
         this.callBack = callBack;
     }
 

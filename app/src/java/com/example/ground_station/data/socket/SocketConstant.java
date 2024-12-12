@@ -37,6 +37,13 @@ public class SocketConstant {
     public static final byte DATA_PACKET = (byte) 0x16;               // 数据包
     public static final byte TEXT_TO_SPEECH_V2 = (byte) 0x17;         // 文字转语音V2
     public static final byte SERVO = (byte) 0x30;
+    public static final byte PARACHUTE_3C = (byte) 0x3c;           // 缓降器重量获取
+    public static final byte PARACHUTE_3E = (byte) 0x3e;           // 缓降器长度获取
+    public static final byte PARACHUTE_CIRCUI_STATUS = (byte) 0x3f;              // 获取缓降器熔断状态
+    public static final byte SERVO_SWITCH_STATUS = (byte) 0x40;              //询问开关状态
+    public static final byte SERVO_WEIGHT_REMOVE_PEEL = (byte) 0x41;         //缓降器去皮操作
+    public static final byte SERVO_WEIGHT_RESET_LENGHT = (byte) 0x42;         //缓降器完全收线指令
+
     public static final byte DIRECTION = (byte) 0x46;
     public static final byte AMPLIFIER = (byte) 0x9a;
     public static final byte STREAMER = (byte) 0x9b;
@@ -68,4 +75,5 @@ public class SocketConstant {
 //    public static final byte SERVO_DOWN = (byte) 0x30;                // 舵机 down
 //    public static final byte SERVO_RETURN = (byte) 0x30;              // 舵机 回中
 
+    public static String DELETE_INIT_WEIGHT = "delete_init_weight";
 }

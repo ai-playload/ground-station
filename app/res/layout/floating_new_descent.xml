@@ -2,9 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="432dp"
-    android:layout_height="317dp"
+    android:layout_height="wrap_content"
     android:background="@drawable/floating_new_audio_bg"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingBottom="10dp">
 
     <RelativeLayout
         android:id="@+id/audio_title_container"
@@ -64,7 +65,7 @@
         android:layout_marginTop="14dp">
 
         <LinearLayout
-            android:layout_width="129dp"
+            android:layout_width="@dimen/sj_hint_name_width"
             android:layout_height="33dp"
             android:layout_marginLeft="27dp"
             android:background="@drawable/shape_general_bg"
@@ -72,12 +73,13 @@
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/lenghtTv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tts_loop_cb"
                 android:layout_marginLeft="10dp"
                 android:gravity="center"
-                android:text="俯仰："
+                android:text="放线长度："
                 android:textColor="#ffe2e6f2"
                 android:textSize="13sp" />
 
@@ -87,6 +89,7 @@
                 android:layout_weight="1" />
 
             <TextView
+                android:id="@+id/put_line_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tts_loop_cb"
@@ -122,12 +125,13 @@
                 android:layout_weight="1" />
 
             <TextView
+                android:id="@+id/weight_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tts_loop_cb"
                 android:layout_marginRight="12dp"
                 android:gravity="center"
-                android:text="0  kg"
+                android:text="--  kg"
                 android:textColor="#ffe2e6f2"
                 android:textSize="13sp" />
 
@@ -138,10 +142,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:layout_marginTop="14dp">
 
         <LinearLayout
-            android:layout_width="129dp"
+            android:layout_width="@dimen/sj_hint_name_width"
             android:layout_height="33dp"
             android:layout_marginLeft="27dp"
             android:background="@drawable/shape_general_bg"
@@ -154,23 +159,19 @@
                 android:layout_below="@+id/tts_loop_cb"
                 android:layout_marginLeft="10dp"
                 android:gravity="center"
-                android:text="速度："
+                android:text="速度(档位)："
                 android:textColor="#ffe2e6f2"
                 android:textSize="13sp" />
 
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/speed_tv"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tts_loop_cb"
                 android:layout_marginRight="12dp"
-                android:gravity="center"
-                android:text="1  m/min"
+                android:gravity="right"
+                android:text="1 档"
                 android:textColor="#ffe2e6f2"
                 android:textSize="13sp" />
 
@@ -178,13 +179,28 @@
 
         <SeekBar
             android:id="@+id/speed_progress"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:max="10"
+            android:min="1"
             android:progress="0"
             android:progressDrawable="@drawable/seekbar_progress_layer"
             android:thumb="@drawable/seekbar_thumb" />
+
+        <TextView
+            android:id="@+id/speedComiftBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:background="#fa0"
+            android:layout_marginRight="11dp"
+            android:paddingHorizontal="15dp"
+            android:paddingVertical="10dp"
+            android:text="确认"
+            android:textColor="#fff"
+            android:visibility="visible" />
 
     </LinearLayout>
 
@@ -194,7 +210,7 @@
         android:layout_marginTop="14dp">
 
         <LinearLayout
-            android:layout_width="129dp"
+            android:layout_width="@dimen/sj_hint_name_width"
             android:layout_height="33dp"
             android:layout_marginLeft="27dp"
             android:background="@drawable/shape_general_bg"
@@ -250,72 +266,104 @@
         <TextView
             android:id="@+id/circuit_tv"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:drawableTop="@drawable/urgent_selector"
+            android:drawablePadding="4dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
             android:text="紧急熔断"
             android:textColor="@color/white"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
-            android:drawableTop="@drawable/urgent_selector"
-            android:clickable="true"
-            android:drawablePadding="4dp"
-            android:gravity="center"
-            android:textSize="13sp" />
-
-        <TextView
-            android:id="@+id/braking_tv"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="限位"
-            android:textColor="@color/white"
-            android:drawableTop="@drawable/limit_selector"
-            android:drawablePadding="4dp"
-            android:gravity="center"
-            android:clickable="true"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:textSize="13sp" />
 
         <TextView
             android:id="@+id/stop_action"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="停止"
-            android:textColor="@color/white"
+            android:layout_weight="1"
+            android:clickable="true"
             android:drawableTop="@drawable/stop_selector"
             android:drawablePadding="4dp"
-            android:gravity="center"
-            android:clickable="true"
             android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:text="停止"
+            android:textColor="@color/white"
             android:textSize="13sp" />
 
         <TextView
             android:id="@+id/up_action"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="上升"
-            android:textColor="@color/white"
+            android:layout_weight="1"
+            android:clickable="true"
             android:drawableTop="@drawable/audio_up_selector"
             android:drawablePadding="4dp"
-            android:gravity="center"
-            android:clickable="true"
             android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:text="上升"
+            android:textColor="@color/white"
             android:textSize="13sp" />
 
         <TextView
             android:id="@+id/down_action"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="下降"
-            android:textColor="@color/white"
+            android:layout_weight="1"
+            android:clickable="true"
             android:drawableTop="@drawable/audio_down_selector"
             android:drawablePadding="4dp"
-            android:gravity="center"
-            android:clickable="true"
             android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:text="下降"
+            android:textColor="@color/white"
             android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/removePeelBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:drawableTop="@drawable/limit_selector"
+            android:drawablePadding="4dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:text="重量去皮"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/lenghtResetBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:drawableTop="@drawable/limit_selector"
+            android:drawablePadding="4dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:text="完全收线"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1px"
+            android:layout_weight="1" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1px"
+            android:layout_weight="1" />
 
     </LinearLayout>
 

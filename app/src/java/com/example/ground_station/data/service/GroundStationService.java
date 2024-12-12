@@ -300,13 +300,13 @@ public class GroundStationService extends Service implements AbilityCallback {
         socketClientManager.sendSocketThanReceiveCommand(msgId2, payload, callback);
     }
 
-    public void getAudioListInfoDelayed(ResultCallBack<List<AudioModel>> callBack, int size, long delayed) {
+    public void getAudioListInfoDelayed(ResultCallback<List<AudioModel>> callBack, int size, long delayed) {
         Log.d(TAG, "ttkx getAudioListInfoDelayed: " + TimeUtils.getNowString());
 
         requestAudioListInfo(callBack, size, delayed, 0);
     }
 
-    private void requestAudioListInfo(ResultCallBack<List<AudioModel>> callBack, int size, long delayed, int num) {
+    private void requestAudioListInfo(ResultCallback<List<AudioModel>> callBack, int size, long delayed, int num) {
         ThreadUtils.executeByIoWithDelay(new ThreadUtils.SimpleTask<List<AudioModel>>() {
             @Override
             public List<AudioModel> doInBackground() throws Throwable {
@@ -334,11 +334,11 @@ public class GroundStationService extends Service implements AbilityCallback {
         }, delayed, TimeUnit.MILLISECONDS);
     }
 
-    public void getAudioListInfo(ResultCallBack<List<AudioModel>> callBack) {
+    public void getAudioListInfo(ResultCallback<List<AudioModel>> callBack) {
         requestAudioListInfo(callBack, 0);
     }
 
-    private void requestAudioListInfo(ResultCallBack<List<AudioModel>> callBack, final int num) {
+    private void requestAudioListInfo(ResultCallback<List<AudioModel>> callBack, final int num) {
         sendSocketThanReceiveCommand(SocketConstant.GET_RECORD_LIST, 0, () -> {
             receiveResponse(response -> {
                 List<AudioModel> audioModels = formartAudioModel(response);

@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.ground_station.R;
 import com.google.android.material.tabs.TabLayout;
 import com.iflytek.aikitdemo.tool.SPUtil;
-import com.iflytek.aikitdemo.tool.ThreadExtKt;
 import com.lzf.easyfloat.EasyFloat;
 import com.lzf.easyfloat.enums.ShowPattern;
 import com.lzf.easyfloat.enums.SidePattern;
@@ -33,18 +32,15 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.com.example.ground_station.data.model.AudioModel;
 import java.com.example.ground_station.data.model.CommonConstants;
 import java.com.example.ground_station.data.model.UploadFileEvent;
-import java.com.example.ground_station.data.service.ResultCallBack;
+import java.com.example.ground_station.data.service.ResultCallback;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.data.utils.Bus;
 import java.com.example.ground_station.presentation.floating.BaseFloatingHelper;
 import java.com.example.ground_station.presentation.floating.CloseCallback;
 import java.com.example.ground_station.presentation.util.DisplayUtils;
-import java.com.example.ground_station.presentation.util.GsonParser;
 import java.com.example.ground_station.presentation.util.MusicFileUtil;
 import java.util.ArrayList;
 import java.util.List;
-
-import kotlin.Unit;
 
 public class FloatingAudioFileHelper2 extends BaseFloatingHelper {
     private final String tag = "audio_file_tag";
@@ -213,7 +209,7 @@ public class FloatingAudioFileHelper2 extends BaseFloatingHelper {
     }
 
     private void getOriAudioData(AudioBaseListView audioListView) {
-        groundStationService.getAudioListInfo(new ResultCallBack<List<AudioModel>>() {
+        groundStationService.getAudioListInfo(new ResultCallback<List<AudioModel>>() {
             @Override
             public void result(List<AudioModel> audioModelList) {
                 if (audioListView != null) {

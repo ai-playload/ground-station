@@ -26,12 +26,9 @@ import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.example.widget.ScaleImage;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
-import java.com.example.ground_station.data.service.ResultCallBack;
 import java.com.example.ground_station.data.socket.SocketConstant;
-import java.com.example.ground_station.data.socket.UdpSocketClient2;
 import java.com.example.ground_station.data.utils.Utils;
 import java.com.example.ground_station.presentation.util.DisplayUtils;
-import java.util.List;
 
 public class FloatingLightHelper extends BaseFloatingHelper {
     private final String tag = "light_tag";

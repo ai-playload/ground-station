@@ -33,7 +33,7 @@ import com.lzf.easyfloat.utils.InputMethodUtils;
 
 import java.com.example.ground_station.data.model.AudioModel;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
-import java.com.example.ground_station.data.service.ResultCallBack;
+import java.com.example.ground_station.data.service.ResultCallback;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 import java.com.example.ground_station.presentation.ability.AudioFileGenerationCallback;
@@ -300,7 +300,7 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
     }
 
     private void playBpFile(File file) {
-        groundStationService.getAudioListInfo(new ResultCallBack<List<AudioModel>>() {
+        groundStationService.getAudioListInfo(new ResultCallback<List<AudioModel>>() {
             @Override
             public void result(List<AudioModel> audioModelList) {
                 if (audioModelList != null) {

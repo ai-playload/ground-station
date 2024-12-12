@@ -6,15 +6,12 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.blankj.utilcode.util.StringUtils;
-import com.blankj.utilcode.util.ToastUtils;
-
 import org.greenrobot.eventbus.EventBus;
 
 import java.com.example.ground_station.data.model.AudioModel;
 import java.com.example.ground_station.data.model.CommonConstants;
 import java.com.example.ground_station.data.model.MediaEvent;
-import java.com.example.ground_station.data.service.ResultCallBack;
+import java.com.example.ground_station.data.service.ResultCallback;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.util.List;
 
@@ -64,7 +61,7 @@ public class AudioBpListView extends AudioBaseListView {
             if (!audioModel.isDeleteLoading()) {
                 audioModel.setDeleteLoading(true);
                 groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, SocketConstant.PM.PLAY_BUNCH_DELETE);
-                groundStationService.getAudioListInfoDelayed(new ResultCallBack<List<AudioModel>>() {
+                groundStationService.getAudioListInfoDelayed(new ResultCallback<List<AudioModel>>() {
                     @Override
                     public void result(List<AudioModel> audioModelList) {
                         adapter.submitList(audioModelList);

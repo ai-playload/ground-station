@@ -22,10 +22,9 @@ import com.lzf.easyfloat.enums.ShowPattern;
 import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
-import java.com.example.ground_station.data.service.ResultCallBack;
+import java.com.example.ground_station.data.service.ResultCallback;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.data.socket.UdpClientHelper;
-import java.com.example.ground_station.data.socket.UdpSocketClient2;
 import java.com.example.ground_station.data.utils.Utils;
 import java.com.example.ground_station.data.utils.ViewUtils;
 
@@ -176,7 +175,7 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
 
                         driveWdTv = view.findViewById(R.id.drive_temp_tv);
                         headWdTv = view.findViewById(R.id.lamp_holder_tempe_tv);
-                        UdpClientHelper.getInstance().getClient().setCallBack(new ResultCallBack<byte[]>() {
+                        UdpClientHelper.getInstance().getClient().setCallBack(new ResultCallback<byte[]>() {
                             @Override
                             public void result(byte[] bytes) {
                                 disCacllBack(bytes);

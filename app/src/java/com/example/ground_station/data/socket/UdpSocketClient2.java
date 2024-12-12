@@ -1,11 +1,9 @@
 package java.com.example.ground_station.data.socket;
 
-import android.util.Log;
-
 import com.blankj.utilcode.util.ToastUtils;
 import com.example.ground_station.BuildConfig;
 
-import java.com.example.ground_station.data.service.ResultCallBack;
+import java.com.example.ground_station.data.service.ResultCallback;
 import java.com.example.ground_station.data.utils.DataUtils;
 import java.com.example.ground_station.data.utils.Utils;
 import java.io.IOException;
@@ -24,7 +22,7 @@ public class UdpSocketClient2 {
     private DatagramPacket receivePacket;
     private volatile boolean isConnected = false;
     private Thread readThread;
-    private ResultCallBack<byte[]> callBack;
+    private ResultCallback<byte[]> callBack;
 
 //    public UdpSocketClient2(String ip, int prot) {
 //        this.ip = ip;
@@ -144,7 +142,7 @@ public class UdpSocketClient2 {
         }
     }
 
-    public void setCallBack(ResultCallBack<byte[]> callBack) {
+    public void setCallBack(ResultCallback<byte[]> callBack) {
         this.callBack = callBack;
     }
 }

@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Ai Payload</string>
     <string name="webdav_path">http://81.70.35.199/webdav</string>
+    <string name="ciruit">紧急熔断</string>
+    <string name="ciruit_loading">熔断中</string>
+    <string name="ciruit_loading_cancel">取消熔断中...</string>
 </resources>

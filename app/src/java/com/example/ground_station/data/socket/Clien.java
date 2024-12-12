@@ -1,6 +1,6 @@
 package java.com.example.ground_station.data.socket;
 
-import java.com.example.ground_station.data.service.ResultCallBack;
+import java.com.example.ground_station.data.service.ResultCallback;
 
 public interface Clien {
 
@@ -18,5 +18,5 @@ public interface Clien {
 
     void setConnectCallBack(ConnectionCallback callBack);
 
-    void setCallBack(ResultCallBack<byte[]> callBack);
+    void setCallBack(ResultCallback<byte[]> callBack);
 }
