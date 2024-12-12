@@ -27,13 +27,11 @@ import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.data.socket.UdpClientHelper;
 import java.com.example.ground_station.data.socket.UdpSocketClient2;
 import java.com.example.ground_station.data.utils.Utils;
+import java.com.example.ground_station.data.utils.ViewUtils;
 
 public class FloatingNewLightHelper extends BaseFloatingHelper {
     private final String tag = "light_tag";
     private final String TAG = "FloatingLightHelper";
-    private boolean isLighting = false;
-    private boolean isFlashing = false;
-    private boolean isRedBlueLighting = false;
     private TextView setkValueTv;
     private TextView driveWdTv;
     private TextView headWdTv;
@@ -59,29 +57,12 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                         view.findViewById(R.id.flashing_light_btn).setOnClickListener(v -> {
                             v.setSelected(!v.isSelected());
                             sendSwitchInstrunt(SocketConstant.EXPLOSION_FLASH, v.isSelected());
-
-//                            if (isBound) {
-//                                if (isFlashing) {
-//                                    groundStationService.sendUdpSocketCommand(SocketConstant.EXPLOSION_FLASH, 0);
-//                                } else {
-//                                    groundStationService.sendUdpSocketCommand(SocketConstant.EXPLOSION_FLASH, 1);
-//                                }
-//                                isFlashing = !isFlashing;
-//                            }
                         });
 
 
                         view.findViewById(R.id.red_blue_light_btn).setOnClickListener(v -> {
                             v.setSelected(!v.isSelected());
                             sendSwitchInstrunt(SocketConstant.RED_BLUE_FLASH, v.isSelected());
-//                            if (isBound) {
-//                                if (isRedBlueLighting) {
-//                                    groundStationService.sendUdpSocketCommand(SocketConstant.RED_BLUE_FLASH, 0);
-//                                } else {
-//                                    groundStationService.sendUdpSocketCommand(SocketConstant.RED_BLUE_FLASH, 1);
-//                                }
-//                                isRedBlueLighting = !isRedBlueLighting;
-//                            }
                         });
 
                         AppCompatSeekBar seekBar = view.findViewById(R.id.seek_bar);
@@ -103,6 +84,9 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                                 int progress = seekBar.getProgress();
                                 SPUtil.INSTANCE.putBase("light_progress", progress);
                                 UdpClientHelper.getInstance().send(SocketConstant.BRIGHTNESS, progress);
+                                if (headWdValue > 60 && progress > 40) {
+                                    ToastUtils.showLong("温度过高，降低亮度");
+                                }
                                 Log.d(TAG, "progress value: " + progress);
                             }
                         });
@@ -199,11 +183,8 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                             }
                         });
 
-                        requestWd();
-
-
                         View testWdBtn = view.findViewById(R.id.testLightBtn);
-                        testWdBtn.setVisibility(BuildConfig.DEBUG ? View.VISIBLE : View.GONE);
+                        ViewUtils.setVisibility(testWdBtn, BuildConfig.DEBUG);
                         testWdBtn.setOnClickListener(view1 -> {
                             requestWd();
                         });
@@ -222,7 +203,7 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
 
                     @Override
                     public void show(@NonNull View view) {
-
+                        requestWd();
                     }
 
                     @Override
@@ -251,12 +232,6 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
         UdpClientHelper.getInstance().send(SocketConstant.LIGHT, open ? 1 : 0);
     }
 
-    @Override
-    public void onSuccessConnected() {
-        super.onSuccessConnected();
-        requestWd();
-    }
-
     private void updateUISeekValueTv(int volume) {
         if (setkValueTv != null) {
             setkValueTv.setText(volume + "%");
@@ -277,6 +252,9 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                     Byte v2 = data[5];
                     if (v == SocketConstant.EXPLOSION_WD_HEAD && v2 != headWdValue) {//灯头温度
                         headWdValue = v2;
+                        if (headWdValue > 60) {
+                            ToastUtils.showLong("温度过高，降低亮度");
+                        }
                         if (headWdTv != null && v != null) {
                             headWdTv.post(new Runnable() {
                                 @Override

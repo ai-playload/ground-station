@@ -159,10 +159,11 @@
     </FrameLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
+        android:paddingHorizontal="24dp"
         android:orientation="horizontal">
 
         <TextView
@@ -171,6 +172,7 @@
             android:layout_height="33dp"
             android:background="@drawable/shape_general_bg"
             android:gravity="center"
+            android:visibility="gone"
             android:text="驱动温度： --  ℃"
             android:textColor="#ffe2e6f2"
             android:textSize="13sp" />
@@ -179,7 +181,6 @@
             android:id="@+id/lamp_holder_tempe_tv"
             android:layout_width="129dp"
             android:layout_height="33dp"
-            android:layout_marginLeft="12dp"
             android:background="@drawable/shape_general_bg"
             android:gravity="center"
             android:text="驱动温度： --  ℃"
@@ -196,10 +197,11 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/red_blue_light_btn"
         android:layout_below="@+id/open_light_btn"
-        android:layout_marginLeft="16dp"
+        android:layout_marginLeft="24dp"
         android:background="#fa0"
         android:layout_marginTop="4dp"
         android:text="获取温度"
+        android:visibility="gone"
         android:textColor="@color/white"
         android:textSize="12sp" />
 
@@ -210,6 +212,7 @@
         android:orientation="horizontal">
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
