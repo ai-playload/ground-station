@@ -152,7 +152,7 @@ public class FloatingWindowHelper {
                 changeCloseBackground();
             });
         } else if (selectedBtn == detectorAlarmBtn) {
-            new FloatingNewDescentHelper().showFloatingSettings(selectedBtn.getContext(), () -> {
+            new FloatingNewDescentHelper2().showFloatingSettings(selectedBtn.getContext(), () -> {
                 changeCloseBackground();
             });
         }

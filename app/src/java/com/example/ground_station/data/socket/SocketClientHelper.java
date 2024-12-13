@@ -4,6 +4,9 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.blankj.utilcode.util.ThreadUtils;
+import com.blankj.utilcode.util.TimeUtils;
+import com.blankj.utilcode.util.ToastUtils;
+import com.example.ground_station.BuildConfig;
 
 import java.com.example.ground_station.data.service.ResultCallback;
 import java.com.example.ground_station.data.utils.DataUtils;
@@ -16,6 +19,8 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -175,9 +180,61 @@ public class SocketClientHelper implements Clien {
         });
     }
 
+    int t;
     public void send(byte msgId2, int... payload) {
         send(SendUtils.toData(msgId2, payload));
+        if (!filtSend(msgId2)) {
+            if (BuildConfig.DEBUG) {
+                try {
+                    String hexString = Integer.toHexString(msgId2);
+                    ToastUtils.showShort("" + hexString);
+
+                    String pv = "";
+                    if (payload != null && payload.length > 0) {
+                        int p = payload[0];
+                        pv = Integer.toHexString(Math.abs(p));
+                        if (pv.length() == 1) {
+                            pv = "0" + pv;
+                        }
+                        if (p < 0) {
+                            pv = "-" + pv;
+                        }
+                    }
+                    fsMap.put(TimeUtils.getNowString() + t++, hexString + pv);
+
+                    resultCallback.result(fsMap);
+                } catch (Exception e) {
+                }
+            }
+        }
     }
+
+    byte[] filtSend = new byte[]{};
+//    byte[] filtSend = new byte[]{SocketConstant.PARACHUTE_3E, SocketConstant.PARACHUTE_3C};
+
+    private boolean filtSend(byte msgId2) {
+        for (byte b : filtSend) {
+            if (b == msgId2) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    ResultCallback<Map> resultCallback;
+
+    public void setResultCallback(ResultCallback resultCallback) {
+        this.resultCallback = resultCallback;
+    }
+
+    public Map<String, String> fsMap = new LinkedHashMap<String, String>() {
+
+        @Override
+        protected boolean removeEldestEntry(Entry<String, String> eldest) {
+            super.removeEldestEntry(eldest);
+            return this.size() > 8;
+        }
+    };
 
 
     @Override

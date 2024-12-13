@@ -9,4 +9,9 @@ public class ViewUtils {
             v.setVisibility(visiblity ? View.VISIBLE :View.GONE);
         }
     }
+    public static void setVisibility(View v, boolean visiblity) {
+        if (v != null) {
+            v.setVisibility(visiblity ? View.VISIBLE :View.GONE);
+        }
+    }
 }

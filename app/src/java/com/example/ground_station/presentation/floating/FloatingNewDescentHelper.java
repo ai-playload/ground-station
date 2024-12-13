@@ -151,8 +151,8 @@ public class FloatingNewDescentHelper extends BaseFloatingHelper {
             helper.sendInstruct(SocketConstant.SERVO_WEIGHT_RESET_LENGHT);
         });
 
-        int savedSpeedProgress = SPUtil.INSTANCE.getInt("speed_progress", 0);
-        int savedLengthProgress = SPUtil.INSTANCE.getInt("length_progress", 0);
+        int savedSpeedProgress = SPUtil.INSTANCE.getInt("speed_progress", 1);
+        int savedLengthProgress = SPUtil.INSTANCE.getInt("length_progress", 1);
         speedInputView.setProgress(savedSpeedProgress);
         lengthBar.setProgress(savedLengthProgress);
 
