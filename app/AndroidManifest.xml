@@ -33,6 +33,7 @@
         android:roundIcon="@mipmap/ic_main"
         android:supportsRtl="true"
         android:theme="@style/Theme.Groundstation"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
             android:name="java.com.example.ground_station.presentation.screen.MainActivity"

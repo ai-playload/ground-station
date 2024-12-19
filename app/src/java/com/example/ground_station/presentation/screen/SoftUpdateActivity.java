@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import com.example.ground_station.BuildConfig;
 import com.example.ground_station.R;
 
+import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.presentation.fun.file.FileListInfoView;
 import java.com.example.ground_station.presentation.fun.file.PathConstants;
 import java.com.example.ground_station.presentation.util.ViewUtils;
@@ -29,7 +30,8 @@ public class SoftUpdateActivity extends ComponentActivity {
         fliView0 = (FileListInfoView) findViewById(R.id.fileListInfoView0);
         fliView1 = (FileListInfoView) findViewById(R.id.fileListInfoView1);
 
-        initContentView(fliView0, PathConstants.TAG_TEST_FUN);
+        initContentView(fliView0, "data/play/");
+//        initContentView(fliView0, PathConstants.TAG_TEST_FUN);
         initContentView(fliView1, PathConstants.TAG_TEST_HISTORY);
 
         ViewUtils.setVisible(fliView1, false);
@@ -44,7 +46,9 @@ public class SoftUpdateActivity extends ComponentActivity {
     }
 
     private void initContentView(FileListInfoView fv, String tag) {
-        String rootPath = this.getResources().getString(R.string.webdav_path) + "/apk/";
+        ShoutcasterConfig.DeviceInfo mediaInfo = ShoutcasterConfig.getMediaInfo();
+        String rootPath = "http://" + mediaInfo.getIp() + "/webdav/";
+//        String rootPath = this.getResources().getString(R.string.webdav_path) + "/apk/";
         rootPath += BuildConfig.DEBUG ? tag : PathConstants.TAG_ONLINE;
         fv.setRootPath(rootPath);
         fv.requestFileList(rootPath);

@@ -19,5 +19,7 @@ public class SettingActivity extends ComponentActivity {
         ((View) findViewById(R.id.softUpdateBtn)).setOnClickListener(view -> {
                 startActivity(new Intent(SettingActivity.this, SoftUpdateActivity.class));
         });
+
+
     }
 }

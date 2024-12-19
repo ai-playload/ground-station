@@ -174,6 +174,9 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation("io.github.cymchad:BaseRecyclerViewAdapterHelper:3.0.14")
     implementation("com.squareup.okhttp3:okhttp:4.9.0")
-
+// 导入ID3Tag库
+//    implementation 'org.jaudiotagger:jaudiotagger:2.2.4'
+//    implementation 'org.jaudiotagger:jaudiotagger:2.2.6'
+    implementation(files("libs/jaudiotagger-2.0.2.jar"))
 //    implementation "com.github.recruit-lifestyle:FloatingView:2.4.4"
 }

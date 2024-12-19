@@ -22,6 +22,7 @@ import com.lzf.easyfloat.EasyFloat;
 import com.lzf.easyfloat.enums.ShowPattern;
 import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
+import com.thegrizzlylabs.sardineandroid.DavResource;
 
 import java.com.example.ground_station.data.model.AudioModel;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
@@ -30,6 +31,11 @@ import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 import java.com.example.ground_station.presentation.floating.adapter.AudioAdapter;
 import java.com.example.ground_station.presentation.floating.dialog.FloatingDeleteDialog;
+import java.com.example.ground_station.presentation.fun.file.FileInfoUtils;
+import java.com.example.ground_station.presentation.fun.file.FileLoadCallBack;
+import java.com.example.ground_station.presentation.fun.file.PathConstants;
+import java.com.example.ground_station.presentation.fun.file.SardineCallBack;
+import java.com.example.ground_station.presentation.fun.file.SardineHelper;
 import java.com.example.ground_station.presentation.util.GsonParser;
 import java.com.example.ground_station.presentation.util.MusicFileUtil;
 import java.util.ArrayList;
@@ -250,41 +256,20 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
         remoteRecyclerView.setAdapter(remoteAdapter);
     }
 
+
     private void getRemoteAudioList() {
-        groundStationService.sendSocketThanReceiveCommand(SocketConstant.GET_RECORD_LIST, 0, () -> {
-            ThreadExtKt.mainThread(500, () -> {
-                groundStationService.receiveResponse(response -> {
-                    Log.d(TAG, "Received response before: " + response);
-
-                    if (response != null && response.length() > 1) {
-                        // 查找第一个 '[' 和最后一个 ']' 的位置
-                        int firstIndex = response.indexOf("[");
-                        int lastIndex = response.lastIndexOf("]");
-
-                        // 如果 '[' 和 ']' 都存在，且顺序正确
-                        if (firstIndex != -1 && lastIndex != -1 && firstIndex < lastIndex) {
-                            // 截取从 '[' 到 ']' 之间的内容
-                            response = response.substring(firstIndex, lastIndex + 1);  // 保留到最后的 ']'
-                        }
-
-                        Log.d(TAG, "Received response after modification: " + response);
-
-                        try {
-                            GsonParser gsonParser = new GsonParser();
-                            List<AudioModel> audioModelList = getAllRemoteAudioToAudioModel(gsonParser.parseAudioFileList(response));
-                            remoteAdapter.submitList(audioModelList);
-
-                        } catch (Exception e) {
-                            Log.e(TAG, " error: " + e);
-                        }
-                    }
-                });
-
-                return Unit.INSTANCE;
-            });
+        groundStationService.getWebdavFiles(new SardineCallBack<List<AudioModel>>() {
+            @Override
+            public void getResult(List<AudioModel> audioModelList) {
+                remoteAdapter.submitList(audioModelList);
+                // 解析ID3标签
+//                AudioFile audioFile = AudioFileIO.read(audioFile);
+//                Tag tag = audioFile.getTag();
+//                String title = tag.getFirst(FieldKey.TITLE); // 获取歌曲名称
+//                String artist = tag.getFirst(FieldKey.ARTIST); // 获取歌手
+            }
         });
     }
-
 
     public void initRecyclerView(RecyclerView recyclerView) {
         adapter = new AudioAdapter((audioModel, isPlaying, isPlayingPosition, position) -> {

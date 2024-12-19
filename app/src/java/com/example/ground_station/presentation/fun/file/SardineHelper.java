@@ -5,28 +5,30 @@ import android.util.Log;
 
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ThreadUtils;
+import com.blankj.utilcode.util.Utils;
 import com.thegrizzlylabs.sardineandroid.DavResource;
 import com.thegrizzlylabs.sardineandroid.Sardine;
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine;
 
+import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class SardineHelper {
 
     private static final String TAG = "SardineHelper";
-    public static String HOST_URL = "http://81.70.35.199";
+    public static String HOST_URL = "http://" + ShoutcasterConfig.getMediaInfo().getIp();
 
     private static Sardine sardine;
-    private final Context context;
     private String path;
 
     public SardineHelper(Context context) {
-        this.context = context;
+        HOST_URL = "http://" + ShoutcasterConfig.getMediaInfo().getIp();
     }
 
     public String getPath() {
@@ -39,6 +41,26 @@ public class SardineHelper {
             @Override
             public Objects doInBackground() throws Throwable {
                 getSardine().put(path, data);
+                return null;
+            }
+
+            @Override
+            public void onSuccess(Objects result) {
+
+            }
+        });
+    }
+
+    public void upLoad(String path, String  filePath, SardineCallBack<String> callBack) {
+        ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<Objects>() {
+
+            @Override
+            public Objects doInBackground() throws Throwable {
+//                InputStream filePathForN = FilePathUtils.getFilePathForN(uri, Utils.getApp());
+                InputStream filePathForN = new FileInputStream(filePath) ;
+                byte[] byteArray = FilePathUtils.toByteArray(filePathForN);
+                getSardine().put(path, byteArray);
+                callBack.getResult(filePath);
                 return null;
             }
 
@@ -75,15 +97,21 @@ public class SardineHelper {
         ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<List<DavResource>>() {
             @Override
             public List<DavResource> doInBackground() throws Throwable {
-                List<DavResource> list = getSardine().list(path);
-                if (list != null && list.size() > 1) {
-                    DavResource davResource = list.get(0);
-                    String path2 = davResource.getPath();
-                    list.remove(0);
-                    if (Objects.equals(path2, "")) {
+                try{
+                    List<DavResource> list = getSardine().list(path);
+                    if (list != null && list.size() > 1) {
+                        DavResource davResource = list.get(0);
+                        String path2 = davResource.getPath();
+                        list.remove(0);
+                        if (Objects.equals(path2, "")) {
+                        }
                     }
+                    return list;
+                }catch (Exception e) {
+                    String message = e.getMessage();
+                    Log.e("webdav:ttkx", message);
                 }
-                return list;
+                return new ArrayList<>();
             }
 
             @Override
@@ -107,7 +135,8 @@ public class SardineHelper {
         synchronized (SardineHelper.class) {
             if (sardine == null) {
                 sardine = new OkHttpSardine();
-                sardine.setCredentials("sftp", "456sftp", true);
+                sardine.setCredentials("sz", "456", true);
+//                sardine.setCredentials("sftp", "456sftp", true);
             }
             return sardine;
         }

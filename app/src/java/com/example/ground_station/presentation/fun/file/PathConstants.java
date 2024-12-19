@@ -1,8 +1,11 @@
 package java.com.example.ground_station.presentation.fun.file;
 
+import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.Utils;
 import com.example.ground_station.BuildConfig;
 
+import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.io.File;
 
 public class PathConstants {
@@ -24,5 +27,17 @@ public class PathConstants {
 
     public static File getInstallApkFile(String name) {
         return new File(getInstallApkParentFile(), name);
+    }
+
+
+    public static String getPalyPath() {
+        String rootPath = getWebdavRootPath();
+        return rootPath + "data/play/";
+    }
+
+    private static @NonNull String getWebdavRootPath() {
+        ShoutcasterConfig.DeviceInfo mediaInfo = ShoutcasterConfig.getMediaInfo();
+        String rootPath = "http://" + mediaInfo.getIp() + "/webdav/";
+        return rootPath;
     }
 }

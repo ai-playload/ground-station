@@ -15,6 +15,7 @@ import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.iflytek.aikitdemo.tool.ThreadExtKt;
 import com.lzf.easyfloat.EasyFloat;
+import com.thegrizzlylabs.sardineandroid.DavResource;
 
 import org.freedesktop.gstreamer.GStreamer;
 
@@ -33,6 +34,10 @@ import java.com.example.ground_station.presentation.ability.AbilityConstant;
 import java.com.example.ground_station.presentation.ability.AudioFileGenerationCallback;
 import java.com.example.ground_station.presentation.ability.tts.TtsHelper2;
 import java.com.example.ground_station.presentation.floating.FloatingWindowHelper;
+import java.com.example.ground_station.presentation.fun.file.FileInfoUtils;
+import java.com.example.ground_station.presentation.fun.file.PathConstants;
+import java.com.example.ground_station.presentation.fun.file.SardineCallBack;
+import java.com.example.ground_station.presentation.fun.file.SardineHelper;
 import java.com.example.ground_station.presentation.util.GsonParser;
 import java.util.ArrayList;
 import java.util.List;
@@ -271,7 +276,9 @@ public class GroundStationService extends Service implements AbilityCallback {
 //            });
 //        }
     }
+
     ExecutorService fixedPool = Executors.newSingleThreadExecutor();
+
     public void sendUdpSocketCommand(byte msgId2, int payload) {
         fixedPool.execute(new ThreadUtils.SimpleTask<Object>() {
 
@@ -298,6 +305,19 @@ public class GroundStationService extends Service implements AbilityCallback {
 
     public void sendSocketThanReceiveCommand(byte msgId2, int payload, Runnable callback) {
         socketClientManager.sendSocketThanReceiveCommand(msgId2, payload, callback);
+    }
+
+    private SardineHelper sardineHelper = new SardineHelper(null);
+
+    public void getWebdavFiles(SardineCallBack<List<AudioModel>> callBack) {
+        String path = PathConstants.getPalyPath();
+        sardineHelper.list(path, new SardineCallBack<List<DavResource>>() {
+            @Override
+            public void getResult(List<DavResource> list) {
+                List<AudioModel> audioModelList = FileInfoUtils.getAllRemoteAudioToAudioModel(list);
+                callBack.getResult(audioModelList);
+            }
+        });
     }
 
     public void getAudioListInfoDelayed(ResultCallback<List<AudioModel>> callBack, int size, long delayed) {

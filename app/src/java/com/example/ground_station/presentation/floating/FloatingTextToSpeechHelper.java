@@ -39,6 +39,9 @@ import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 import java.com.example.ground_station.presentation.ability.AudioFileGenerationCallback;
 import java.com.example.ground_station.presentation.ability.tts.TtsHelper2;
+import java.com.example.ground_station.presentation.fun.file.PathConstants;
+import java.com.example.ground_station.presentation.fun.file.SardineCallBack;
+import java.com.example.ground_station.presentation.fun.file.SardineHelper;
 import java.com.example.ground_station.presentation.util.TCPFileUploader;
 import java.io.File;
 import java.util.List;
@@ -269,20 +272,29 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
         Activity topActivity = ActivityUtils.getTopActivity();
         if (topActivity != null) {
             String filePath = file.getPath();
-            uploader.uploadFile(ActivityUtils.getTopActivity(), filePath, (progress -> {
-                Log.d("uploadAudioFile", "文件：" + filePath + "  progress: " + progress);
-                if (progress == 100) {
-                    ToastUtils.showShort("文件上传成功   文件名：" + file.getName());
+//            uploader.uploadFile(ActivityUtils.getTopActivity(), filePath, (progress -> {
+//                Log.d("uploadAudioFile", "文件：" + filePath + "  progress: " + progress);
+//                if (progress == 100) {
+//                    ToastUtils.showShort("文件上传成功   文件名：" + file.getName());
+//                    playBpFile(file);
+//                }
+//            }));
+            SardineHelper sardineHelper = new SardineHelper(null);
+            String palyPath = PathConstants.getPalyPath();
+            palyPath += file.getName();
+            sardineHelper.upLoad(palyPath, file.getPath(), new SardineCallBack<String>() {
+                @Override
+                public void getResult(String s) {
                     playBpFile(file);
                 }
-            }));
+            });
         }
     }
 
     private void playBpFile(File file) {
-        groundStationService.getAudioListInfo(new ResultCallback<List<AudioModel>>() {
+        groundStationService.getWebdavFiles(new SardineCallBack<List<AudioModel>>() {
             @Override
-            public void result(List<AudioModel> audioModelList) {
+            public void getResult(List<AudioModel> audioModelList) {
                 if (audioModelList != null) {
                     String name = file.getName();
                     for (int i = 0; i < audioModelList.size(); i++) {
@@ -296,12 +308,31 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                         }
 
                     }
-                    Log.d("uploadAudioFile", "文件：" + name + "  循环播放指令fileIndex: " + -1);
-                } else {
-                    Log.d("uploadAudioFile", "文件：" + "null" + "  循环播放指令fileIndex: ");
                 }
             }
         });
+//        groundStationService.getAudioListInfo(new ResultCallback<List<AudioModel>>() {
+//            @Override
+//            public void result(List<AudioModel> audioModelList) {
+//                if (audioModelList != null) {
+//                    String name = file.getName();
+//                    for (int i = 0; i < audioModelList.size(); i++) {
+//                        AudioModel audioModel = audioModelList.get(i);
+//                        String audioFileName = audioModel.getAudioFileName();
+//                        if (StringUtils.equals(audioFileName, name)) {
+//                            int fileIndex = i;
+//                            send(SocketConstant.PLAY_RECORD_Bp, fileIndex);
+//                            Log.d("uploadAudioFile", "文件：" + name + "  循环播放指令fileIndex: " + fileIndex);
+//                            return;
+//                        }
+//
+//                    }
+//                    Log.d("uploadAudioFile", "文件：" + name + "  循环播放指令fileIndex: " + -1);
+//                } else {
+//                    Log.d("uploadAudioFile", "文件：" + "null" + "  循环播放指令fileIndex: ");
+//                }
+//            }
+//        });
     }
 
     public void send(byte msgId2, int... payload) {
