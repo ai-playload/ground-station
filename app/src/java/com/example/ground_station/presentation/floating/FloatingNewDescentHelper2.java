@@ -2,6 +2,7 @@ package java.com.example.ground_station.presentation.floating;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.Message;
@@ -18,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 
+import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.TimeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.example.ground_station.BuildConfig;
@@ -487,12 +489,20 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
         Application context = com.blankj.utilcode.util.Utils.getApp();
         if (circuiStatus == DeviceStatus.LOADING) {
             circuitButton.setText(context.getString(R.string.ciruit_loading));
-            circuitButton.setBackgroundResource(R.drawable.custom_btn_bg_fa0);
+            setTopDrawable(circuitButton, R.drawable.urgent_selector_open);
         } else {
             circuiStatus = DeviceStatus.NORMAL;
             circuitButton.setText(context.getString(R.string.ciruit));
-            circuitButton.setBackgroundResource(isSafetyBtnEnable ? R.drawable.custom_btn_bg : R.drawable.custom_btn_disable_bg);
+            setTopDrawable(circuitButton, isSafetyBtnEnable ?
+                    R.drawable.urgent_selector_unselected : R.drawable.urgent_selector);
         }
+    }
+
+    private void setTopDrawable(TextView tv, int drawableId) {
+        Drawable drawable = tv.getContext().getResources().getDrawable(drawableId);
+        int w = ConvertUtils.dp2px(30);
+        drawable.setBounds(0,0, w, w);
+        tv.setCompoundDrawables(null, drawable, null, null);
     }
 
     private String formartJs(Map<String, String> jsMap) {

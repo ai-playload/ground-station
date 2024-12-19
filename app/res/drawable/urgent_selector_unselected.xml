@@ -3,5 +3,5 @@
     <!-- 按下状态的图标 -->
     <item android:state_pressed="true" android:drawable="@drawable/ic_urgent_selected"/>
     <!-- 默认状态的图标 -->
-    <item android:drawable="@drawable/ic_urgent_close"/>
+    <item android:drawable="@drawable/ic_urgent_unselected"/>
 </selector>
