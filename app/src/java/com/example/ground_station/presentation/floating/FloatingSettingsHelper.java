@@ -137,7 +137,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             safetyButton = view.findViewById(R.id.safety_button);
                             Button brakingButton = view.findViewById(R.id.braking_tv);
                             circuitButton = view.findViewById(R.id.circuit_tv);
-                            Button relieveButton = view.findViewById(R.id.relieve_tv);
+                            TextView relieveButton = view.findViewById(R.id.relieve_tv);
                             Button upActionButton = view.findViewById(R.id.up_action);
                             Button downActionButton = view.findViewById(R.id.down_action);
                             Button stopActionButton = view.findViewById(R.id.stop_action);
@@ -286,7 +286,7 @@ public class FloatingSettingsHelper extends BaseFloatingHelper {
                             ViewUtils.setVisibility(zoneTv, debug);
                             ViewUtils.setVisibility(testUpdateBtn, debug);
                             ViewUtils.setVisibility(relieveButton, debug);
-                            ViewUtils.setVisibility(textSendMuiltBtn, debug);
+//                            ViewUtils.setVisibility(textSendMuiltBtn, debug);
                             ViewUtils.setVisibility(view.findViewById(R.id.testHintRoot), debug);
                         }
                     }

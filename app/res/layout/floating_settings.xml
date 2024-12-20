@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rlContent"
-    android:layout_width="300dp"
+    android:layout_width="388dp"
     android:layout_height="wrap_content"
     android:background="@drawable/floating_layout_bg_shape"
     android:orientation="vertical">
@@ -295,22 +295,26 @@
         android:text="完全收线"
         android:textColor="#fff" />
 
-    <Button
+    <TextView
         android:id="@+id/relieve_tv"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/circuit_tv"
-        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@+id/lenghtResetBtn"
+        android:background="@drawable/custom_btn_bg"
+        android:layout_alignTop="@+id/lenghtResetBtn"
+        android:layout_marginLeft="1dp"
         android:text="更新长度"
         android:visibility="visible" />
     <TextView
         android:id="@+id/zoneTv"
         android:layout_width="88dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="23dp"
-        android:layout_toRightOf="@+id/circuit_tv"
+        android:layout_marginLeft="2dp"
+        android:layout_toRightOf="@+id/stop_action"
         android:background="@drawable/custom_btn_bg"
-        android:layout_below="@+id/circuit_tv"
+        android:layout_alignTop="@+id/stop_action"
         android:gravity="center"
         android:paddingHorizontal="15dp"
         android:paddingVertical="10dp"
