@@ -5,6 +5,7 @@
     android:layout_width="388dp"
     android:layout_height="wrap_content"
     android:background="@drawable/floating_layout_bg_shape"
+    android:paddingBottom="15dp"
     android:orientation="vertical">
 
     <ImageView
@@ -306,7 +307,7 @@
         android:layout_alignTop="@+id/lenghtResetBtn"
         android:layout_marginLeft="1dp"
         android:text="更新长度"
-        android:visibility="visible" />
+        android:visibility="gone" />
     <TextView
         android:id="@+id/zoneTv"
         android:layout_width="88dp"
@@ -321,7 +322,7 @@
         android:layout_marginTop="5dp"
         android:text="零位学习"
         android:textColor="#fff"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/textSendBtn"
