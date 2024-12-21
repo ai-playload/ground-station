@@ -180,6 +180,11 @@ public class SocketClientHelper implements Clien {
         });
     }
 
+    public void send(String msgId2, String... payload) {
+        byte[] data = SendUtils.toData(msgId2, payload);
+        send(data);
+    }
+
     int t;
     public void send(byte msgId2, int... payload) {
         send(SendUtils.toData(msgId2, payload));

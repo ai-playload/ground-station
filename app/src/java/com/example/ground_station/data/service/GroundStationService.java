@@ -24,7 +24,7 @@ import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.socket.ConnectionCallback;
 import java.com.example.ground_station.data.socket.ResponseCallback;
 import java.com.example.ground_station.data.socket.SocketClient;
-import java.com.example.ground_station.data.socket.SocketClientManager;
+import java.com.example.ground_station.data.socket.SocketClientHelper;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.data.socket.UdpSocketClient2;
 import java.com.example.ground_station.data.socket.UdpSocketClientManager;
@@ -75,7 +75,7 @@ public class GroundStationService extends Service implements AbilityCallback {
 
     public boolean isShouting;
     private TtsHelper2 aiSoundHelper;
-    private SocketClientManager socketClientManager;
+//    private SocketClientManager socketClientManager;
     private UdpSocketClientManager udpSocketClientManager;
     private ShoutcasterConfig config;
     private PlaybackCallback playbackCallback;
@@ -93,10 +93,10 @@ public class GroundStationService extends Service implements AbilityCallback {
         return aiSoundHelper;
     }
 
-    public boolean isConnectedSocket() {
-        SocketClientManager manager = getSocketClientManager();
-        return manager != null && manager.isConnected;
-    }
+//    public boolean isConnectedSocket() {
+////        SocketClientManager manager = getSocketClientManager();
+////        return manager != null && manager.isConnected;
+//    }
 
     public class LocalBinder extends Binder {
         public GroundStationService getService() {
@@ -110,9 +110,9 @@ public class GroundStationService extends Service implements AbilityCallback {
         nativeClassInit();
     }
 
-    public SocketClientManager getSocketClientManager() {
-        return socketClientManager;
-    }
+//    public SocketClientManager getSocketClientManager() {
+//        return socketClientManager;
+//    }
 
     public UdpSocketClientManager getUdpSocketClientManager() {
         return udpSocketClientManager;
@@ -251,10 +251,10 @@ public class GroundStationService extends Service implements AbilityCallback {
     private void connectSocket(ConnectionCallback callback) {
         ShoutcasterConfig.DeviceInfo controller = config.getMediaInfo();
 
-        if (socketClientManager == null) {
-            socketClientManager = new SocketClientManager(getApplicationContext(), controller.getIp(), controller.getPort());
-        }
-        socketClientManager.connect(controller, callback);
+//        if (socketClientManager == null) {
+//            socketClientManager = new SocketClientManager(getApplicationContext(), controller.getIp(), controller.getPort());
+//        }
+//        socketClientManager.connect(controller, callback);
 
 //        connectUdpSocket();
     }
@@ -296,15 +296,18 @@ public class GroundStationService extends Service implements AbilityCallback {
     }
 
     public void sendSocketCommand(byte msgId2, int payload) {
-        socketClientManager.sendSocketCommand(msgId2, payload);
+        SocketClientHelper.getMedia().send(msgId2, payload);
+//        socketClientManager.sendSocketCommand(msgId2, payload);
     }
 
     public void sendRemoteAudioCommand(byte msgId2, int payload, int playState) {
-        socketClientManager.sendRemoteAudioCommand(msgId2, payload, playState);
+        SocketClientHelper.getMedia().send(msgId2, payload, playState);
+//        socketClientManager.sendRemoteAudioCommand(msgId2, payload, playState);
     }
 
     public void sendSocketThanReceiveCommand(byte msgId2, int payload, Runnable callback) {
-        socketClientManager.sendSocketThanReceiveCommand(msgId2, payload, callback);
+        SocketClientHelper.getMedia().send(msgId2, payload);
+//        socketClientManager.sendSocketThanReceiveCommand(msgId2, payload, callback);
     }
 
     private SardineHelper sardineHelper = new SardineHelper(null);
@@ -327,31 +330,31 @@ public class GroundStationService extends Service implements AbilityCallback {
     }
 
     private void requestAudioListInfo(ResultCallback<List<AudioModel>> callBack, int size, long delayed, int num) {
-        ThreadUtils.executeByIoWithDelay(new ThreadUtils.SimpleTask<List<AudioModel>>() {
-            @Override
-            public List<AudioModel> doInBackground() throws Throwable {
-                SocketClient socketClient = socketClientManager.getSocketClient();
-                socketClient.sendInstruct(SocketConstant.GET_RECORD_LIST, 0);
-                String response = socketClient.receiveResponse(2048);
-                List<AudioModel> audioModels = formartAudioModel(response);
-                return audioModels;
-            }
-
-            @Override
-            public void onSuccess(List<AudioModel> audioModels) {
-                Log.d(TAG, "ttkx getAudioListInfoDelayed:  结果 audioModels:" + (audioModels == null ? "null" : String.valueOf(audioModels.size())));
-                if (audioModels != null && audioModels.size() != size) {
-                    callBack.result(audioModels);
-                } else {
-                    int newNum = num + 1;
-                    if (newNum >= 4) {
-                        callBack.result(null);
-                    } else {
-                        getAudioListInfoDelayed(callBack, size, delayed);
-                    }
-                }
-            }
-        }, delayed, TimeUnit.MILLISECONDS);
+//        ThreadUtils.executeByIoWithDelay(new ThreadUtils.SimpleTask<List<AudioModel>>() {
+//            @Override
+//            public List<AudioModel> doInBackground() throws Throwable {
+//                SocketClient socketClient = socketClientManager.getSocketClient();
+//                socketClient.sendInstruct(SocketConstant.GET_RECORD_LIST, 0);
+//                String response = socketClient.receiveResponse(2048);
+//                List<AudioModel> audioModels = formartAudioModel(response);
+//                return audioModels;
+//            }
+//
+//            @Override
+//            public void onSuccess(List<AudioModel> audioModels) {
+//                Log.d(TAG, "ttkx getAudioListInfoDelayed:  结果 audioModels:" + (audioModels == null ? "null" : String.valueOf(audioModels.size())));
+//                if (audioModels != null && audioModels.size() != size) {
+//                    callBack.result(audioModels);
+//                } else {
+//                    int newNum = num + 1;
+//                    if (newNum >= 4) {
+//                        callBack.result(null);
+//                    } else {
+//                        getAudioListInfoDelayed(callBack, size, delayed);
+//                    }
+//                }
+//            }
+//        }, delayed, TimeUnit.MILLISECONDS);
     }
 
     public void getAudioListInfo(ResultCallback<List<AudioModel>> callBack) {
@@ -421,19 +424,19 @@ public class GroundStationService extends Service implements AbilityCallback {
     }
 
     public void receiveResponse(ResponseCallback callback) {
-        socketClientManager.receiveResponse(callback);
+//        socketClientManager.receiveResponse(callback);
     }
 
     public void sendSetVolumeCommand(int volume) {
-        socketClientManager.sendSetVolumeCommand(volume);
+//        socketClientManager.sendSetVolumeCommand(volume);
     }
 
     public void sendServoCommand(int direction) {
-        socketClientManager.sendServoCommand(direction);
+//        socketClientManager.sendServoCommand(direction);
     }
 
     public void sendDetectorCommand(int payload) {
-        socketClientManager.sendDetectorCommand(payload);
+//        socketClientManager.sendDetectorCommand(payload);
     }
 
     public void checkConnectionStatus() {
@@ -465,10 +468,10 @@ public class GroundStationService extends Service implements AbilityCallback {
         super.onDestroy();
         nativeFinalize();
 
-        if (socketClientManager != null) {
-            socketClientManager.disconnect();
-            socketClientManager.shutdown();
-        }
+//        if (socketClientManager != null) {
+//            socketClientManager.disconnect();
+//            socketClientManager.shutdown();
+//        }
     }
 
     @Override
@@ -519,19 +522,16 @@ public class GroundStationService extends Service implements AbilityCallback {
         this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, fileIndex, SocketConstant.PM.PLAY_BUNCH_RECOVER_PLAY);
     }
 
-    /**
-     * @param position
-     */
-    public void sendDeleteFileInstruct(int position) {
-        socketClientManager.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, SocketConstant.PM.PLAY_BUNCH_DELETE);
-    }
+
 
     public void sendInstruct(byte msgId2, int... payload) {
-        socketClientManager.sendInstruct(msgId2, payload);
+        SocketClientHelper.getMedia().send(msgId2, payload);
+//        socketClientManager.sendInstruct(msgId2, payload);
     }
 
     public void sendInstruct(String msgId2, String... payload) {
-        socketClientManager.sendInstruct(msgId2, payload);
+        SocketClientHelper.getMedia().send(msgId2, payload);
+//        socketClientManager.sendInstruct(msgId2, payload);
     }
 
     /**

@@ -103,7 +103,8 @@ public class AudioBaseListView extends LinearLayout implements ConnectStateListe
     }
 
     public boolean isConnectedSocket() {
-        return groundStationService != null && groundStationService.isConnectedSocket();
+//        return groundStationService != null && groundStationService.isConnectedSocket();
+        return  false;
     }
 
     protected void send(byte msgId2, int... payload) {

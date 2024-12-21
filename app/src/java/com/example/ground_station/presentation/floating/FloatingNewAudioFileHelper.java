@@ -14,34 +14,28 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.example.ground_station.R;
 import com.google.android.material.tabs.TabLayout;
-import com.iflytek.aikitdemo.tool.SPUtil;
-import com.iflytek.aikitdemo.tool.ThreadExtKt;
 import com.lzf.easyfloat.EasyFloat;
 import com.lzf.easyfloat.enums.ShowPattern;
 import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
-import com.thegrizzlylabs.sardineandroid.DavResource;
 
 import java.com.example.ground_station.data.model.AudioModel;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.socket.SocketClientHelper;
 import java.com.example.ground_station.data.socket.SocketConstant;
+import java.com.example.ground_station.data.utils.Utils;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 import java.com.example.ground_station.presentation.floating.adapter.AudioAdapter;
 import java.com.example.ground_station.presentation.floating.dialog.FloatingDeleteDialog;
 import java.com.example.ground_station.presentation.fun.file.FileInfoUtils;
-import java.com.example.ground_station.presentation.fun.file.FileLoadCallBack;
-import java.com.example.ground_station.presentation.fun.file.PathConstants;
 import java.com.example.ground_station.presentation.fun.file.SardineCallBack;
-import java.com.example.ground_station.presentation.fun.file.SardineHelper;
-import java.com.example.ground_station.presentation.util.GsonParser;
 import java.com.example.ground_station.presentation.util.MusicFileUtil;
+import java.com.example.ground_station.presentation.util.ViewUtils;
 import java.util.ArrayList;
 import java.util.List;
-
-import kotlin.Unit;
 
 public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
 
@@ -121,7 +115,7 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
 //                            send(SocketConstant.AMPLIFIER, 2);
 
                             if (isRemotePlay) {
-                                groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, currentRemoteAudioPosition, 2);
+                                send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, currentRemoteAudioPosition, 2);
                             } else {
                                 send(SocketConstant.STREAMER, 2);//停止播放
                             }
@@ -159,13 +153,8 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 0) {
-                    recyclerView.setVisibility(View.VISIBLE);
-                    remoteRecyclerView.setVisibility(View.GONE);
-                } else {
-                    recyclerView.setVisibility(View.GONE);
-                    remoteRecyclerView.setVisibility(View.VISIBLE);
-                }
+                boolean load = tab.getPosition() == 0;
+                tabPositionChange(load, recyclerView, remoteRecyclerView);
             }
 
             @Override
@@ -196,6 +185,16 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
                 Toast.makeText(recyclerView.getContext(), "请选择文件", Toast.LENGTH_SHORT).show();
                 return;
             }
+            if (isRemotePlay) {
+                List<AudioModel> currentList = remoteAdapter.getCurrentList();
+                if (currentList != null && currentList.size() > position && position >= 0) {
+                    AudioModel audioModel = remoteAdapter.getCurrentItem(position);
+                    if (FileInfoUtils.isBjs(audioModel.getAudioFilePath())) {
+                        ToastUtils.showShort("警报声不可删除");
+                        return;
+                    }
+                }
+            }
 
             new FloatingDeleteDialog().showDeleteDialog(recyclerView.getContext(), new FloatingDeleteDialog.DeleteDialogCallback() {
                 @Override
@@ -214,7 +213,7 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
                         adapter.submitList(allMp3Files);
                     } else {
                         //远程删除
-                        groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 3);
+                        send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 3);
                         getRemoteAudioList();
                     }
                 }
@@ -225,6 +224,13 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
                 }
             });
         });
+        tabLayout.getTabAt(1).select();
+        tabPositionChange(false, recyclerView, remoteRecyclerView);
+    }
+
+    private static void tabPositionChange(boolean load, RecyclerView recyclerView, RecyclerView remoteRecyclerView) {
+        ViewUtils.setVisibility(recyclerView, load);
+        ViewUtils.setVisibility(remoteRecyclerView, !load);
     }
 
     private void initRemoteRecyclerView(RecyclerView remoteRecyclerView) {
@@ -235,25 +241,34 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
                 groundStationService.cancelGstreamerAudioCommand();
             }
 
+            if (FileInfoUtils.isBjs(audioModel.getAudioFilePath())) {
+                helper.send(SocketConstant.PLAY_ALARM, position);
+                return;
+            }else {
+                position -=3;
+            }
+
             currentRemoteAudioPosition = position;
 
             if (isBound) {
                 if (!isPlaying && !isPlayingPosition) {
-                    groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 1);
+                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 1);
                 } else if (!isPlaying) {
-                    groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 2);
+                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 2);
                 } else if (isPlayingPosition) {
-                    groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 1);
+                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 1);
                 }
             }
         });
 
         remoteAdapter.setOnItemDeleteListener((audioModel, position) -> {
-            groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 3);
+            send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 3);
         });
 
         remoteRecyclerView.setLayoutManager(new LinearLayoutManager(remoteRecyclerView.getContext()));
         remoteRecyclerView.setAdapter(remoteAdapter);
+
+        remoteAdapter.submitList(FileInfoUtils.getBjs());
     }
 
 
@@ -261,6 +276,9 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
         groundStationService.getWebdavFiles(new SardineCallBack<List<AudioModel>>() {
             @Override
             public void getResult(List<AudioModel> audioModelList) {
+                if (audioModelList != null) {
+                    audioModelList.addAll(0, FileInfoUtils.getBjs());
+                }
                 remoteAdapter.submitList(audioModelList);
                 // 解析ID3标签
 //                AudioFile audioFile = AudioFileIO.read(audioFile);
@@ -276,7 +294,7 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
             Log.d(tag, "isPlaying: " + isPlaying + " isPlayingPosition: " + isPlayingPosition);
             if (isRemotePlay) { //当前是远程播放就停止远程播放
                 isRemotePlay = false;
-                groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 2);
+                send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 2);
             }
 
             if (isBound) {
@@ -314,7 +332,10 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
         });
 
         adapter.setOnItemDeleteListener((audioModel, position) -> {
-
+            if (FileInfoUtils.isBjs(audioModel.getAudioFilePath())) {
+                ToastUtils.showShort("警报声不可删除");
+                return;
+            }
             String audioFileName = audioModel.getAudioFileName();
             boolean isDeleted = MusicFileUtil.deleteAudioFile(audioFileName);
             if (isDeleted) {
@@ -385,7 +406,7 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         activity.startActivityForResult(Intent.createChooser(intent, "选择音频文件"), AUDIO_REQUEST_CODE);
     }
-    
+
     public void send(byte msgId2, int... payload) {
         helper.send(msgId2, payload);
     }
