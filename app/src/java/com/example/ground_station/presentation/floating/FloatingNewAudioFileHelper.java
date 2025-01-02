@@ -40,14 +40,11 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
 
     public static final int AUDIO_REQUEST_CODE = 9;
     private final String tag = "audio_file_tag";
-    private final String TAG = "FloatingAudioFileHelper";
     private AudioAdapter adapter;
     private AudioAdapter remoteAdapter;
     private boolean isAudioPlayEnding = false;
     private boolean isRemotePlay = false;
     private int currentRemoteAudioPosition = -1;
-    private boolean isSingleStatus = false;
-    private boolean isSingleLoopStatus = false;
     private boolean isListLoopStatus = false;
 
     SocketClientHelper helper = SocketClientHelper.getMedia();
@@ -142,8 +139,6 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
         RecyclerView recyclerView = view.findViewById(R.id.recyclerview);
         RecyclerView remoteRecyclerView = view.findViewById(R.id.remote_recyclerview);
 
-//        RadioGroup playGroup = view.findViewById(R.id.play_group);
-
         initRecyclerView(recyclerView);
         initRemoteRecyclerView(remoteRecyclerView);
 
@@ -179,6 +174,22 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
             boolean isSelected = !textView.isSelected();
             textView.setSelected(isSelected);
             isListLoopStatus = isSelected;
+//            if (tabLayout.getSelectedTabPosition() == 1) {
+//                List<AudioModel> currentList = remoteAdapter.getCurrentList();
+//                int position = remoteAdapter.getCurrentPlayingPosition();
+//                if (currentList != null && currentList.size() > position && position >= 0) {
+//                    AudioModel audioModel = currentList.get(position);
+//                    if (audioModel.isPlaying()) {
+//                        if (isListLoopStatus) {
+//                            playRmoteAudio(audioModel);
+//                        } else {
+//                            audioModel.setPlaying(false);
+//                            remoteAdapter.notifyDataSetChanged();
+//                            sendAudioInstruct(audioModel, 2);
+//                        }
+//                    }
+//                }
+//            }
         });
 
         view.findViewById(R.id.audio_delete_btn).setOnClickListener(v -> {
@@ -264,13 +275,15 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
             if (isBound) {
                 if (!isPlaying && !isPlayingPosition) {
 //                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 1);
-                    sendAudioInstruct(audioModel, 1);
+//                    sendAudioInstruct(audioModel, 1);
+                    playRmoteAudio(audioModel);
                 } else if (!isPlaying) {
 //                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 2);
                     sendAudioInstruct(audioModel, 2);
                 } else if (isPlayingPosition) {
 //                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 1);
-                    sendAudioInstruct(audioModel, 1);
+//                    sendAudioInstruct(audioModel, 1);
+                    playRmoteAudio(audioModel);
                 }
             }
         });
@@ -286,14 +299,34 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
         remoteAdapter.submitList(FileInfoUtils.getBjs());
     }
 
+    private void playRmoteAudio(AudioModel audioModel) {
+        if (isListLoopStatus) {
+            //循环播放
+            int payload1 = getAudioPayload(audioModel);
+            if (payload1 >= 0) {
+                helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_RECORD_NAME, payload1);
+            }
+        } else {
+            sendAudioInstruct(audioModel, 1);
+        }
+    }
+
     private void sendAudioInstruct(AudioModel audioModel, int payload2) {
+        int payload1 = getAudioPayload(audioModel);
+        if (payload1 >= 0) {
+            helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, payload1, payload2);
+        }
+    }
+
+    private int getAudioPayload(AudioModel audioModel) {
         if (audioModel != null) {
             String audioFileName = audioModel.getAudioFileName();
-            int payload1 = FileInfoUtils.file2Payload(audioFileName);
-            if (payload1 >= 0) {
-                helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, payload1, payload2);
+            int payload = FileInfoUtils.file2Payload(audioFileName);
+            if (payload >= 0) {
+                return payload;
             }
         }
+        return -1;
     }
 
 
@@ -305,11 +338,6 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
                     audioModelList.addAll(0, FileInfoUtils.getBjs());
                 }
                 remoteAdapter.submitList(audioModelList);
-                // 解析ID3标签
-//                AudioFile audioFile = AudioFileIO.read(audioFile);
-//                Tag tag = audioFile.getTag();
-//                String title = tag.getFirst(FieldKey.TITLE); // 获取歌曲名称
-//                String artist = tag.getFirst(FieldKey.ARTIST); // 获取歌手
             }
         });
     }
@@ -326,9 +354,8 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
             if (isBound) {
                 groundStationService.setPlaybackCallback(() -> {
 //                    send(SocketConstant.AMPLIFIER, 2);
-
                     if (isListLoopStatus) {
-                        adapter.playNextAudio();
+                        adapter.playLoopAudio();
                     } else {
                         isAudioPlayEnding = true;
                         adapter.getCurrentItem(position).setPlaying(false);
