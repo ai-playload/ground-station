@@ -60,7 +60,7 @@ public class AudioLoadListView extends AudioBaseListView {
                 if (selectedList != null && selectedList.size() > 0) {
                 //停止本地和网络所有
                 send(SocketConstant.STREAMER, SocketConstant.PM.PLAY_BUNCH_STOP);
-                send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, 0, SocketConstant.PM.PLAY_BUNCH_STOP);
+                send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, 0, SocketConstant.PM.PLAY_BUNCH_STOP);
                     adapter.other(0);//开始循环播放第一首
                 }
             }

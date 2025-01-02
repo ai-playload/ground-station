@@ -201,7 +201,7 @@ public class AudioAdapter extends ListAdapter<AudioModel, AudioAdapter.AudioView
         }
 
         public void bind(AudioModel audioModel, boolean isSelected) {
-            audioContent.setText(audioModel.getAudioFileName());
+            audioContent.setText(audioModel.getShowName());
             playBtn.setImageResource(audioModel.isPlaying() ? R.drawable.ic_item_pause : R.drawable.ic_item_play);
             itemView.setSelected(isSelected);
             ViewCompat.setBackgroundTintList(playImg, ColorStateList.valueOf(isSelected ? Color.parseColor("#F99E51") : Color.parseColor("#FFFFFF")));

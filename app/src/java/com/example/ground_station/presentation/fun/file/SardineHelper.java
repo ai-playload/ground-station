@@ -10,7 +10,15 @@ import com.thegrizzlylabs.sardineandroid.DavResource;
 import com.thegrizzlylabs.sardineandroid.Sardine;
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine;
 
+import org.greenrobot.eventbus.EventBus;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
+
+import java.com.example.ground_station.data.model.MediaEvent;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
+import java.com.example.ground_station.data.socket.SocketConstant;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,16 +59,33 @@ public class SardineHelper {
         });
     }
 
-    public void upLoad(String path, String  filePath, SardineCallBack<String> callBack) {
+    public void upLoad(String path, File  file, String  aliasName, SardineCallBack<String> callBack) {
         ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<Objects>() {
 
             @Override
             public Objects doInBackground() throws Throwable {
-//                InputStream filePathForN = FilePathUtils.getFilePathForN(uri, Utils.getApp());
-                InputStream filePathForN = new FileInputStream(filePath) ;
+////                InputStream filePathForN = FilePathUtils.getFilePathForN(uri, Utils.getApp());
+//                FileInfoUtils.writeTitle(file, aliasName);
+                String filePath = file.getPath();
+//                File file1 = new File(filePath);
+//                AudioFile audioFile = AudioFileIO.read(file1);
+//                Tag tag = audioFile.getTag();
+//                if (tag != null) {
+//                    String first = tag.getFirst(FieldKey.TITLE);
+//                    String first2 = tag.getFirst(FieldKey.ARTIST);
+//                }
+
+                InputStream filePathForN = new FileInputStream(file) ;
                 byte[] byteArray = FilePathUtils.toByteArray(filePathForN);
                 getSardine().put(path, byteArray);
+
+                FileInfoUtils.putAudioInfoMap(path, aliasName);
+
                 callBack.getResult(filePath);
+
+                MediaEvent event = new MediaEvent();
+                event.PM = SocketConstant.UPDATE_AUDIO_LIST;//文件上传成功，更新远程音频列表
+                EventBus.getDefault().post(event);
                 return null;
             }
 

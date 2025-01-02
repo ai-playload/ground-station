@@ -2,8 +2,6 @@ package java.com.example.ground_station.presentation.floating;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -23,7 +21,6 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.example.ground_station.R;
 import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.google.android.material.textfield.TextInputLayout;
-import com.iflytek.aikitdemo.tool.SPUtil;
 import com.lzf.easyfloat.EasyFloat;
 import com.lzf.easyfloat.enums.ShowPattern;
 import com.lzf.easyfloat.enums.SidePattern;
@@ -35,6 +32,7 @@ import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 import java.com.example.ground_station.presentation.ability.AudioFileGenerationCallback;
+import java.com.example.ground_station.presentation.fun.file.FileInfoUtils;
 import java.com.example.ground_station.presentation.util.MusicFileUtil;
 import java.com.example.ground_station.presentation.util.TCPFileUploader;
 import java.io.File;
@@ -217,7 +215,6 @@ public class FloatingNewTextToSpeechHelper extends BaseFloatingHelper {
     }
 
     private void uploadAudioFile(File file) {
-
         TCPFileUploader uploader = new TCPFileUploader();
         Activity topActivity = ActivityUtils.getTopActivity();
         if (topActivity != null) {
@@ -234,21 +231,22 @@ public class FloatingNewTextToSpeechHelper extends BaseFloatingHelper {
     }
 
     private void playRemoteTtsLoopFile(File file) {
-        List<AudioModel> allMp3Files = MusicFileUtil.getAllMp3Files();
-        String targetFileName = file.getName();
-        int index = -1;
-
-        for (int i = 0; i < allMp3Files.size(); i++) {
-            if (allMp3Files.get(i).getAudioFileName().equals(targetFileName)) {
-                index = i;
-                break;
-            }
-        }
-
-        if (index != -1) {
-//            AudioModel targetAudio = allMp3Files.get(index);
-            groundStationService.sendSocketCommand(SocketConstant.PLAY_RECORD_Bp, index);
-        }
+//        String targetFileName = file.getName();
+//        List<AudioModel> allMp3Files = MusicFileUtil.getAllMp3Files();
+//        int index = -1;
+//
+//        for (int i = 0; i < allMp3Files.size(); i++) {
+//            if (allMp3Files.get(i).getAudioFileName().equals(targetFileName)) {
+//                index = i;
+//                break;
+//            }
+//        }
+//
+//        if (index != -1) {
+////            AudioModel targetAudio = allMp3Files.get(index);
+//        }
+        int payload = FileInfoUtils.file2Payload(file);
+        groundStationService.sendSocketCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_RECORD_NAME, payload);
     }
 
 }

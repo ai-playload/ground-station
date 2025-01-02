@@ -40,12 +40,12 @@ public class AudioBpListView extends AudioBaseListView {
                 if (selectedList != null && list != null) {
                     //停止本地和网络所有
                     send(SocketConstant.STREAMER, SocketConstant.PM.PLAY_BUNCH_STOP);
-//                    send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, 0, SocketConstant.PM.PLAY_BUNCH_STOP);
+//                    send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, 0, SocketConstant.PM.PLAY_BUNCH_STOP);
                     int[] ps = new int[selectedList.size()];
                     for (int i = 0; i < selectedList.size(); i++) {
                         ps[i] = list.indexOf(selectedList.get(i));
                     }
-                    send(SocketConstant.PLAY_RECORD_Bp, ps);//循环播放
+                    send(SocketConstant.PLAY_REMOTE_AUDIO_BY_RECORD_NAME, ps);//循环播放
                 }
             }
         });
@@ -60,7 +60,7 @@ public class AudioBpListView extends AudioBaseListView {
         adapter.setOnItemDeleteListener((audioModel, position) -> {
             if (!audioModel.isDeleteLoading()) {
                 audioModel.setDeleteLoading(true);
-                groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, SocketConstant.PM.PLAY_BUNCH_DELETE);
+                groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, SocketConstant.PM.PLAY_BUNCH_DELETE);
                 groundStationService.getAudioListInfoDelayed(new ResultCallback<List<AudioModel>>() {
                     @Override
                     public void result(List<AudioModel> audioModelList) {

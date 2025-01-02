@@ -3,6 +3,8 @@ package java.com.example.ground_station.data.socket;
 public class SocketConstant {
 
 
+    public static final int UPDATE_AUDIO_LIST = 100;//更新远程列表
+
     public static class PM {
         public static final byte PLAY_BUNCH_START = (byte) 0x01;               // -开始播放
         public static final byte PLAY_BUNCH_STOP = (byte) 0x02;               // -停止
@@ -46,9 +48,7 @@ public class SocketConstant {
 
     public static final byte DIRECTION = (byte) 0x46;
     public static final byte AMPLIFIER = (byte) 0x9a;
-    public static final byte STREAMER = (byte) 0x9b;
 
-    public static final byte PLAY_RECORD_Bp = (byte) 0x9c;               // 网络循环播放
 
     // 新增的命令
     public static final byte REBOOT_DEVICE = (byte) 0x35;             // 设备重启
@@ -68,6 +68,13 @@ public class SocketConstant {
     public static final byte RED_BLUE_FLASH = (byte) 0x2e;            // 红蓝爆闪
     public static final byte NOTIFY_RE_FILENAME = (byte) 0x15;          // 提示传文件成功
     public static final byte PLAY_REMOTE_AUDIO_BY_INDEX = (byte) 0x99;  //网络点播控制 发送索引播放音频
+    public static final byte PLAY_RECORD_Bp = (byte) 0x9c;               // 网络循环播放
+    public static final byte STREAMER = (byte) 0x9b;
+
+
+    public static final byte PLAY_REMOTE_AUDIO_BY_NAME = (byte) 0x9e;  //网络点播控制 发送文件名播放音频
+    public static final byte PLAY_REMOTE_AUDIO_BY_RECORD_NAME = (byte) 0x9f;  //网络循环播放控制 发送文件名播放音频
+
 
     public static final byte HEART_BEAT = (byte) 0x50;  // Heartbeat 心跳包
 

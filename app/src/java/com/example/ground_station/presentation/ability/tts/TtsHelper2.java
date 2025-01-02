@@ -49,6 +49,7 @@ public class TtsHelper2 implements SynthesisCallback, IAudioDataCallback {
 
 
     private static final String TAG = TtsHelper.class.getSimpleName();
+    private String aduidoStr;
 
     public TtsHelper2() {
         textQueue = new ConcurrentLinkedQueue<>();
@@ -113,7 +114,7 @@ public class TtsHelper2 implements SynthesisCallback, IAudioDataCallback {
                 } else if (what == 2) {
                     if (fileWriteListener != null) {
                         Log.d("TtsEngine", "fileHandler == 2"  );
-                        fileWriteListener.onSuccess(TtsHelper2.this.recordFile);
+                        fileWriteListener.onSuccess(TtsHelper2.this.recordFile, aduidoStr);
                     }
                 }
                 return true;
@@ -136,13 +137,13 @@ public class TtsHelper2 implements SynthesisCallback, IAudioDataCallback {
     }
 
     public interface IFileWriteListener {
-        void onSuccess(File file);
+        void onSuccess(File file, String aduidoStr);
     }
 
-    public void setFileName(int flag) {
-        this.flag = flag;
-        int tag = flag % 10;
-        this.fileName = "t" + tag + ".mp3";
+    public void setFileName(String flag) {
+//        this.flag = flag;
+//        int tag = flag % 10;
+        this.fileName = flag;
     }
 
     public String getFileName() {
@@ -204,7 +205,7 @@ public class TtsHelper2 implements SynthesisCallback, IAudioDataCallback {
         textQueue.offer(text);
         audioTrack.play();
         resume();
-
+        aduidoStr = text;
         this.audioFileGenerationCallback = audioFileGenerationCallback;
     }
 

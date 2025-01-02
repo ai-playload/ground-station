@@ -26,7 +26,6 @@ import java.com.example.ground_station.data.model.AudioModel;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.socket.SocketClientHelper;
 import java.com.example.ground_station.data.socket.SocketConstant;
-import java.com.example.ground_station.data.utils.Utils;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 import java.com.example.ground_station.presentation.floating.adapter.AudioAdapter;
 import java.com.example.ground_station.presentation.floating.dialog.FloatingDeleteDialog;
@@ -115,7 +114,12 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
 //                            send(SocketConstant.AMPLIFIER, 2);
 
                             if (isRemotePlay) {
-                                send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, currentRemoteAudioPosition, 2);
+                                List<AudioModel> currentList = remoteAdapter.getCurrentList();
+                                if (currentList != null && currentList.size() > currentRemoteAudioPosition && currentRemoteAudioPosition >= 0) {
+                                    AudioModel audioModel = currentList.get(currentRemoteAudioPosition);
+//                                  send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, currentRemoteAudioPosition, 2);
+                                    sendAudioInstruct(audioModel, 2);
+                                }
                             } else {
                                 send(SocketConstant.STREAMER, 2);//停止播放
                             }
@@ -196,6 +200,7 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
                 }
             }
 
+
             new FloatingDeleteDialog().showDeleteDialog(recyclerView.getContext(), new FloatingDeleteDialog.DeleteDialogCallback() {
                 @Override
                 public void onDelete() {
@@ -213,7 +218,13 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
                         adapter.submitList(allMp3Files);
                     } else {
                         //远程删除
-                        send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 3);
+                        AudioAdapter audioAdapter = isRemotePlay ? remoteAdapter : adapter;
+                        List<AudioModel> currentList = audioAdapter.getCurrentList();
+                        if (currentList != null && currentList.size() > position) {
+                            AudioModel audioModel = currentList.get(position);
+                            sendAudioInstruct(audioModel, 3);
+//                        send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 3);
+                        }
                         getRemoteAudioList();
                     }
                 }
@@ -244,31 +255,45 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
             if (FileInfoUtils.isBjs(audioModel.getAudioFilePath())) {
                 helper.send(SocketConstant.PLAY_ALARM, position);
                 return;
-            }else {
-                position -=3;
+            } else {
+                position -= 3;
             }
 
             currentRemoteAudioPosition = position;
 
             if (isBound) {
                 if (!isPlaying && !isPlayingPosition) {
-                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 1);
+//                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 1);
+                    sendAudioInstruct(audioModel, 1);
                 } else if (!isPlaying) {
-                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 2);
+//                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 2);
+                    sendAudioInstruct(audioModel, 2);
                 } else if (isPlayingPosition) {
-                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 1);
+//                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 1);
+                    sendAudioInstruct(audioModel, 1);
                 }
             }
         });
 
         remoteAdapter.setOnItemDeleteListener((audioModel, position) -> {
-            send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 3);
+//            send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 3);
+            sendAudioInstruct(audioModel, 3);
         });
 
         remoteRecyclerView.setLayoutManager(new LinearLayoutManager(remoteRecyclerView.getContext()));
         remoteRecyclerView.setAdapter(remoteAdapter);
 
         remoteAdapter.submitList(FileInfoUtils.getBjs());
+    }
+
+    private void sendAudioInstruct(AudioModel audioModel, int payload2) {
+        if (audioModel != null) {
+            String audioFileName = audioModel.getAudioFileName();
+            int payload1 = FileInfoUtils.file2Payload(audioFileName);
+            if (payload1 >= 0) {
+                helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, payload1, payload2);
+            }
+        }
     }
 
 
@@ -294,7 +319,8 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
             Log.d(tag, "isPlaying: " + isPlaying + " isPlayingPosition: " + isPlayingPosition);
             if (isRemotePlay) { //当前是远程播放就停止远程播放
                 isRemotePlay = false;
-                send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 2);
+//                send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 2);
+                sendAudioInstruct(audioModel, 2);
             }
 
             if (isBound) {

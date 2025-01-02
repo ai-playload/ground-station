@@ -81,7 +81,7 @@ public class AudioBaseListView extends LinearLayout implements ConnectStateListe
                     if (type == CommonConstants.TYPE_LOAD) {
                         send(SocketConstant.STREAMER, SocketConstant.PM.PLAY_BUNCH_STOP);
                     } else {
-                        send(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, p, SocketConstant.PM.PLAY_BUNCH_STOP);
+                        send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, p, SocketConstant.PM.PLAY_BUNCH_STOP);
                     }
 
                     if (PlayerStates.normal == tag) {

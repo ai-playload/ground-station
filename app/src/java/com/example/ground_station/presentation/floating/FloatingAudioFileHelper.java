@@ -122,7 +122,7 @@ public class FloatingAudioFileHelper extends BaseFloatingHelper {
 //                            groundStationService.sendSocketCommand(SocketConstant.AMPLIFIER, 2);
 
                             if (isRemotePlay) {
-                                groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, currentRemoteAudioPosition, 2);
+                                groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, currentRemoteAudioPosition, 2);
                             } else {
                                 groundStationService.sendSocketCommand(SocketConstant.STREAMER, 2);//停止播放
                             }
@@ -221,17 +221,17 @@ public class FloatingAudioFileHelper extends BaseFloatingHelper {
 
             if (isBound) {
                 if (!isPlaying && !isPlayingPosition) {
-                    groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 1);
+                    groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 1);
                 } else if (!isPlaying) {
-                    groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 2);
+                    groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 2);
                 } else if (isPlayingPosition) {
-                    groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 1);
+                    groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 1);
                 }
             }
         });
 
         remoteAdapter.setOnItemDeleteListener((audioModel, position) -> {
-            groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 3);
+            groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 3);
         });
 
         remoteRecyclerView.setLayoutManager(new LinearLayoutManager(remoteRecyclerView.getContext()));
@@ -278,7 +278,7 @@ public class FloatingAudioFileHelper extends BaseFloatingHelper {
             Log.d(tag, "isPlaying: " + isPlaying + " isPlayingPosition: " + isPlayingPosition);
             if (isRemotePlay) { //当前是远程播放就停止远程播放
                 isRemotePlay = false;
-                groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, position, 2);
+                groundStationService.sendRemoteAudioCommand(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 2);
             }
 
             if (isBound) {

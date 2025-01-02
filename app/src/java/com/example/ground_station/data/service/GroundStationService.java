@@ -498,28 +498,28 @@ public class GroundStationService extends Service implements AbilityCallback {
      * 网络点播控制-开始播放
      */
     public void netBpStart(int fileIndex) {
-        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, fileIndex, SocketConstant.PM.PLAY_BUNCH_START);
+        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, fileIndex, SocketConstant.PM.PLAY_BUNCH_START);
     }
 
     /**
      * 网络点播控制-停止
      */
     public void netBpStop(int fileIndex) {
-        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, fileIndex, SocketConstant.PM.PLAY_BUNCH_STOP);
+        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, fileIndex, SocketConstant.PM.PLAY_BUNCH_STOP);
     }
 
     /**
      * 网络点播控制-暂停
      */
     public void netBpPause(int fileIndex) {
-        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, fileIndex, SocketConstant.PM.PLAY_BUNCH_PAUSE);
+        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, fileIndex, SocketConstant.PM.PLAY_BUNCH_PAUSE);
     }
 
     /**
      * 网络点播控制-暂停后恢复
      */
     public void netBpRecoverPlay(int fileIndex) {
-        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_INDEX, fileIndex, SocketConstant.PM.PLAY_BUNCH_RECOVER_PLAY);
+        this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, fileIndex, SocketConstant.PM.PLAY_BUNCH_RECOVER_PLAY);
     }
 
 

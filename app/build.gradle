@@ -178,5 +178,6 @@ dependencies {
 //    implementation 'org.jaudiotagger:jaudiotagger:2.2.4'
 //    implementation 'org.jaudiotagger:jaudiotagger:2.2.6'
     implementation(files("libs/jaudiotagger-2.0.2.jar"))
+    implementation(files("libs/jave-1.0.2.jar"))
 //    implementation "com.github.recruit-lifestyle:FloatingView:2.4.4"
 }

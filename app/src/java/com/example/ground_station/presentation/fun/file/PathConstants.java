@@ -1,5 +1,7 @@
 package java.com.example.ground_station.presentation.fun.file;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.Utils;
@@ -29,6 +31,29 @@ public class PathConstants {
         return new File(getInstallApkParentFile(), name);
     }
 
+
+    public static String getUploadAudioPalyPath(String name) {
+        String palyPath = PathConstants.getPalyPath();
+        int index = FileInfoUtils.getUploadAudioFileIndex();
+        String hz = "";
+        int index1 = name.lastIndexOf(".");
+        if (index1 >= 0) {
+            hz = name.substring(index1);
+        }
+        return palyPath + index + hz;
+    }
+
+    public static String getText2AudioFileName(String showFileName) {
+        String palyPath = PathConstants.getPalyPath();
+        String originName = FileInfoUtils.getAudioOriginName(showFileName);
+        if (TextUtils.isEmpty(originName)) {
+            int index = FileInfoUtils.getText2AudioFileIndex();
+            String hz = ".mp3";
+            return palyPath + "0" + index + hz;
+        } else {
+            return  palyPath + originName;
+        }
+    }
 
     public static String getPalyPath() {
         String rootPath = getWebdavRootPath();

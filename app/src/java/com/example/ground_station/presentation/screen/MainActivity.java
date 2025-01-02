@@ -50,9 +50,12 @@ import java.com.example.ground_station.data.socket.SocketClientHelper;
 import java.com.example.ground_station.data.socket.UdpClientHelper;
 import java.com.example.ground_station.data.utils.Utils;
 import java.com.example.ground_station.presentation.ability.IFlytekAbilityManager;
+import java.com.example.ground_station.presentation.fun.file.PathConstants;
+import java.com.example.ground_station.presentation.fun.file.SardineCallBack;
+import java.com.example.ground_station.presentation.fun.file.SardineHelper;
 import java.com.example.ground_station.presentation.util.AssetCopierUtil;
 import java.com.example.ground_station.presentation.util.FilePathUtils;
-import java.com.example.ground_station.presentation.util.TCPFileUploader;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -325,10 +328,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void uploadAudioFile(String filePath) {
-        TCPFileUploader uploader = new TCPFileUploader();
-        uploader.uploadFile(this, filePath, (progress -> {
+        File file = new File(filePath);
+        String name = file.getName();
+        String palyPath = PathConstants.getUploadAudioPalyPath(name);
+        String aliasName = name;
 
-        }));
+        SardineHelper sardineHelper = new SardineHelper(null);
+        sardineHelper.upLoad(palyPath, file, aliasName, new SardineCallBack<String>() {
+            @Override
+            public void getResult(String s) {
+
+            }
+        });
     }
 
     private void copyAssets() {
