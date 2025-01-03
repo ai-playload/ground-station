@@ -20,6 +20,7 @@ import com.lzf.easyfloat.enums.ShowPattern;
 import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
+import java.com.example.ground_station.data.utils.FunctionManager;
 import java.com.example.ground_station.data.utils.Utils;
 import java.com.example.ground_station.data.utils.ViewUtils;
 import java.com.example.ground_station.presentation.screen.MainActivity;
@@ -92,14 +93,13 @@ public class FloatingWindowHelper {
                 topMainActivityBtn = view.findViewById(R.id.tv_options_to_main_btn);
 
                 View[] btns = {audioBtn, textToSpeechBtn, audioFileBtn, lightBtn, detectorAlarmBtn, topMainActivityBtn};
-                for (View btn : btns) {
-                    Object tag = btn.getTag();
-                    if (tag != null) {
-                     String str = tag.toString();
-                     boolean show = Utils.flavorVisible(BuildConfig.FLAVOR, str);//不同的
-                     ViewUtils.setVisibility(btn, show);
+                updateBtnVisible(btns);
+                FunctionManager.getInstance().addChangeListener(new FunctionManager.Callback() {
+                    @Override
+                    public void callback(String flavor, boolean show) {
+                        updateBtnVisible(btns);
                     }
-                }
+                });
 
                 view.findViewById(R.id.btnParent).requestLayout();
 
@@ -120,6 +120,17 @@ public class FloatingWindowHelper {
                 });
             }
         }).show();
+    }
+
+    private static void updateBtnVisible(View[] btns) {
+        for (View btn : btns) {
+            Object tag = btn.getTag();
+            if (tag != null) {
+             String str = tag.toString();
+             boolean show = Utils.flavorVisible(BuildConfig.FLAVOR, str);//不同的
+             ViewUtils.setVisibility(btn, show);
+            }
+        }
     }
 
     private void toggleButtonSelection(ImageView selectedBtn, AppCompatActivity activity) {

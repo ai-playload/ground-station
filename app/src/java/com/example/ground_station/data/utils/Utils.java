@@ -4,6 +4,8 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.widget.EditText;
 
+import com.blankj.utilcode.util.SPUtils;
+
 import java.com.example.ground_station.data.common.Const;
 import java.util.List;
 
@@ -53,6 +55,7 @@ public class Utils {
 
     /**
      * 检查端口和IP
+     *
      * @param edIp
      * @param edPort
      * @param tag
@@ -73,6 +76,10 @@ public class Utils {
     }
 
     public static boolean flavorVisible(String flavor, String tagFlavor) {
-        return TextUtils.equals(flavor, Const.FLAVOR_ALL) || TextUtils.equals(flavor, tagFlavor);
+        boolean show = TextUtils.equals(flavor, Const.FLAVOR_ALL) || TextUtils.equals(flavor, tagFlavor);
+        if (show && TextUtils.equals(flavor, Const.FLAVOR_ALL)) {
+            show = SPUtils.getInstance().getBoolean(tagFlavor, true);
+        }
+        return show;
     }
 }

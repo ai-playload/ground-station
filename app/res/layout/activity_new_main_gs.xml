@@ -12,6 +12,54 @@
         android:src="@mipmap/ic_login_background" />
 
     <LinearLayout
+        android:id="@+id/funParent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="60dp"
+        android:background="#999"
+        android:paddingHorizontal="11dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:text="功能\n选择："
+
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <CheckBox
+            android:id="@+id/fc_hhq"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tag="@string/HanHuaQi"
+            android:checked="true"
+            android:text="喊话器"
+            android:textColor="#fff" />
+
+        <CheckBox
+            android:id="@+id/fc_linght"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:tag="@string/Light"
+            android:checked="true"
+            android:text="云台灯"
+            android:textColor="#fff" />
+
+        <CheckBox
+            android:id="@+id/fc_sj"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:checked="true"
+            android:tag="@string/SuoJiang"
+            android:text="索降器"
+            android:textColor="#fff" />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

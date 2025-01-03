@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,8 +15,8 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.blankj.utilcode.util.NetworkUtils;
+import com.blankj.utilcode.util.SPUtils;
 import com.example.ground_station.BuildConfig;
 import com.example.ground_station.R;
 import com.lzf.easyfloat.EasyFloat;
@@ -45,10 +45,11 @@ import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.service.GroundStationService;
 import java.com.example.ground_station.data.socket.Clien;
 import java.com.example.ground_station.data.socket.ConnectionCallback;
-import java.com.example.ground_station.data.utils.ViewUtils;
 import java.com.example.ground_station.data.socket.SocketClientHelper;
 import java.com.example.ground_station.data.socket.UdpClientHelper;
+import java.com.example.ground_station.data.utils.FunctionManager;
 import java.com.example.ground_station.data.utils.Utils;
+import java.com.example.ground_station.data.utils.ViewUtils;
 import java.com.example.ground_station.presentation.ability.IFlytekAbilityManager;
 import java.com.example.ground_station.presentation.fun.file.PathConstants;
 import java.com.example.ground_station.presentation.fun.file.SardineCallBack;
@@ -148,6 +149,29 @@ public class MainActivity extends AppCompatActivity {
         ViewUtils.setVisibility(findViewById(R.id.testParentView), BuildConfig.DEBUG);
 
         String flavor = BuildConfig.FLAVOR;
+        boolean allFlavor = TextUtils.equals(flavor, Const.FLAVOR_ALL);
+        ViewUtils.setVisibility(findViewById(R.id.funParent), allFlavor);
+        if (allFlavor) {
+            functionSelected();
+        }
+        updateBtnVisible(flavor);
+    }
+
+    private void functionSelected() {
+        int[] ids = new int[]{R.id.fc_hhq, R.id.fc_linght, R.id.fc_sj};
+        FunctionManager manager = FunctionManager.getInstance();
+        for (int id : ids) {
+            CheckBox checkBox = findViewById(id);
+            String fcFlavor = (String) checkBox.getTag();
+            checkBox.setChecked(manager.getHasFunction(fcFlavor));
+            checkBox.setOnCheckedChangeListener((compoundButton, b) -> {
+                manager.updateFunction(fcFlavor, b);
+                updateBtnVisible(Const.FLAVOR_ALL);
+            });
+        }
+    }
+
+    private void updateBtnVisible(String flavor) {
         ViewUtils.setVisibility(findViewById(R.id.shout_input_layout), Utils.flavorVisible(flavor, Const.FLAVOR_HANHUAQI));
         ViewUtils.setVisibility(findViewById(R.id.cloud_light_input_layout), Utils.flavorVisible(flavor, Const.FLAVOR_LIGHT));
         ViewUtils.setVisibility(findViewById(R.id.controller_input_layout), Utils.flavorVisible(flavor, Const.FLAVOR_SUOJIANG));
