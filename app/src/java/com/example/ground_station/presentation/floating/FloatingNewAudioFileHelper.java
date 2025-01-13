@@ -62,15 +62,9 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
             }
         });
 
-        EasyFloat.with(activity)
-                .setShowPattern(ShowPattern.ALL_TIME)
-                .setSidePattern(SidePattern.DEFAULT)
-                .setGravity(Gravity.CENTER, 0, 0)
-                .setDragEnable(true)
-                .setTag(tag)
-                .setLayout(R.layout.floating_new_audio_file, view -> {
-                    initFloatingView(view, tag, closeCallback);
-                    initView(view, activity);
+        EasyFloat.with(activity).setShowPattern(ShowPattern.ALL_TIME).setSidePattern(SidePattern.DEFAULT).setGravity(Gravity.CENTER, 0, 0).setDragEnable(true).setTag(tag).setLayout(R.layout.floating_new_audio_file, view -> {
+            initFloatingView(view, tag, closeCallback);
+            initView(view, activity);
 
 //                    TextView textView = view.findViewById(R.id.audio_loop_select);
 //                    textView.setOnClickListener(v -> {
@@ -82,57 +76,55 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
 //                    // 添加两个选项
 //                    tabLayout.addTab(tabLayout.newTab().setText("本地音频"));
 //                    tabLayout.addTab(tabLayout.newTab().setText("远程音频"));
-                })
-                .registerCallbacks(new OnFloatCallbacks() {
-                    @Override
-                    public void dragEnd(@NonNull View view) {
+        }).registerCallbacks(new OnFloatCallbacks() {
+            @Override
+            public void dragEnd(@NonNull View view) {
 
-                    }
+            }
 
-                    @Override
-                    public void hide(@NonNull View view) {
+            @Override
+            public void hide(@NonNull View view) {
 
-                    }
+            }
 
-                    @Override
-                    public void show(@NonNull View view) {
+            @Override
+            public void show(@NonNull View view) {
 
-                    }
+            }
 
-                    @Override
-                    public void drag(@NonNull View view, @NonNull MotionEvent motionEvent) {
+            @Override
+            public void drag(@NonNull View view, @NonNull MotionEvent motionEvent) {
 
-                    }
+            }
 
-                    @Override
-                    public void dismiss() {
-                        if (isBound) {
-                            groundStationService.cancelGstreamerAudioCommand();
+            @Override
+            public void dismiss() {
+                if (isBound) {
+                    groundStationService.cancelGstreamerAudioCommand();
 //                            send(SocketConstant.AMPLIFIER, 2);
 
-                            if (isRemotePlay) {
-                                List<AudioModel> currentList = remoteAdapter.getCurrentList();
-                                if (currentList != null && currentList.size() > currentRemoteAudioPosition && currentRemoteAudioPosition >= 0) {
-                                    AudioModel audioModel = currentList.get(currentRemoteAudioPosition);
+                    if (isRemotePlay) {
+                        List<AudioModel> currentList = remoteAdapter.getCurrentList();
+                        if (currentList != null && currentList.size() > currentRemoteAudioPosition && currentRemoteAudioPosition >= 0) {
+                            AudioModel audioModel = currentList.get(currentRemoteAudioPosition);
 //                                  send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, currentRemoteAudioPosition, 2);
-                                    sendAudioInstruct(audioModel, 2);
-                                }
-                            } else {
-                                send(SocketConstant.STREAMER, 2);//停止播放
-                            }
+                            sendAudioInstruct(audioModel, 2);
                         }
+                    } else {
+                        send(SocketConstant.STREAMER, 2);//停止播放
                     }
+                }
+            }
 
-                    @Override
-                    public void touchEvent(@NonNull View view, @NonNull MotionEvent motionEvent) {
-                        handleTouchEvent(view, motionEvent);
-                    }
+            @Override
+            public void touchEvent(@NonNull View view, @NonNull MotionEvent motionEvent) {
+                handleTouchEvent(view, motionEvent);
+            }
 
-                    @Override
-                    public void createdResult(boolean b, @Nullable String s, @Nullable View view) {
-                    }
-                })
-                .show();
+            @Override
+            public void createdResult(boolean b, @Nullable String s, @Nullable View view) {
+            }
+        }).show();
     }
 
     private void initView(View view, AppCompatActivity activity) {
@@ -264,10 +256,17 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
             }
 
             if (FileInfoUtils.isBjs(audioModel.getAudioFilePath())) {
-                helper.send(SocketConstant.PLAY_ALARM, position);
+                if ((!isPlaying && !isPlayingPosition) || (isPlaying && isPlayingPosition)) {
+                    if (isListLoopStatus) {
+                        int index = position + 100;//100~102
+                        helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_RECORD_NAME, index);
+                    } else {
+                        helper.send(SocketConstant.PLAY_ALARM, position);
+                    }
+                } else if (!isPlaying) {//暂停
+                    sendAudioInstruct(audioModel, 2);
+                }
                 return;
-            } else {
-                position -= 3;
             }
 
             currentRemoteAudioPosition = position;
@@ -429,8 +428,7 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
         view.getLocationOnScreen(location);
         float x = motionEvent.getRawX();
         float y = motionEvent.getRawY();
-        return x >= location[0] && x <= location[0] + view.getWidth() &&
-                y >= location[1] && y <= location[1] + view.getHeight();
+        return x >= location[0] && x <= location[0] + view.getWidth() && y >= location[1] && y <= location[1] + view.getHeight();
     }
 
     private List<AudioModel> getAllMp3Files() {
