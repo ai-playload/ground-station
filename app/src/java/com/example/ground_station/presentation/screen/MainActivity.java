@@ -226,6 +226,8 @@ public class MainActivity extends AppCompatActivity {
             // 更新 并连接
             client.update(ipPortInfo[0], ipPortInfo[1]);
         }
+
+        requestFloatingPermissionsAndShow();
     }
 
     private void initIpAndPort(EditText edIp, EditText edPort, ShoutcasterConfig.DeviceInfo info) {

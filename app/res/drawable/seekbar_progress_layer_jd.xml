@@ -1,11 +1,11 @@
 <!-- res/drawable/seekbar_progress_layer.xml -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- 背景 -->
-    <item android:gravity="center_vertical" android:height="5dp" android:id="@android:id/background" android:drawable="@drawable/seekbar_background">
+    <item android:gravity="center_vertical" android:left="-2dp" android:right="-2dp" android:id="@android:id/background" android:drawable="@drawable/group_112252">
     </item>
-
+<!--    seekbar_background-->
     <!-- 次级进度（可选，如果不需要可以省略） -->
-    <item android:gravity="center_vertical" android:height="5dp" android:id="@android:id/secondaryProgress"  android:drawable="@drawable/seekbar_background">
+    <item android:gravity="center_vertical" android:height="5dp"  android:id="@android:id/secondaryProgress"  android:drawable="@drawable/seekbar_background">
     </item>
 
     <!-- 主进度 -->

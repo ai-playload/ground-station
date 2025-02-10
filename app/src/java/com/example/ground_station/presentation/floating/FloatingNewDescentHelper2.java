@@ -3,6 +3,7 @@ package java.com.example.ground_station.presentation.floating;
 import android.app.Application;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.Message;
@@ -158,15 +159,20 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
                             // 计算并更新速度和步进长度的值
                             speedValue = savedSpeedProgress;
                             lengthValue = savedLengthProgress;
-                            speedTv.setText(speedValue + "  档");
+                            speedTv.setText(speedValue + "  m/min");
                             lengthTv.setText(lengthValue + "  m");
 
                             speedInputView.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                                 @Override
                                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                    SPUtil.INSTANCE.putBase("speed_progress", progress);
-                                    speedValue = progress;
-                                    speedTv.setText(speedValue + "  档");
+                                    if (progress < 0) { // 如果progress小于0，可以设置为0或其他你希望的最小值
+                                        seekBar.setProgress(0); // 或者其他最小值
+                                    }
+                                    int p = progress + 1;
+                                    SPUtil.INSTANCE.putBase("speed_progress", p);
+                                    speedValue = p;
+                                    speedTv.setText(speedValue + "  m/min");
+                                    sendInstruct(SocketConstant.PARACHUTE_SPEED, p);
                                 }
 
                                 @Override
@@ -183,8 +189,12 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
                             lengthBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                                 @Override
                                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                    SPUtil.INSTANCE.putBase("length_progress", progress);
-                                    lengthValue = progress;
+                                    if (progress < 0) { // 如果progress小于0，可以设置为0或其他你希望的最小值
+                                        seekBar.setProgress(0); // 或者其他最小值
+                                    }
+                                    int p = progress + 1;
+                                    SPUtil.INSTANCE.putBase("length_progress", p);
+                                    lengthValue = p;
                                     lengthTv.setText(lengthValue + "  m");
                                 }
 
@@ -254,7 +264,7 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
                                     return;
                                 }
 //                                sendInstruct(SocketConstant.PARACHUTE_SPEED, Integer.parseInt(speedInputView.getText().toString()));
-                                sendInstruct(SocketConstant.PARACHUTE_LENGTH, lengthBar.getProgress());
+                                sendInstruct(SocketConstant.PARACHUTE_LENGTH, dsProgress(lengthBar));
                             });
 
                             downActionButton.setOnClickListener(v -> {
@@ -264,11 +274,11 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
                                 }
                                 //TODO: 2024/11/23
 //                                sendInstruct(SocketConstant.PARACHUTE_SPEED, -speedInputView);
-                                sendInstruct(SocketConstant.PARACHUTE_LENGTH, -lengthBar.getProgress());
+                                sendInstruct(SocketConstant.PARACHUTE_LENGTH, -dsProgress(lengthBar));
                             });
 
                             view.findViewById(R.id.speedComiftBtn).setOnClickListener(view1 -> {
-                                sendInstruct(SocketConstant.PARACHUTE_SPEED, speedInputView.getProgress());
+                                sendInstruct(SocketConstant.PARACHUTE_SPEED, dsProgress(speedInputView));
                             });
 
                             //2上升 3下降 4停止
@@ -276,12 +286,12 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
                                 sendInstruct(SocketConstant.PARACHUTE, PARACHUTE_STATUS_STOP);
                             });
 
-                            RecvTaskHelper.getInstance().setCallback(new ResultCallback<byte[]>() {
-                                @Override
-                                public void result(byte[] bytes) {
-                                    setRevInfo(bytes);
-                                }
-                            });
+//                            RecvTaskHelper.getInstance().setCallback(new ResultCallback<byte[]>() {
+//                                @Override
+//                                public void result(byte[] bytes) {
+//                                    setRevInfo(bytes);
+//                                }
+//                            });
 
                             jsTv = view.findViewById(R.id.jsTv);
                             fsTv = view.findViewById(R.id.fsTv);
@@ -289,12 +299,12 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
                             View textSendMuiltBtn = view.findViewById(R.id.textSendBtn);
                             textSendMuiltBtn.setOnClickListener(view1 -> {
                                 try {
-                                    int size = lengthBar.getProgress();
+                                    int size = dsProgress(lengthBar);
                                     for (int i = 0; i < size; i++) {
 //                                        updateLenghtInfo();
 //                                        updateWeightInfo();
-                                        sendInstruct(SocketConstant.PARACHUTE_SPEED, -speedInputView.getProgress());
-                                        sendInstruct(SocketConstant.PARACHUTE_LENGTH, -lengthBar.getProgress());
+                                        sendInstruct(SocketConstant.PARACHUTE_SPEED, -dsProgress(speedInputView));
+                                        sendInstruct(SocketConstant.PARACHUTE_LENGTH, -dsProgress(lengthBar));
                                     }
                                 } catch (Exception e) {
                                 }
@@ -339,7 +349,7 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
 
     private void updateSwitchUi() {
         if (safetyButton != null) {
-            safetyButton.setText(isSafetyBtnEnable ? "开机中" : "关机中");
+//            safetyButton.setText(isSafetyBtnEnable ? "开机中" : "关机中");
 //            safetyButton.setBackgroundResource(isSafetyBtnEnable ? R.drawable.custom_btn_bg_green : R.drawable.custom_btn_bg);
             SPUtil.INSTANCE.putBase("sj_kg", isSafetyBtnEnable);
             safetyButton.setSelected(isSafetyBtnEnable);
@@ -489,7 +499,7 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
         Application context = com.blankj.utilcode.util.Utils.getApp();
         if (circuiStatus == DeviceStatus.LOADING) {
             circuitButton.setText(context.getString(R.string.ciruit_loading));
-            setTopDrawable(circuitButton, R.drawable.urgent_selector_open);
+            setTopDrawable(circuitButton, R.drawable.urgent_selector_open_new);
         } else {
             circuiStatus = DeviceStatus.NORMAL;
             circuitButton.setText(context.getString(R.string.ciruit));
@@ -501,7 +511,7 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
     private void setTopDrawable(TextView tv, int drawableId) {
         Drawable drawable = tv.getContext().getResources().getDrawable(drawableId);
         int w = ConvertUtils.dp2px(30);
-        drawable.setBounds(0,0, w, w);
+        drawable.setBounds(0, 0, w, w);
         tv.setCompoundDrawables(null, drawable, null, null);
     }
 
@@ -524,5 +534,9 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
         }
     };
 
+
+    private int dsProgress(SeekBar seekBar) {
+        return seekBar.getProgress() + 1;
+    }
 
 }

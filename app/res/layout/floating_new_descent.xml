@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="432dp"
+    android:layout_width="442dp"
     android:layout_height="wrap_content"
     android:background="@drawable/floating_new_audio_bg"
     android:orientation="vertical"
@@ -23,15 +23,14 @@
             android:textColor="@color/white"
             android:textSize="16sp" />
 
-        <View
+        <ImageView
             android:id="@+id/close_btn"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentRight="true"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="5dp"
-            android:background="@drawable/ic_close_new" />
+            android:layout_marginRight="5dp"
+            android:padding="5dp"
+            android:src="@drawable/ic_close_new" />
 
         <View
             android:layout_width="match_parent"
@@ -55,19 +54,20 @@
         android:gravity="center"
         android:paddingLeft="13dp"
         android:paddingRight="13dp"
-        android:text="关机中"
+        android:text="安全开关"
         android:textColor="@drawable/text_color_selector"
         android:textSize="13sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp">
+        android:layout_marginTop="14dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="27dp">
 
         <LinearLayout
             android:layout_width="@dimen/sj_hint_name_width"
-            android:layout_height="33dp"
-            android:layout_marginLeft="27dp"
+            android:layout_height="32dp"
             android:background="@drawable/shape_general_bg"
             android:gravity="center"
             android:orientation="horizontal">
@@ -102,9 +102,10 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="129dp"
-            android:layout_height="33dp"
-            android:layout_marginLeft="29dp"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_marginLeft="17dp"
+            android:layout_weight="1"
             android:background="@drawable/shape_general_bg"
             android:gravity="center"
             android:orientation="horizontal">
@@ -137,6 +138,23 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/removePeelBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginLeft="17dp"
+            android:background="@drawable/power_stroke_bg_selector"
+            android:clickable="true"
+            android:drawableLeft="@drawable/ic_qp"
+            android:drawablePadding="4dp"
+            android:drawableTint="@drawable/text_color_selector"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="13dp"
+            android:text="去皮"
+            android:textColor="@drawable/text_color_selector"
+            android:textSize="13sp" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -147,7 +165,7 @@
 
         <LinearLayout
             android:layout_width="@dimen/sj_hint_name_width"
-            android:layout_height="33dp"
+            android:layout_height="32dp"
             android:layout_marginLeft="27dp"
             android:background="@drawable/shape_general_bg"
             android:gravity="center"
@@ -159,7 +177,7 @@
                 android:layout_below="@+id/tts_loop_cb"
                 android:layout_marginLeft="10dp"
                 android:gravity="center"
-                android:text="速度(档位)："
+                android:text="速度："
                 android:textColor="#ffe2e6f2"
                 android:textSize="13sp" />
 
@@ -171,7 +189,7 @@
                 android:layout_below="@+id/tts_loop_cb"
                 android:layout_marginRight="12dp"
                 android:gravity="right"
-                android:text="1 档"
+                android:text="1 m/min"
                 android:textColor="#ffe2e6f2"
                 android:textSize="13sp" />
 
@@ -182,11 +200,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
             android:layout_weight="1"
-            android:max="10"
-            android:min="1"
-            android:progress="1"
-            android:progressDrawable="@drawable/seekbar_progress_layer"
+            android:max="9"
+            android:min="0"
+            android:progress="0"
+            android:progressDrawable="@drawable/seekbar_progress_layer_jd"
             android:thumb="@drawable/seekbar_thumb" />
 
         <TextView
@@ -200,7 +219,7 @@
             android:paddingVertical="10dp"
             android:text="确认"
             android:textColor="#fff"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
     </LinearLayout>
 
@@ -211,7 +230,7 @@
 
         <LinearLayout
             android:layout_width="@dimen/sj_hint_name_width"
-            android:layout_height="33dp"
+            android:layout_height="32dp"
             android:layout_marginLeft="27dp"
             android:background="@drawable/shape_general_bg"
             android:gravity="center"
@@ -250,9 +269,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:max="30"
-            android:min="1"
-            android:progress="1"
+            android:layout_marginLeft="5dp"
+            android:max="29"
+            android:min="0"
+            android:progress="0"
             android:progressDrawable="@drawable/seekbar_progress_layer"
             android:thumb="@drawable/seekbar_thumb" />
 
@@ -277,6 +297,12 @@
             android:text="紧急熔断"
             android:textColor="@color/white"
             android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/lenghtResetBtn"
+            style="@style/sj_fun_btn_style"
+            android:drawableTop="@drawable/limit_selector"
+            android:text="完全收线" />
 
         <TextView
             android:id="@+id/stop_action"
@@ -328,25 +354,6 @@
         android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/removePeelBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:drawableTop="@drawable/limit_selector"
-            android:drawablePadding="4dp"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
-            android:gravity="center"
-            android:text="重量去皮"
-            android:textColor="@color/white"
-            android:textSize="13sp" />
-
-        <TextView
-            android:id="@+id/lenghtResetBtn"
-            style="@style/sj_fun_btn_style"
-            android:drawableTop="@drawable/limit_selector"
-            android:text="完全收线" />
 
         <TextView
             android:id="@+id/zoneTv"
@@ -359,20 +366,19 @@
             style="@style/sj_fun_btn_style"
             android:drawableTop="@drawable/limit_selector"
             android:text="测试发送多条指令" />
+
+        <TextView
+            android:id="@+id/relieve_tv"
+            style="@style/sj_fun_btn_style"
+            android:drawableTop="@drawable/limit_selector"
+            android:text="获取绳长" />
     </LinearLayout>
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_marginTop="10dp"
-            android:id="@+id/relieve_tv"
-            style="@style/sj_fun_btn_style"
-            android:drawableTop="@drawable/limit_selector"
-            android:text="获取绳长" />
-    </LinearLayout>
+        android:orientation="horizontal"></LinearLayout>
 
 
 </LinearLayout>

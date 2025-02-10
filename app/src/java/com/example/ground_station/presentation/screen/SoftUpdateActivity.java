@@ -47,7 +47,7 @@ public class SoftUpdateActivity extends ComponentActivity {
 
     private void initContentView(FileListInfoView fv, String tag) {
         ShoutcasterConfig.DeviceInfo mediaInfo = ShoutcasterConfig.getMediaInfo();
-        String rootPath = "http://" + mediaInfo.getIp() + "/webdav/";
+        String rootPath = "http://" + mediaInfo.getIp() + "/";
 //        String rootPath = this.getResources().getString(R.string.webdav_path) + "/apk/";
         rootPath += BuildConfig.DEBUG ? tag : PathConstants.TAG_ONLINE;
         fv.setRootPath(rootPath);
