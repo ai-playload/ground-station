@@ -41,7 +41,7 @@ public class RecvTaskHelper {
         InputStream inputStream = getInput();
         if (inputStream != null) {
             try {
-                byte[] bytes = new byte[BYTE_LENGTH];
+                byte[] bytes = new byte[1024];
                 // 读取客户端发送的信息
                 int count = inputStream.read(bytes, 0, BYTE_LENGTH);
                 if (count > 0) {

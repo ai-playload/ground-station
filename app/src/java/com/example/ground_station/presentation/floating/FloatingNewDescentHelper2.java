@@ -374,6 +374,8 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
                 }
             });
         }
+        RecvTaskHelper.getInstance().setSocketManager(helper);
+        SendTaskHelper.getInstance().setSocketManager(helper);
         RecvTaskHelper.getInstance().setCallback(new ResultCallback<byte[]>() {
             @Override
             public void result(byte[] bytes) {
