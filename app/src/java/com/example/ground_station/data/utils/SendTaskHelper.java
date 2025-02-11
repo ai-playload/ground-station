@@ -80,4 +80,8 @@ public class SendTaskHelper {
     public LoopHelper getLoop() {
         return loop;
     }
+
+    public void removeAll() {
+        list.clear();
+    }
 }

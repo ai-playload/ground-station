@@ -37,7 +37,7 @@ import java.com.example.ground_station.data.service.ResultCallback;
 import java.com.example.ground_station.data.socket.DeviceStatus;
 import java.com.example.ground_station.data.socket.SocketClientHelper;
 import java.com.example.ground_station.data.socket.SocketConstant;
-import java.com.example.ground_station.data.utils.RecvTaskHelper;
+import java.com.example.ground_station.data.socket.UdpClientHelper;
 import java.com.example.ground_station.data.utils.SendTaskHelper;
 import java.com.example.ground_station.data.utils.Utils;
 import java.com.example.ground_station.presentation.util.DisplayUtils;
@@ -95,7 +95,7 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
 //                        }
 //                    });
 
-                    RecvTaskHelper.getInstance().getLoop().start();
+//                    RecvTaskHelper.getInstance().getLoop().start();
                 })
                 .registerCallbacks(new OnFloatCallbacks() {
 
@@ -121,10 +121,11 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
 
                     @Override
                     public void dismiss() {
-                        RecvTaskHelper.getInstance().getLoop().stop();
+//                        RecvTaskHelper.getInstance().getLoop().stop();
                         if (mHandler != null) {
                             mHandler.removeCallbacksAndMessages(null);
                         }
+                        SendTaskHelper.getInstance().removeAll();
                         SendTaskHelper.getInstance().getLoop().stop();
                     }
 
@@ -374,14 +375,22 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
                 }
             });
         }
-        RecvTaskHelper.getInstance().setSocketManager(helper);
         SendTaskHelper.getInstance().setSocketManager(helper);
-        RecvTaskHelper.getInstance().setCallback(new ResultCallback<byte[]>() {
+//        RecvTaskHelper.getInstance().setSocketManager(helper);
+//        RecvTaskHelper.getInstance().setCallback(new ResultCallback<byte[]>() {
+//            @Override
+//            public void result(byte[] bytes) {
+//                setRevInfo(bytes);
+//            }
+//        });
+
+        helper.setCallBack(new ResultCallback<byte[]>() {
             @Override
             public void result(byte[] bytes) {
                 setRevInfo(bytes);
             }
         });
+
         requestSwitchInfo();
         requestLenghtInfo();
         requestWeightInfo();
@@ -441,7 +450,7 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
                     int v = bytes[4];
                     byte zl = bytes[3];
                     if (zl == SocketConstant.PARACHUTE_3E) {
-                        lenghtTv.setText("当前放线长度：" + v + "m");
+                        lenghtTv.setText(v + "m");
                     } else if (zl == SocketConstant.PARACHUTE_3C) {
                         weightValue = v;
                         updateWeightUI();
