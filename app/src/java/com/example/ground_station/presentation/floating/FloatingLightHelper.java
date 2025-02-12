@@ -28,7 +28,7 @@ import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
 import java.com.example.ground_station.data.service.ResultCallBack;
 import java.com.example.ground_station.data.socket.SocketConstant;
-import java.com.example.ground_station.data.socket.UdpSocketClient2;
+import java.com.example.ground_station.data.socket.UdpSocketClient3;
 import java.com.example.ground_station.data.utils.Utils;
 import java.com.example.ground_station.presentation.util.DisplayUtils;
 import java.util.List;
@@ -329,7 +329,7 @@ public class FloatingLightHelper extends BaseFloatingHelper {
                             driveWdTv = view.findViewById(R.id.drive_temp_tv);
                             headWdTv = view.findViewById(R.id.lamp_holder_tempe_tv);
 
-                            UdpSocketClient2.getInstance().setCallBack(new ResultCallBack<List<byte[]>>() {
+                            UdpSocketClient3.getInstance().setCallBack(new ResultCallBack<List<byte[]>>() {
                                 @Override
                                 public void result(List<byte[]> bytes) {
                                     disCacllBack(bytes);

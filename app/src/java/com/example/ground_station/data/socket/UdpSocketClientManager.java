@@ -13,12 +13,12 @@ import java.util.concurrent.Executors;
 
 public class UdpSocketClientManager {
     private ExecutorService executorService;
-    private UdpSocketClient2 udpSocketClient;  // 替换为 UdpSocketClient
+    private UdpSocketClient3 udpSocketClient;  // 替换为 UdpSocketClient
 
     public UdpSocketClientManager(String serverIp, int serverPort) throws IOException {
         this.executorService = Executors.newSingleThreadExecutor(); // 创建一个具有固定线程数的线程池
 
-        this.udpSocketClient =   UdpSocketClient2.getInstance(); // 实例化 UdpSocketClient
+        this.udpSocketClient =   UdpSocketClient3.getInstance(); // 实例化 UdpSocketClient
     }
 
     public void connect() {

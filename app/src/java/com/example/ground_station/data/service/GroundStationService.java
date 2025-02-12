@@ -25,7 +25,7 @@ import java.com.example.ground_station.data.socket.ResponseCallback;
 import java.com.example.ground_station.data.socket.SocketClient;
 import java.com.example.ground_station.data.socket.SocketClientManager;
 import java.com.example.ground_station.data.socket.SocketConstant;
-import java.com.example.ground_station.data.socket.UdpSocketClient2;
+import java.com.example.ground_station.data.socket.UdpSocketClient3;
 import java.com.example.ground_station.data.socket.UdpSocketClientManager;
 import java.com.example.ground_station.data.utils.SendUtils;
 import java.com.example.ground_station.presentation.ability.AbilityCallback;
@@ -76,7 +76,7 @@ public class GroundStationService extends Service implements AbilityCallback {
     private UdpSocketClientManager udpSocketClientManager;
     private ShoutcasterConfig config;
     private PlaybackCallback playbackCallback;
-    private UdpSocketClient2 udpSocketClient2;
+    private UdpSocketClient3 UdpSocketClient3;
     private ExecutorService executorService;
 
 
@@ -160,8 +160,8 @@ public class GroundStationService extends Service implements AbilityCallback {
         initGStreamer();
 
         executorService = Executors.newSingleThreadExecutor();
-        udpSocketClient2 = UdpSocketClient2.getInstance();
-//        udpSocketClient2 = new UdpSocketClient2("127.0.0.1", 13551);
+        UdpSocketClient3 = UdpSocketClient3.getInstance();
+//        UdpSocketClient3 = new UdpSocketClient3("127.0.0.1", 13551);
 //        createNotificationChannel();
 //        startForegroundService();
     }
@@ -261,11 +261,11 @@ public class GroundStationService extends Service implements AbilityCallback {
 
     public void connectUdpSocket() {
         ShoutcasterConfig.DeviceInfo cloudLightInfo = config.getCloudLightInfo();
-        if (udpSocketClient2 != null) {
+        if (UdpSocketClient3 != null) {
          ThreadUtils.executeByFixed(1, new ThreadUtils.SimpleTask<Object>() {
                 @Override
                 public Object doInBackground() throws Throwable {
-                    udpSocketClient2.connect(cloudLightInfo.getIp(), cloudLightInfo.getPort(), null);
+                    UdpSocketClient3.connect(cloudLightInfo.getIp(), cloudLightInfo.getPort(), null);
                     return null;
                 }
 
@@ -283,7 +283,7 @@ public class GroundStationService extends Service implements AbilityCallback {
             @Override
             public Object doInBackground() throws Throwable {
                 try {
-                    udpSocketClient2.sendData(SendUtils.toData(msgId2, payload));
+                    UdpSocketClient3.sendData(SendUtils.toData(msgId2, payload));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
