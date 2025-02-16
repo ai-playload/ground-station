@@ -490,7 +490,8 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
         }
     };
 
-    private byte[] ignoreIn = {SocketConstant.PARACHUTE_3C, SocketConstant.PARACHUTE_3E};
+//    private byte[] ignoreIn = {SocketConstant.PARACHUTE_3C, SocketConstant.PARACHUTE_3E};
+    private byte[] ignoreIn = {};
 
     public boolean isIgonreIn(int v) {
         for (byte b : ignoreIn) {
