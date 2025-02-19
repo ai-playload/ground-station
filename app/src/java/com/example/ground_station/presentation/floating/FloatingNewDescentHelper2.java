@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -154,8 +155,8 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
                             int savedSpeedProgress = SPUtil.INSTANCE.getInt("speed_progress", 1);
                             int savedLengthProgress = SPUtil.INSTANCE.getInt("length_progress", 1);
 
-                            speedInputView.setProgress(savedSpeedProgress);
-                            lengthBar.setProgress(savedLengthProgress);
+                            speedInputView.setProgress(savedSpeedProgress -1);
+                            lengthBar.setProgress(savedLengthProgress -1);
 
                             // 计算并更新速度和步进长度的值
                             speedValue = savedSpeedProgress;
