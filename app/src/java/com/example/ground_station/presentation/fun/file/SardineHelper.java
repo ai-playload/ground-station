@@ -156,12 +156,12 @@ public class SardineHelper {
         return path;
     }
 
-    private static Sardine getSardine() {
+    public static Sardine getSardine() {
         synchronized (SardineHelper.class) {
             if (sardine == null) {
                 sardine = new OkHttpSardine();
-                sardine.setCredentials("sz", "456", true);
-//                sardine.setCredentials("sftp", "456sftp", true);
+//                sardine.setCredentials("sz", "456", true);
+                sardine.setCredentials("sftp", "456sftp", true);
             }
             return sardine;
         }

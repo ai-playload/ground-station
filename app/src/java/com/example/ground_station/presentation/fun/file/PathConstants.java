@@ -62,7 +62,7 @@ public class PathConstants {
 
     private static @NonNull String getWebdavRootPath() {
         ShoutcasterConfig.DeviceInfo mediaInfo = ShoutcasterConfig.getMediaInfo();
-        String rootPath = "http://" + mediaInfo.getIp() + "/webdav/";
+        String rootPath = "http://" + mediaInfo.getIp() + "/";
         return rootPath;
     }
 }
