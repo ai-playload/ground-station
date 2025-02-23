@@ -9,10 +9,12 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatSeekBar;
+import androidx.core.math.MathUtils;
 
 import com.example.ground_station.R;
 import com.iflytek.aikitdemo.tool.SPUtil;
@@ -144,6 +146,34 @@ public class FloatingAudioHelper extends BaseFloatingHelper {
                                 }
                             });
 
+                            TextView ylBsTv = view.findViewById(R.id.ylBsTv);
+                            AppCompatSeekBar seekBarBs = view.findViewById(R.id.seek_bar_bs);
+                            int volumeBs = SPUtil.INSTANCE.getInt("audio_volume_bs", 0);
+                            seekBarBs.setProgress(volumeBs);
+                            updateBs(volumeBs, ylBsTv);
+                            seekBarBs.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                                @Override
+                                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                }
+
+                                @Override
+                                public void onStartTrackingTouch(SeekBar seekBar) {
+                                }
+
+                                @Override
+                                public void onStopTrackingTouch(SeekBar seekBar) {
+                                    int volumeBs = seekBarBs.getProgress();
+                                    updateBs(volumeBs, ylBsTv);
+                                    SPUtil.INSTANCE.putBase("audio_volume_bs", volumeBs);
+                                    Log.d(TAG, "volume value: " + volumeBs);
+
+                                    if (groundStationService.isShouting) {
+                                        button.performClick();
+                                    }
+                                }
+                            });
+
+
                             button.setOnClickListener(v -> {
                                 if (isBound) {
                                     if (groundStationService.isShouting) {
@@ -154,7 +184,8 @@ public class FloatingAudioHelper extends BaseFloatingHelper {
                                     } else {
                                         ShoutcasterConfig.DeviceInfo shoutcaster = groundStationService.getConfig().getShoutcaster();
 
-                                        String command = String.format(GstreamerCommandConstant.SHOUTT_COMMAND, shoutcaster.getIp(), shoutcaster.getPort());
+                                        String bs = getBs(seekBarBs.getProgress());
+                                        String command = String.format(GstreamerCommandConstant.SHOUTT_COMMAND_BS, bs, shoutcaster.getIp(), shoutcaster.getPort());
                                         groundStationService.sendShoutCommand(command);
                                         groundStationService.sendSocketCommand(SocketConstant.STREAMER, 1);
                                         groundStationService.sendSocketCommand(SocketConstant.START_TALK, 0);
@@ -178,5 +209,17 @@ public class FloatingAudioHelper extends BaseFloatingHelper {
                     }
                 })
                 .show();
+    }
+
+    private static void updateBs(int volume, TextView ylBsTv) {
+        String bs = getBs(volume);
+        ylBsTv.setText("音量倍数：" + bs);
+    }
+
+    private static @NonNull String getBs(int volume) {
+        float v = (volume + 10) / 10f;
+        v = MathUtils.clamp(v, 1, 3);
+        String bs = String.format("%.1f", v);
+        return bs;
     }
 }
