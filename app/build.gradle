@@ -14,7 +14,7 @@ android {
     defaultConfig {
         applicationId "com.example.ground_station"
         minSdk 21
-        targetSdk 34
+        targetSdk 27
         versionCode 10
         versionName "2.12.1"
 

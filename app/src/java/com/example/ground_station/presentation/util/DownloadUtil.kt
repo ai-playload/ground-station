@@ -9,6 +9,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import com.blankj.utilcode.util.GsonUtils
+import com.blankj.utilcode.util.Utils
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType
@@ -17,6 +19,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
+import java.com.example.ground_station.presentation.floating.autdio.AudioFormatBean
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileInputStream
@@ -36,29 +39,21 @@ open class DownloadUtil {
      * @param listener     下载监听
      */
     fun download(
-        url: String,
-        destFileDir: String,
-        destFileName: String,
+        info: AudioFormatBean,
         listener: OnDownloadListener
     ) {
-        if (url == null || url == "") {
-            return
-        }
+        var destFileName: String = info.filename;
+        var url = " http://81.70.35.199:5100/piper";
         if (okHttpClient == null) {
             okHttpClient = OkHttpClient()
         }
-        var json = "{\n" +
-                "    \"text\": \"Hello World\",\n" +
-                "    \"filename\": \"t6.mp3\",\n" +
-                "    \"num\": \"1\",\n" +
-                "    \"DB\": \"20\",\n" +
-                "}";
 
-        json =
-            "{\"text\":\"我们是中华中民共和国公民\",\"filename\":\"t31.mp3\",\"num\":\"1\",\"DB\":\"20\"}"
+        var destFileDir: String = Utils.getApp().cacheDir.absolutePath + "/tempAudio";
+        var json = GsonUtils.toJson(info);
+//        json =
+//            "{\"text\":\"我们是中华中民共和国公民\",\"filename\":\"t31.mp3\",\"num\":\"1\",\"DB\":\"20\"}"
 
         val JSON: MediaType = "application/json; charset=utf-8".toMediaType()
-//        val JSON: MediaType = get.get("application/json; charset=utf-8")
 
         val body: RequestBody = RequestBody.create(JSON, json)
         val request: Request = Request.Builder()
@@ -76,8 +71,9 @@ open class DownloadUtil {
             override fun onResponse(call: Call, response: Response) {
                 var code = response.code;
                 if (code !== 200) {
-                    var ss = response.body.toString();
-                    ss.toString();
+                    var vs:String = "访问文字转语音接口失败，code: "+ code;
+                    var e = RuntimeException(vs);
+                    listener.onDownloadFailed(e)
                 } else if (code === 200 && response.body != null) {
                     var inputStream: InputStream? = null
                     val buf = ByteArray(2048)

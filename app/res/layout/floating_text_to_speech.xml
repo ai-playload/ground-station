@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="300dp"
-    android:layout_height="320dp"
+    android:layout_height="380dp"
     android:id="@+id/rlContent"
     android:background="@drawable/floating_layout_bg_shape"
     android:orientation="vertical">
@@ -42,11 +42,48 @@
         android:progressTint="@color/purple"
         android:thumb="@drawable/custom_thumb" />
 
+
+    <LinearLayout
+        android:id="@+id/fbParent"
+        android:layout_below="@+id/seek_bar"
+        android:layout_marginTop="4dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/ylFbTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/close_btn"
+            android:layout_marginLeft="22dp"
+            android:text="提升音量(分贝)：30"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+
+        <androidx.appcompat.widget.AppCompatSeekBar
+            android:id="@+id/seek_bar_fb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/volume_text"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="16dp"
+            android:max="29"
+            android:min="0"
+            android:progress="29"
+            android:progressBackgroundTint="@color/white"
+            android:progressTint="@color/purple"
+            android:thumb="@drawable/custom_thumb" />
+    </LinearLayout>
+
+
     <LinearLayout
         android:id="@+id/contentLayout"
-        android:layout_below="@+id/seek_bar"
+        android:layout_below="@+id/fbParent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="11dp"
         android:orientation="vertical">
 
         <com.google.android.material.textfield.TextInputLayout
@@ -71,8 +108,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
-                android:textColor="@color/white"
-                android:maxLines="3" />
+                android:maxLines="3"
+                android:textColor="@color/white" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

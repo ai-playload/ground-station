@@ -16,21 +16,21 @@ import android.widget.FrameLayout;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatSeekBar;
+import androidx.core.math.MathUtils;
 
 import com.blankj.utilcode.util.ActivityUtils;
-import com.blankj.utilcode.util.GsonUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.example.ground_station.R;
 import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.iflytek.aikitdemo.tool.SPUtil;
-import com.iflytek.aikitdemo.tool.ThreadExtKt;
 import com.lzf.easyfloat.EasyFloat;
 import com.lzf.easyfloat.enums.ShowPattern;
 import com.lzf.easyfloat.enums.SidePattern;
@@ -45,14 +45,12 @@ import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 import java.com.example.ground_station.presentation.ability.AudioFileGenerationCallback;
 import java.com.example.ground_station.presentation.ability.tts.TtsHelper2;
+import java.com.example.ground_station.presentation.floating.autdio.AudioFormatBean;
 import java.com.example.ground_station.presentation.util.DisplayUtils;
-import java.com.example.ground_station.presentation.util.GsonParser;
+import java.com.example.ground_station.presentation.util.DownloadUtil;
 import java.com.example.ground_station.presentation.util.TCPFileUploader;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-
-import kotlin.Unit;
 
 public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
     private final String tag = "text_to_speech_tag";
@@ -62,6 +60,7 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
     private Runnable delayedTask;
     private CheckBox checkBox;
     private static int fileNameFlag = 0;
+    private AppCompatSeekBar seekBarFb;
 
     public void showFloatingTextToSpeech(Context context, CloseCallback closeCallback) {
         startGroundStationService(context, new IServiceConnection() {
@@ -196,6 +195,29 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                                 }
                             });
 
+                            TextView ylFbTv = view.findViewById(R.id.ylFbTv);
+                            seekBarFb = view.findViewById(R.id.seek_bar_fb);
+                            int volumeFb = SPUtil.INSTANCE.getInt("audio_volume_fb", 29);
+                            seekBarFb.setProgress(volumeFb);
+                            updateBs(volumeFb, ylFbTv);
+                            seekBarFb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                                @Override
+                                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                }
+
+                                @Override
+                                public void onStartTrackingTouch(SeekBar seekBar) {
+                                }
+
+                                @Override
+                                public void onStopTrackingTouch(SeekBar seekBar) {
+                                    int volumeFb = seekBarFb.getProgress();
+                                    updateBs(volumeFb, ylFbTv);
+                                    SPUtil.INSTANCE.putBase("audio_volume_fb", volumeFb);
+                                    Log.d(TAG, "volume value: " + volumeFb);
+                                }
+                            });
+
                             editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                                 @Override
                                 public void onFocusChange(View v, boolean hasFocus) {
@@ -231,65 +253,54 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
 
                             speakButton.setOnClickListener(v -> {
                                 if (isBound) {
-                                    if (!editText.getText().toString().trim().isEmpty()) {
+                                    String inputStr = editText.getText().toString().trim();
+                                    if (!inputStr.isEmpty()) {
                                         groundStationService.getTtsHelper().setFileName(fileNameFlag++);
                                         String fileName = groundStationService.getTtsHelper().getFileName();
-                                        groundStationService.generateAudioFile(editText.getText().toString(), new AudioFileGenerationCallback() {
-                                            long startTime = 0;
-                                            long endTime = 0;
 
-                                            @Override
-                                            public void onAudioFileGenerationStart() {
-                                                startTime = System.currentTimeMillis();
-                                                Log.d(TAG, "onAudioFileGenerationStart ");
-                                            }
+                                        if (checkBox.isChecked()) {
+                                            formartMp3(inputStr, fileName);
+                                        } else {
+                                            groundStationService.generateAudioFile(inputStr, new AudioFileGenerationCallback() {
+                                                long startTime = 0;
+                                                long endTime = 0;
 
-                                            @Override
-                                            public void onAudioFileGenerationEnd(String filePath) {
-                                                endTime = System.currentTimeMillis();
-                                                long duration = endTime - startTime;
-
-                                                ShoutcasterConfig.DeviceInfo shoutcaster = groundStationService.getConfig().getShoutcaster();
-
-                                                String command = String.format(GstreamerCommandConstant.TEXT_TO_SPEECH_COMMAND, filePath, shoutcaster.getIp(), shoutcaster.getPort());
-                                                groundStationService.sendMusicCommand(command);
-                                                Log.d(TAG, "onAudioFileGenerationEnd " + filePath + " duration: " + duration);
-                                            }
-                                        });
-                                        groundStationService.getTtsHelper().setFileWriteListener(new TtsHelper2.IFileWriteListener() {
-                                            @Override
-                                            public void onSuccess(File file) {
-                                                Log.d("TtsEngine", "onSuccess 回调 file" + file.getName());
-                                                boolean equals = StringUtils.equals(file.getName(), fileName);
-                                                if (equals) {
-                                                    playGstreamerMusic();
+                                                @Override
+                                                public void onAudioFileGenerationStart() {
+                                                    startTime = System.currentTimeMillis();
+                                                    Log.d(TAG, "onAudioFileGenerationStart ");
                                                 }
-                                                speakButton.post(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        speakButton.setEnabled(true);
+
+                                                @Override
+                                                public void onAudioFileGenerationEnd(String filePath) {
+                                                    endTime = System.currentTimeMillis();
+                                                    long duration = endTime - startTime;
+
+                                                    ShoutcasterConfig.DeviceInfo shoutcaster = groundStationService.getConfig().getShoutcaster();
+
+                                                    String command = String.format(GstreamerCommandConstant.TEXT_TO_SPEECH_COMMAND, filePath, shoutcaster.getIp(), shoutcaster.getPort());
+                                                    groundStationService.sendMusicCommand(command);
+                                                    Log.d(TAG, "onAudioFileGenerationEnd " + filePath + " duration: " + duration);
+                                                }
+                                            });
+                                            groundStationService.getTtsHelper().setFileWriteListener(new TtsHelper2.IFileWriteListener() {
+                                                @Override
+                                                public void onSuccess(File file) {
+                                                    Log.d("TtsEngine", "onSuccess 回调 file" + file.getName());
+                                                    boolean equals = StringUtils.equals(file.getName(), fileName);
+                                                    if (equals) {
+                                                        playGstreamerMusic();
                                                     }
-                                                });
-                                            }
-                                        });
-                                        speakButton.setEnabled(false);
-
-
-                                        // 创建一个新的任务并安排执行
-                                        delayedTask = new Runnable() {
-                                            @Override
-                                            public void run() {
-//                                                if (isCheckedLoop) {
-//                                                    groundStationService.sendSocketCommand(SocketConstant.TEXT_TO_SPEECH_LOOP, 0);
-//                                                }
-//
-//                                                groundStationService.sendSocketCommand(SocketConstant.STREAMER, 1);
-//                                                groundStationService.sendSocketCommand(SocketConstant.START_TALK, 0);
-//                                        playGstreamerMusic();
-                                            }
-                                        };
-
-//                                        handler.postDelayed(delayedTask, 700 * editText.getText().toString().length());
+                                                    speakButton.post(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            speakButton.setEnabled(true);
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                            speakButton.setEnabled(false);
+                                        }
                                     } else {
                                         Toast.makeText(context, "请输入要播放的内容", Toast.LENGTH_SHORT).show();
                                     }
@@ -315,6 +326,40 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                 uploadAudioFile(recordFile);
             }
         }
+    }
+
+    /**
+     *
+     */
+    private void formartMp3(String str, String fileName) {
+        AudioFormatBean info = new AudioFormatBean();
+        info.text = str;
+        info.filename = fileName;
+        if (seekBarFb != null) {
+            String fb = getBs(seekBarFb.getProgress());
+            info.DB = fb;
+        } else {
+            info.DB = "1";
+        }
+
+        info.num = "1";
+        new DownloadUtil().download(info, new DownloadUtil.OnDownloadListener() {
+            @Override
+            public void onDownloadSuccess(@Nullable File file) {
+                uploadAudioFile(file);
+            }
+
+            @Override
+            public void onDownloading(int progress) {
+
+            }
+
+            @Override
+            public void onDownloadFailed(@Nullable Exception e) {
+                String message = e.getMessage();
+                ToastUtils.showLong("从服务器获取文字转语音文件失败：" + message);
+            }
+        });
     }
 
     private void uploadAudioFile(File file) {
@@ -355,6 +400,17 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                 }
             }
         });
+    }
+
+    private static void updateBs(int volume, TextView ylBsTv) {
+        String bs = getBs(volume);
+        ylBsTv.setText("提升音量(分贝)：" + bs);
+    }
+
+    private static @NonNull String getBs(int volume) {
+        int v = volume + 1;
+        v = MathUtils.clamp(v, 1, 30);
+        return v + "";
     }
 
 }
