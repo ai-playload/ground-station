@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (BuildConfig.DEBUG) {
             versionTv.setText("版本号: " + getVersionName() + "\r\nIP：" + NetworkUtils.getIPAddress(true));
-            ((ImageView) findViewById(R.id.bgIv)).setImageDrawable(null);
+//            ((ImageView) findViewById(R.id.bgIv)).setImageDrawable(null);
             findViewById(R.id.rfcBtn).setOnClickListener(view -> {
 //                showFloatingWindow();
                 requestFloatingPermissionsAndShow();
