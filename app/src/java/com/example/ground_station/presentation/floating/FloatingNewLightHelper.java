@@ -228,7 +228,7 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
     }
 
     private void sendSwitchInstrunt(byte msgid2, boolean open) {
-        UdpClientHelper.getInstance().send(SocketConstant.LIGHT, open ? 1 : 0);
+        UdpClientHelper.getInstance().send(msgid2, open ? 1 : 0);
     }
 
     private void updateUISeekValueTv(int volume) {
