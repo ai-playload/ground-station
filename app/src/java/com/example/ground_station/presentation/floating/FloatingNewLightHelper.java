@@ -70,13 +70,6 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
 
                             @Override
                             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                mLightValue = progress;
-                                progress = seekBar.getProgress() + 1;
-                                UdpClientHelper.getInstance().send(SocketConstant.BRIGHTNESS, progress);
-                                if (headWdValue > 60 && progress > 40) {
-                                    ToastUtils.showLong("温度过高，降低亮度");
-                                }
-                                Log.d(TAG, "progress value: " + progress);
                                 updateUISeekValueTv(progress);
                             }
 
@@ -86,10 +79,21 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
 
                             @Override
                             public void onStopTrackingTouch(SeekBar seekBar) {
+                                mLightValue = seekBar.getProgress();
+                                int progress   = seekBar.getProgress() + 1;
+                                UdpClientHelper.getInstance().send(SocketConstant.BRIGHTNESS, progress);
+                                if (headWdValue > 60 && progress > 40) {
+                                    ToastUtils.showLong("温度过高，降低亮度");
+                                }
+                                Log.d(TAG, "progress value: " + progress);
+                                updateUISeekValueTv(progress);
                             }
+
                         });
                         int progressLoad = mLightValue;
                         seekBar.setProgress(progressLoad);
+                        UdpClientHelper.getInstance().send(SocketConstant.BRIGHTNESS, progressLoad + 1);
+
 
                         AppCompatImageButton leftRotation = view.findViewById(R.id.light_left_btn);
                         leftRotation.setOnTouchListener(new View.OnTouchListener() {
