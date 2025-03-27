@@ -35,7 +35,7 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
     private TextView driveWdTv;
     private TextView headWdTv;
     private int driveWdValue, headWdValue = Integer.MIN_VALUE;
-
+    private static int mLightValue = 50 - 1;
 
     public void showFloatingLight(Context context, CloseCallback closeCallback) {
         EasyFloat.with(context)
@@ -65,12 +65,18 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                         });
 
                         AppCompatSeekBar seekBar = view.findViewById(R.id.seek_bar);
-                        int progressLoad = SPUtil.INSTANCE.getInt("light_progress", 100);
-                        seekBar.setProgress(progressLoad);
-
+                        setkValueTv = view.findViewById(R.id.seekValueTv);
                         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
                             @Override
                             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                mLightValue = progress;
+                                progress = seekBar.getProgress() + 1;
+                                UdpClientHelper.getInstance().send(SocketConstant.BRIGHTNESS, progress);
+                                if (headWdValue > 60 && progress > 40) {
+                                    ToastUtils.showLong("温度过高，降低亮度");
+                                }
+                                Log.d(TAG, "progress value: " + progress);
                                 updateUISeekValueTv(progress);
                             }
 
@@ -80,17 +86,10 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
 
                             @Override
                             public void onStopTrackingTouch(SeekBar seekBar) {
-                                int progress = seekBar.getProgress();
-                                SPUtil.INSTANCE.putBase("light_progress", progress);
-                                UdpClientHelper.getInstance().send(SocketConstant.BRIGHTNESS, progress);
-                                if (headWdValue > 60 && progress > 40) {
-                                    ToastUtils.showLong("温度过高，降低亮度");
-                                }
-                                Log.d(TAG, "progress value: " + progress);
                             }
                         });
-                        setkValueTv = view.findViewById(R.id.seekValueTv);
-                        updateUISeekValueTv(seekBar.getProgress());
+                        int progressLoad = mLightValue;
+                        seekBar.setProgress(progressLoad);
 
                         AppCompatImageButton leftRotation = view.findViewById(R.id.light_left_btn);
                         leftRotation.setOnTouchListener(new View.OnTouchListener() {

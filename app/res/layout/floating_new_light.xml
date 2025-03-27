@@ -125,7 +125,7 @@
                 android:layout_weight="1"
                 android:layout_height="16dp"
                 android:layout_marginLeft="1dp"
-                android:max="100"
+                android:max="99"
                 android:progress="0"
                 android:progressDrawable="@drawable/custom_seekbar_progress"
                 android:thumb="@drawable/progress_seekbar_thumb" />
