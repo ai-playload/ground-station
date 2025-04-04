@@ -32,6 +32,7 @@ import com.lzf.easyfloat.utils.InputMethodUtils;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.socket.SocketClientHelper;
 import java.com.example.ground_station.data.socket.SocketConstant;
+import java.com.example.ground_station.data.view.ConnectStatusView;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 import java.com.example.ground_station.presentation.ability.AudioFileGenerationCallback;
 import java.com.example.ground_station.presentation.ability.tts.TtsHelper2;
@@ -107,7 +108,7 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
 
                             groundStationService.getAiSoundHelper().stop();
                         }
-
+                        helper.setConnectCallBack(null);
                     }
 
                     @Override
@@ -118,6 +119,7 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                     public void createdResult(boolean success, @Nullable String s, @Nullable View view) {
                         if (view != null) {
                             initFloatingView(view, tag, closeCallback);
+                            initConnectStatus(view, helper);
 
                             TextInputLayout textInputLayout = view.findViewById(R.id.audioContent);
                             EditText editText = textInputLayout.getEditText();

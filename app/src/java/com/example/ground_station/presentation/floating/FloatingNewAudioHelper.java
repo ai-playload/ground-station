@@ -53,6 +53,8 @@ public class FloatingNewAudioHelper extends BaseFloatingHelper {
                 .setLayout(R.layout.floating_new_audio, view -> {
                     if (view != null) {
                         initFloatingView(view, tag, closeCallback);
+                        initConnectStatus(view, helper);
+
                         AppCompatImageButton shoutButton = view.findViewById(R.id.audio_shout_btn);
                         TextView shoutTv = view.findViewById(R.id.audio_shout_tv);
 
@@ -118,7 +120,7 @@ public class FloatingNewAudioHelper extends BaseFloatingHelper {
                             groundStationService.cancelGstreamerAudioCommand();
                             groundStationService.sendSocketCommand(SocketConstant.STREAMER, 2);
                         }
-
+                        helper.setConnectCallBack(null);
                     }
 
                     @Override

@@ -128,6 +128,7 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
                         }
                         SendTaskHelper.getInstance().removeAll();
                         SendTaskHelper.getInstance().getLoop().stop();
+                        helper.setConnectCallBack(null);
                     }
 
                     @Override
@@ -139,6 +140,7 @@ public class FloatingNewDescentHelper2 extends BaseFloatingHelper {
                     public void createdResult(boolean b, @Nullable String s, @Nullable View view) {
                         if (view != null) {
                             initFloatingView(view, tag, closeCallback);
+                            initConnectStatus(view, helper);
 
                             safetyButton = view.findViewById(R.id.safety_button);
                             circuitButton = view.findViewById(R.id.circuit_tv);

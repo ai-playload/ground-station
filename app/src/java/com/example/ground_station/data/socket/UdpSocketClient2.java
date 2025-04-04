@@ -17,7 +17,6 @@ public class UdpSocketClient2 {
 
     private String ip = "127.0.0.1";
     private int portJs = 13551;
-    private int portSend = 13552;
     private DatagramSocket datagramSocket;
     private DatagramPacket receivePacket;
     private volatile boolean isConnected = false;

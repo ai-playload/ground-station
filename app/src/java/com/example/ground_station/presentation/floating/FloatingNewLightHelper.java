@@ -36,6 +36,9 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
     private TextView headWdTv;
     private int driveWdValue, headWdValue = Integer.MIN_VALUE;
     private static int mLightValue = 50 - 1;
+    private static boolean mSwOpen;
+    private static boolean mSwFlash;
+    private static boolean mSwRedBlue;
 
     public void showFloatingLight(Context context, CloseCallback closeCallback) {
         EasyFloat.with(context)
@@ -47,22 +50,26 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                 .setLayout(R.layout.floating_new_light, view -> {
                     if (view != null) {
                         initFloatingView(view, tag, closeCallback);
+                        initConnectStatus(view, UdpClientHelper.getInstance().getClient());
 
                         view.findViewById(R.id.open_light_btn).setOnClickListener(v -> {
-                            v.setSelected(!v.isSelected());
+                            v.setSelected(mSwOpen = !v.isSelected());
                             sendSwitchInstrunt(SocketConstant.LIGHT, v.isSelected());
                         });
+                        view.findViewById(R.id.open_light_btn).setSelected(mSwOpen);
 
                         view.findViewById(R.id.flashing_light_btn).setOnClickListener(v -> {
-                            v.setSelected(!v.isSelected());
+                            v.setSelected(mSwFlash = !v.isSelected());
                             sendSwitchInstrunt(SocketConstant.EXPLOSION_FLASH, v.isSelected());
                         });
+                        view.findViewById(R.id.flashing_light_btn).setSelected(mSwFlash);
 
 
                         view.findViewById(R.id.red_blue_light_btn).setOnClickListener(v -> {
-                            v.setSelected(!v.isSelected());
+                            v.setSelected(mSwRedBlue = !v.isSelected());
                             sendSwitchInstrunt(SocketConstant.RED_BLUE_FLASH, v.isSelected());
                         });
+                        view.findViewById(R.id.red_blue_light_btn).setSelected(mSwRedBlue);
 
                         AppCompatSeekBar seekBar = view.findViewById(R.id.seek_bar);
                         setkValueTv = view.findViewById(R.id.seekValueTv);
@@ -70,7 +77,7 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
 
                             @Override
                             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                updateUISeekValueTv(progress);
+                                updateUISeekValueTv(progress + 1);
                             }
 
                             @Override
@@ -80,7 +87,7 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                             @Override
                             public void onStopTrackingTouch(SeekBar seekBar) {
                                 mLightValue = seekBar.getProgress();
-                                int progress   = seekBar.getProgress() + 1;
+                                int progress = seekBar.getProgress() + 1;
                                 UdpClientHelper.getInstance().send(SocketConstant.BRIGHTNESS, progress);
                                 if (headWdValue > 60 && progress > 40) {
                                     ToastUtils.showLong("温度过高，降低亮度");
@@ -90,10 +97,9 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                             }
 
                         });
-                        int progressLoad = mLightValue;
-                        seekBar.setProgress(progressLoad);
-                        UdpClientHelper.getInstance().send(SocketConstant.BRIGHTNESS, progressLoad + 1);
-
+                        seekBar.setProgress(mLightValue);
+                        UdpClientHelper.getInstance().send(SocketConstant.BRIGHTNESS, mLightValue + 1);
+                        updateUISeekValueTv(mLightValue + 1);
 
                         AppCompatImageButton leftRotation = view.findViewById(R.id.light_left_btn);
                         leftRotation.setOnTouchListener(new View.OnTouchListener() {
@@ -215,7 +221,7 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
 
                     @Override
                     public void dismiss() {
-
+                        UdpClientHelper.getInstance().getClient().setConnectCallBack(null);
                     }
 
                     @Override
@@ -232,6 +238,14 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
 
     private void sendSwitchInstrunt(byte msgid2, boolean open) {
         UdpClientHelper.getInstance().send(msgid2, open ? 1 : 0);
+        if (setkValueTv != null && open) {
+            setkValueTv.post(new Runnable() {
+                @Override
+                public void run() {
+                    UdpClientHelper.getInstance().send(SocketConstant.BRIGHTNESS, mLightValue + 1);
+                }
+            });
+        }
     }
 
     private void updateUISeekValueTv(int volume) {

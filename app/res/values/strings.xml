@@ -6,8 +6,8 @@
     <string name="ciruit_loading_cancel">取消熔断中...</string>
     <string name="ALL">All</string>
     <string name="HanHuaQi">HanHuaQi</string>
-    <string name="HanHuaQi_DefaultIp">192.168.144.155</string>
+    <string name="HanHuaQi_DefaultIp">192.168.144.105</string>
     <string name="SuoJiang">SuoJiang</string>
-    <string name="SuoJiang_DefaultIp">192.168.144.100</string>
+    <string name="SuoJiang_DefaultIp">192.168.144.152</string>
     <string name="Light">Light</string>
 </resources>

@@ -246,7 +246,7 @@
                     android:layout_marginLeft="6dp"
                     android:background="@null"
                     android:hint="请输入"
-                    android:text="13552"
+                    android:text="13551"
                     android:textColor="@color/white"
                     android:textColorHint="#BDBDBD"
                     android:textCursorDrawable="@drawable/cursor_yellow"

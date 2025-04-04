@@ -16,8 +16,10 @@ import com.iflytek.aikitdemo.tool.SPUtil;
 import com.lzf.easyfloat.EasyFloat;
 
 import java.com.example.ground_station.data.service.GroundStationService;
+import java.com.example.ground_station.data.socket.Clien;
 import java.com.example.ground_station.data.socket.SocketClientHelper;
 import java.com.example.ground_station.data.socket.SocketConstant;
+import java.com.example.ground_station.data.view.ConnectStatusView;
 
 public class BaseFloatingHelper {
 
@@ -76,6 +78,14 @@ public class BaseFloatingHelper {
                 EasyFloat.dismiss(tag);
             });
             settingAudioSize(view);
+        }
+    }
+
+    public void initConnectStatus(View view, Clien clien) {
+        ConnectStatusView statusView = view.findViewById(R.id.statusView);
+        if (statusView != null) {
+            clien.setConnectCallBack(statusView);
+            statusView.setStatus(clien.isConnected());
         }
     }
 
