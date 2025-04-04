@@ -72,16 +72,6 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
                     initFloatingView(view, tag, closeCallback);
                     initView(view, activity);
 
-//                    TextView textView = view.findViewById(R.id.audio_loop_select);
-//                    textView.setOnClickListener(v -> {
-//                        textView.setSelected(!textView.isSelected());
-//                    });
-//
-//                    TabLayout tabLayout = view.findViewById(R.id.tab_layout);
-//
-//                    // 添加两个选项
-//                    tabLayout.addTab(tabLayout.newTab().setText("本地音频"));
-//                    tabLayout.addTab(tabLayout.newTab().setText("远程音频"));
                 }).registerCallbacks(new OnFloatCallbacks() {
                     @Override
                     public void dragEnd(@NonNull View view) {
@@ -108,13 +98,11 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
                         helper.setConnectCallBack(null);
                         if (isBound) {
                             groundStationService.cancelGstreamerAudioCommand();
-//                            send(SocketConstant.AMPLIFIER, 2);
 
                             if (isRemotePlay) {
                                 List<AudioModel> currentList = remoteAdapter.getCurrentList();
                                 if (currentList != null && currentList.size() > currentRemoteAudioPosition && currentRemoteAudioPosition >= 0) {
                                     AudioModel audioModel = currentList.get(currentRemoteAudioPosition);
-//                                  send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, currentRemoteAudioPosition, 2);
                                     sendAudioInstruct(audioModel, 2);
                                 }
                             } else {
@@ -137,10 +125,8 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
     private void initView(View view, AppCompatActivity activity) {
         RecyclerView recyclerView = view.findViewById(R.id.recyclerview);
         RecyclerView remoteRecyclerView = view.findViewById(R.id.remote_recyclerview);
-
         initRecyclerView(recyclerView);
         initRemoteRecyclerView(remoteRecyclerView);
-
         initConnectStatus(view, helper);
 
         TabLayout tabLayout = view.findViewById(R.id.tab_layout);
@@ -175,22 +161,6 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
             boolean isSelected = !textView.isSelected();
             textView.setSelected(isSelected);
             isListLoopStatus = isSelected;
-//            if (tabLayout.getSelectedTabPosition() == 1) {
-//                List<AudioModel> currentList = remoteAdapter.getCurrentList();
-//                int position = remoteAdapter.getCurrentPlayingPosition();
-//                if (currentList != null && currentList.size() > position && position >= 0) {
-//                    AudioModel audioModel = currentList.get(position);
-//                    if (audioModel.isPlaying()) {
-//                        if (isListLoopStatus) {
-//                            playRmoteAudio(audioModel);
-//                        } else {
-//                            audioModel.setPlaying(false);
-//                            remoteAdapter.notifyDataSetChanged();
-//                            sendAudioInstruct(audioModel, 2);
-//                        }
-//                    }
-//                }
-//            }
         });
 
         view.findViewById(R.id.audio_delete_btn).setOnClickListener(v -> {
@@ -235,7 +205,6 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
                         if (currentList != null && currentList.size() > position) {
                             AudioModel audioModel = currentList.get(position);
                             sendAudioInstruct(audioModel, 3);
-//                        send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 3);
                         }
                         getRemoteAudioList();
                     }

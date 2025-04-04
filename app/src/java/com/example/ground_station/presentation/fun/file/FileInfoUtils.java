@@ -2,6 +2,8 @@ package java.com.example.ground_station.presentation.fun.file;
 
 import android.text.TextUtils;
 
+import androidx.core.math.MathUtils;
+
 import com.blankj.utilcode.util.SPUtils;
 import com.thegrizzlylabs.sardineandroid.DavResource;
 
@@ -172,16 +174,18 @@ public class FileInfoUtils {
     private static int UP_LOAD_FILE_INDEX = SPUtils.getInstance().getInt("UP_LOAD_FILE_INDEX", 9);
 
     public static int getUploadAudioFileIndex() {
-        int i = ++UP_LOAD_FILE_INDEX;
-        SPUtils.getInstance().put("UP_LOAD_FILE_INDEX", i);
-        return i;
+        int i = (UP_LOAD_FILE_INDEX + 1) % 10;
+        i = UP_LOAD_FILE_INDEX = MathUtils.clamp(i, 0, 9);
+        SPUtils.getInstance().put("TEXT_2_AUDIO_FILE_INDEX", UP_LOAD_FILE_INDEX);
+        return i + 10;
     }
 
     private static int TEXT_2_AUDIO_FILE_INDEX = SPUtils.getInstance().getInt("TEXT_2_AUDIO_FILE_INDEX", -1);
 
     public static int getText2AudioFileIndex() {
-        int i = ++TEXT_2_AUDIO_FILE_INDEX;
-        SPUtils.getInstance().put("TEXT_2_AUDIO_FILE_INDEX", i);
+        int i = (TEXT_2_AUDIO_FILE_INDEX + 1) % 10;
+        i = TEXT_2_AUDIO_FILE_INDEX = MathUtils.clamp(i, 0, 9);
+        SPUtils.getInstance().put("TEXT_2_AUDIO_FILE_INDEX", TEXT_2_AUDIO_FILE_INDEX);
         return i;
     }
 }

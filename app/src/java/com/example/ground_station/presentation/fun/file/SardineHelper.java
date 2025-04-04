@@ -161,7 +161,7 @@ public class SardineHelper {
             if (sardine == null) {
                 sardine = new OkHttpSardine();
 //                sardine.setCredentials("sz", "456", true);
-                sardine.setCredentials("sftp", "456sftp", true);
+//                sardine.setCredentials("sftp", "456sftp", true);
             }
             return sardine;
         }
