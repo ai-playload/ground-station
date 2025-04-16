@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.StringUtils;
+import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.example.ground_station.R;
 
@@ -64,6 +65,16 @@ public class ConnectStatusView extends FrameLayout implements ConnectionCallback
     }
 
     public void setStatus(boolean connected) {
+        if (ThreadUtils.isMainThread()) {
+            runUpdate(connected);
+        }else {
+            post(() -> {
+                runUpdate(connected);
+            });
+        }
+    }
+
+    private void runUpdate(boolean connected) {
         if (connected) {
             view.setBackgroundResource(R.drawable.shape_dot_green);
         }else {

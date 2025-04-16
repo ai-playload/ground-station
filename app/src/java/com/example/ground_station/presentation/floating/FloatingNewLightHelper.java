@@ -27,6 +27,7 @@ import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.data.socket.UdpClientHelper;
 import java.com.example.ground_station.data.utils.Utils;
 import java.com.example.ground_station.data.utils.ViewUtils;
+import java.com.example.ground_station.data.view.ConnectStatusView;
 
 public class FloatingNewLightHelper extends BaseFloatingHelper {
     private final String tag = "light_tag";
@@ -39,6 +40,7 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
     private static boolean mSwOpen;
     private static boolean mSwFlash;
     private static boolean mSwRedBlue;
+    private ConnectStatusView statusView;
 
     public void showFloatingLight(Context context, CloseCallback closeCallback) {
         EasyFloat.with(context)
@@ -50,7 +52,9 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                 .setLayout(R.layout.floating_new_light, view -> {
                     if (view != null) {
                         initFloatingView(view, tag, closeCallback);
-                        initConnectStatus(view, UdpClientHelper.getInstance().getClient());
+//                        initConnectStatus(view, UdpClientHelper.getInstance().getClient());
+
+                        statusView = view.findViewById(R.id.statusView);
 
                         view.findViewById(R.id.open_light_btn).setOnClickListener(v -> {
                             v.setSelected(mSwOpen = !v.isSelected());
@@ -221,7 +225,7 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
 
                     @Override
                     public void dismiss() {
-                        UdpClientHelper.getInstance().getClient().setConnectCallBack(null);
+//                        UdpClientHelper.getInstance().getClient().setConnectCallBack(null);
                     }
 
                     @Override
@@ -261,6 +265,10 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
 
     private void disCacllBack(byte[] data) {
         if (data != null && data.length >= 5) {
+            if (statusView != null) {
+                statusView.setStatus(true);
+            }
+
             byte msgId2 = data[3];
             Byte v = data[4];
             switch (msgId2) {

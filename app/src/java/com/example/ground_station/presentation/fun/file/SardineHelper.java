@@ -1,6 +1,7 @@
 package java.com.example.ground_station.presentation.fun.file;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import com.blankj.utilcode.util.StringUtils;
@@ -23,6 +24,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.FileNameMap;
+import java.net.URLConnection;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -64,7 +68,7 @@ public class SardineHelper {
 
             @Override
             public Objects doInBackground() throws Throwable {
-////                InputStream filePathForN = FilePathUtils.getFilePathForN(uri, Utils.getApp());
+//                InputStream filePathForN = FilePathUtils.getFilePathForN(uri, Utils.getApp());
 //                FileInfoUtils.writeTitle(file, aliasName);
                 String filePath = file.getPath();
 //                File file1 = new File(filePath);
@@ -75,9 +79,14 @@ public class SardineHelper {
 //                    String first2 = tag.getFirst(FieldKey.ARTIST);
 //                }
 
-                InputStream filePathForN = new FileInputStream(file) ;
-                byte[] byteArray = FilePathUtils.toByteArray(filePathForN);
-                getSardine().put(path, byteArray);
+//                InputStream filePathForN = new FileInputStream(file) ;
+//                byte[] byteArray = FilePathUtils.toByteArray(filePathForN);
+
+//                String contentType = "application/pdf";
+                FileNameMap fileNameMap = URLConnection.getFileNameMap();
+                String contentType = fileNameMap.getContentTypeFor(file.getName());
+                getSardine().put(path, file, contentType);
+//                getSardine().put(path, byteArray);
 
                 FileInfoUtils.putAudioInfoMap(path, aliasName);
 
