@@ -2,6 +2,7 @@ package java.com.example.ground_station.data.socket;
 
 import android.util.Log;
 
+import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.example.ground_station.BuildConfig;
 
@@ -73,48 +74,53 @@ class UdpClient implements Clien {
 
     @Override
     public void connect() {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (adsChange) {
-                        if (isConnected()) {
-                            disConnect();
-                        }
-                    } else if (isConnected()) {
+        if (ThreadUtils.isMainThread()) {
+            executorService.execute(() -> {
+                runConnect();
+            });
+        } else {
+            runConnect();
+        }
+    }
 
-                        return;
-                    }
-                    datagramSocket = new DatagramSocket(portJs);
-//                    datagramSocket.setSoTimeout(3000);
-                    InetAddress serverAddress = InetAddress.getByName(ip);
-                    datagramSocket.connect(serverAddress, portJs + 1);
-
-                    byte[] buffer = new byte[256];
-                    receivePacket = new DatagramPacket(buffer, buffer.length);
-
-                    setConnectState(true);
-
-                    if (readThread != null) {
-                        readThread.interrupt();
-                    }
-                    readThread = new Thread(new ReadThread());
-                    readThread.start();
-
-                    if (connectCallBack != null) {
-                        connectCallBack.onConnectionSuccess();
-                    }
-                    System.out.println("udp连接成功，监听端口：" + portJs);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    setConnectState(false);
-                    if (connectCallBack != null) {
-                        connectCallBack.onConnectionFailure(e);
-                    }
-                    System.err.println("udp连接失败: " + e.getMessage());
+    private void runConnect() {
+        try {
+            if (adsChange) {
+                if (isConnected()) {
+                    disConnect();
                 }
+            } else if (isConnected()) {
+
+                return;
             }
-        });
+            datagramSocket = new DatagramSocket(portJs);
+//                    datagramSocket.setSoTimeout(3000);
+            InetAddress serverAddress = InetAddress.getByName(ip);
+            datagramSocket.connect(serverAddress, portJs + 1);
+
+            byte[] buffer = new byte[256];
+            receivePacket = new DatagramPacket(buffer, buffer.length);
+
+            setConnectState(true);
+
+            if (readThread != null) {
+                readThread.interrupt();
+            }
+            readThread = new Thread(new ReadThread());
+            readThread.start();
+
+            if (connectCallBack != null) {
+                connectCallBack.onConnectionSuccess();
+            }
+            System.out.println("udp连接成功，监听端口：" + portJs);
+        } catch (Exception e) {
+            e.printStackTrace();
+            setConnectState(false);
+            if (connectCallBack != null) {
+                connectCallBack.onConnectionFailure(e);
+            }
+            System.err.println("udp连接失败: " + e.getMessage());
+        }
     }
 
     @Override
@@ -124,24 +130,31 @@ class UdpClient implements Clien {
             @Override
             public void run() {
                 if (datagramSocket != null && isConnected()) {
-                    try {
-                        DatagramPacket packet = new DatagramPacket(data, data.length);
-                        packet.setData(data);
-                        datagramSocket.send(packet);
-                        System.out.println("udp数据已发送：" + bytesToHex(data));
-                        if (BuildConfig.DEBUG) {
-                            ToastUtils.showShort("udp 成功发送指令：" + data[3]);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        System.err.println("udp发送失败: " + e.getMessage());
-                        if (BuildConfig.DEBUG) {
-                            ToastUtils.showShort("udp 发送失败- 指令：" + data[3]);
-                        }
-                    }
+                    runSend(data);
+                }else {
+                    runConnect();
+                    runSend(data);
                 }
             }
         });
+    }
+
+    private void runSend(byte[] data) {
+        try {
+            DatagramPacket packet = new DatagramPacket(data, data.length);
+            packet.setData(data);
+            datagramSocket.send(packet);
+            System.out.println("udp数据已发送：" + bytesToHex(data));
+            if (BuildConfig.DEBUG) {
+                ToastUtils.showShort("udp 成功发送指令：" + data[3]);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("udp发送失败: " + e.getMessage());
+            if (BuildConfig.DEBUG) {
+                ToastUtils.showShort("udp 发送失败- 指令：" + data[3]);
+            }
+        }
     }
 
     private String bytesToHex(byte[] bytes) {
