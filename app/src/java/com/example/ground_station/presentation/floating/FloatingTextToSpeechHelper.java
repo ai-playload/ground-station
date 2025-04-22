@@ -32,7 +32,6 @@ import com.lzf.easyfloat.utils.InputMethodUtils;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.socket.SocketClientHelper;
 import java.com.example.ground_station.data.socket.SocketConstant;
-import java.com.example.ground_station.data.view.ConnectStatusView;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 import java.com.example.ground_station.presentation.ability.AudioFileGenerationCallback;
 import java.com.example.ground_station.presentation.ability.tts.TtsHelper2;
@@ -242,7 +241,7 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
         Activity topActivity = ActivityUtils.getTopActivity();
         if (topActivity != null) {
             SardineHelper sardineHelper = new SardineHelper(null);
-            String palyPath = PathConstants.getText2AudioFileName(aduidoStr);
+            String palyPath = PathConstants.creatTextAudioFileName(aduidoStr);
             sardineHelper.upLoad(palyPath, file, aduidoStr, new SardineCallBack<String>() {
                 @Override
                 public void getResult(String s) {
@@ -255,8 +254,8 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
     private void playBpFile(String palyPath) {
         int index = palyPath.lastIndexOf("/") + 1;
         if (index >= 0 && index < palyPath.length()) {
-            String palyName = palyPath.substring(index);
-            int payload = FileInfoUtils.file2Payload(palyName);
+            String playName = palyPath.substring(index);
+            int payload = FileInfoUtils.file2Payload(playName);
             if (payload >= 0) {
                 send(SocketConstant.PLAY_REMOTE_AUDIO_BY_RECORD_NAME, payload);
             }

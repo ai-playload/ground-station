@@ -186,6 +186,14 @@ public class SocketClientHelper implements Clien {
     }
 
     int t;
+    public void send(byte msgId2, byte... payload) {
+        int[] p = new int[payload.length];
+        for (int i = 0; i < payload.length; i++) {
+            p[i] = ((int) payload[i]);
+        }
+        send(msgId2, p);
+    }
+
     public void send(byte msgId2, int... payload) {
         send(SendUtils.toData(msgId2, payload));
         if (!filtSend(msgId2)) {

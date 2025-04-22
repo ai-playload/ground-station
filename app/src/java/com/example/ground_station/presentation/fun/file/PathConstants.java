@@ -1,5 +1,6 @@
 package java.com.example.ground_station.presentation.fun.file;
 
+import android.os.Environment;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -33,7 +34,7 @@ public class PathConstants {
 
 
     public static String getUploadAudioPalyPath(String name) {
-        String palyPath = PathConstants.getPalyPath();
+        String palyPath = PathConstants.getPalyWebPath();
         int index = FileInfoUtils.getUploadAudioFileIndex();
         String hz = "";
         int index1 = name.lastIndexOf(".");
@@ -44,7 +45,7 @@ public class PathConstants {
     }
 
     public static String getText2AudioFileName(String showFileName) {
-        String palyPath = PathConstants.getPalyPath();
+        String palyPath = PathConstants.getPalyWebPath();
         String originName = FileInfoUtils.getAudioOriginName(showFileName);
         if (TextUtils.isEmpty(originName)) {
             int index = FileInfoUtils.getText2AudioFileIndex();
@@ -55,16 +56,40 @@ public class PathConstants {
         }
     }
 
-    public static String getPalyPath() {
+    public static String getPalyWebPath() {
         String rootPath = getWebdavRootPath();
-        return rootPath + "/play/";
-//        return rootPath + "data/play/";
+        return rootPath + "play/";
     }
 
-    private static @NonNull String getWebdavRootPath() {
+    public static String getLoadAudioWebPath() {
+        return getPalyWebPath() + "upLoadAudio/";
+    }
+
+    public static String getTextAudioWebPath() {
+        return getPalyWebPath() + "textAudio/";
+    }
+
+    public static String creatTextAudioFileName(String str) {
+        return getTextAudioWebPath()  + str ;
+    }
+
+    public static @NonNull String getWebdavRootPath() {
         ShoutcasterConfig.DeviceInfo mediaInfo = ShoutcasterConfig.getMediaInfo();
         String rootPath = "http://" + mediaInfo.getIp() + ":5000/";
 //        String rootPath = "http://" + mediaInfo.getIp() + "/";
         return rootPath;
     }
+
+    public static File getMusicDir() {
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+    }
+
+    public static File getTextAudioDir() {
+        return new File(getMusicDir(), "textAudio");
+    }
+
+    public static File getUploadAudioDir() {
+        return new File(getMusicDir(), "upLoadAudio");
+    }
+
 }

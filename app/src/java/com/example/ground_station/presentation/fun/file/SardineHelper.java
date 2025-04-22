@@ -1,21 +1,15 @@
 package java.com.example.ground_station.presentation.fun.file;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.Log;
 
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ThreadUtils;
-import com.blankj.utilcode.util.Utils;
 import com.thegrizzlylabs.sardineandroid.DavResource;
 import com.thegrizzlylabs.sardineandroid.Sardine;
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine;
 
 import org.greenrobot.eventbus.EventBus;
-import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.Tag;
 
 import java.com.example.ground_station.data.model.MediaEvent;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
@@ -23,10 +17,10 @@ import java.com.example.ground_station.data.socket.SocketConstant;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.FileNameMap;
 import java.net.URLConnection;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -63,32 +57,24 @@ public class SardineHelper {
         });
     }
 
-    public void upLoad(String path, File  file, String  aliasName, SardineCallBack<String> callBack) {
+    public void upLoad(String path, File file, String aliasName, SardineCallBack<String> callBack) {
         ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<Objects>() {
 
             @Override
             public Objects doInBackground() throws Throwable {
-//                InputStream filePathForN = FilePathUtils.getFilePathForN(uri, Utils.getApp());
-//                FileInfoUtils.writeTitle(file, aliasName);
+                int parentIndex = path.lastIndexOf("/");
+                if (parentIndex > 0) {
+                    String parentPath = path.substring(0, parentIndex);
+                    if (!getSardine().exists(parentPath)) {
+                        getSardine().createDirectory(parentPath);
+                    }
+                }
+
                 String filePath = file.getPath();
-//                File file1 = new File(filePath);
-//                AudioFile audioFile = AudioFileIO.read(file1);
-//                Tag tag = audioFile.getTag();
-//                if (tag != null) {
-//                    String first = tag.getFirst(FieldKey.TITLE);
-//                    String first2 = tag.getFirst(FieldKey.ARTIST);
-//                }
-
-//                InputStream filePathForN = new FileInputStream(file) ;
-//                byte[] byteArray = FilePathUtils.toByteArray(filePathForN);
-
 //                String contentType = "application/pdf";
                 FileNameMap fileNameMap = URLConnection.getFileNameMap();
                 String contentType = fileNameMap.getContentTypeFor(file.getName());
                 getSardine().put(path, file, contentType);
-//                getSardine().put(path, byteArray);
-
-                FileInfoUtils.putAudioInfoMap(path, aliasName);
 
                 callBack.getResult(filePath);
 
@@ -100,7 +86,6 @@ public class SardineHelper {
 
             @Override
             public void onSuccess(Objects result) {
-
             }
         });
     }
@@ -131,7 +116,7 @@ public class SardineHelper {
         ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<List<DavResource>>() {
             @Override
             public List<DavResource> doInBackground() throws Throwable {
-                try{
+                try {
                     List<DavResource> list = getSardine().list(path);
                     if (list != null && list.size() > 1) {
                         DavResource davResource = list.get(0);
@@ -141,7 +126,7 @@ public class SardineHelper {
                         }
                     }
                     return list;
-                }catch (Exception e) {
+                } catch (Exception e) {
                     String message = e.getMessage();
                     Log.e("webdav:ttkx", message);
                 }
@@ -153,6 +138,68 @@ public class SardineHelper {
                 callBack.getResult(result);
             }
         });
+    }
+
+    public void listAllFile(String p, SardineCallBack callBack) {
+        this.path = checkPath(p);
+        ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<List<DavResource>>() {
+            @Override
+            public List<DavResource> doInBackground() throws Throwable {
+                try {
+//                    List<DavResource> list = getSardine().list(path);
+//                    if (list != null && list.size() > 1) {
+//                        DavResource davResource = list.get(0);
+//                        String path2 = davResource.getPath();
+//                        list.remove(0);
+//                        if (Objects.equals(path2, "")) {
+//                        }
+//                    }
+//                    for (DavResource davResource : list) {
+//                        if (davResource.isDirectory()) {
+//                            List<DavResource> list1 = getSardine().list(path);
+//                            list.addAll(list1);
+//                        }
+//                    }
+
+                    List<DavResource> list = getFiles(path);
+                    return list;
+                } catch (Exception e) {
+                    String message = e.getMessage();
+                    Log.e("webdav:ttkx", message);
+                }
+                return new ArrayList<>();
+            }
+
+            @Override
+            public void onSuccess(List<DavResource> result) {
+                callBack.getResult(result);
+            }
+        });
+    }
+
+    public List<DavResource> getFiles(String path) {
+        List<DavResource> result = new ArrayList<>();
+        List<DavResource> list = null;
+        try {
+            list = getSardine().list(path);
+            if (list != null && list.size() > 0) {
+                String parentPath = path.substring(PathConstants.getWebdavRootPath().length());
+                if (list.get(0).getPath().endsWith(parentPath)) {
+                    list.remove(0);
+                }
+
+                for (DavResource davResource : list) {
+                    if (davResource.isDirectory()) {
+//                    String dirPath = PathConstants.getWebdavRootPath() + davResource.getPath();
+//                    result.addAll(getAllFile(dirPath));
+                    } else {
+                        result.add(davResource);
+                    }
+                }
+            }
+        } catch (IOException e) {
+        }
+        return result;
     }
 
     private static String checkPath(String path) {
@@ -229,4 +276,19 @@ public class SardineHelper {
     }
 
 
+    public void delete(List<String> removeList) {
+        ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<String>() {
+            @Override
+            public String doInBackground() throws Throwable {
+                for (String url : removeList) {
+                    getSardine().delete(url);
+                }
+                return null;
+            }
+
+            @Override
+            public void onSuccess(String result) {
+            }
+        });
+    }
 }

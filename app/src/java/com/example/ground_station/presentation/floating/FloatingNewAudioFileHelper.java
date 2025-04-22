@@ -35,7 +35,10 @@ import java.com.example.ground_station.presentation.fun.file.FileInfoUtils;
 import java.com.example.ground_station.presentation.fun.file.SardineCallBack;
 import java.com.example.ground_station.presentation.util.MusicFileUtil;
 import java.com.example.ground_station.presentation.util.ViewUtils;
+import java.io.File;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
@@ -251,14 +254,11 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
 
             if (isBound) {
                 if (!isPlaying && !isPlayingPosition) {
-//                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 1);
 //                    sendAudioInstruct(audioModel, 1);
                     playRmoteAudio(audioModel);
                 } else if (!isPlaying) {
-//                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 2);
                     sendAudioInstruct(audioModel, 2);
                 } else if (isPlayingPosition) {
-//                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 1);
 //                    sendAudioInstruct(audioModel, 1);
                     playRmoteAudio(audioModel);
                 }
@@ -266,7 +266,6 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
         });
 
         remoteAdapter.setOnItemDeleteListener((audioModel, position) -> {
-//            send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 3);
             sendAudioInstruct(audioModel, 3);
         });
 
@@ -289,10 +288,25 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
     }
 
     private void sendAudioInstruct(AudioModel audioModel, int payload2) {
-        int payload1 = getAudioPayload(audioModel);
-        if (payload1 >= 0) {
-            helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, payload1, payload2);
+//        int payload1 = getAudioPayload(audioModel);
+//        if (payload1 >= 0) {
+//            helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, payload1, payload2);
+//        }
+
+        String audioFilePath = audioModel.getAudioFilePath();
+        if (audioFilePath.startsWith("/play")) {
+            audioFilePath = audioFilePath.substring("/play".length());
         }
+        byte[] fileNameBytes = audioFilePath.getBytes();
+        byte[] bytes = new byte[fileNameBytes.length + 1];
+        for (int i = 0; i < bytes.length; i++) {
+            if (i == 0) {
+                bytes[0] = (byte) payload2;
+            } else {
+                bytes[i] = fileNameBytes[i - 1];
+            }
+        }
+        helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_FILE_NAME, bytes);
     }
 
     private int getAudioPayload(AudioModel audioModel) {
@@ -324,7 +338,6 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
             Log.d(tag, "isPlaying: " + isPlaying + " isPlayingPosition: " + isPlayingPosition);
             if (isRemotePlay) { //当前是远程播放就停止远程播放
                 isRemotePlay = false;
-//                send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, position, 2);
                 sendAudioInstruct(audioModel, 2);
             }
 
@@ -411,10 +424,10 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
 
     private List<AudioModel> getAllMp3Files() {
         List<AudioModel> audioModelList = new ArrayList<>();
-        List<String> filePaths = MusicFileUtil.getAllAudioFiles();
-        for (String filePath : filePaths) {
-            String fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
-            audioModelList.add(new AudioModel(fileName, filePath, false));
+        List<File> filePaths = MusicFileUtil.getAllLoadAudioFiles();
+        for (File file : filePaths) {
+            String fileName = file.getName();
+            audioModelList.add(new AudioModel(fileName, file.getPath(), false));
         }
         return audioModelList;
     }

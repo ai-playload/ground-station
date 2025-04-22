@@ -23,7 +23,6 @@ import java.com.example.ground_station.data.model.AudioModel;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.socket.ConnectionCallback;
 import java.com.example.ground_station.data.socket.ResponseCallback;
-import java.com.example.ground_station.data.socket.SocketClient;
 import java.com.example.ground_station.data.socket.SocketClientHelper;
 import java.com.example.ground_station.data.socket.SocketConstant;
 import java.com.example.ground_station.data.socket.UdpSocketClient2;
@@ -40,10 +39,12 @@ import java.com.example.ground_station.presentation.fun.file.SardineCallBack;
 import java.com.example.ground_station.presentation.fun.file.SardineHelper;
 import java.com.example.ground_station.presentation.util.GsonParser;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
@@ -75,7 +76,7 @@ public class GroundStationService extends Service implements AbilityCallback {
 
     public boolean isShouting;
     private TtsHelper2 aiSoundHelper;
-//    private SocketClientManager socketClientManager;
+    //    private SocketClientManager socketClientManager;
     private UdpSocketClientManager udpSocketClientManager;
     private ShoutcasterConfig config;
     private PlaybackCallback playbackCallback;
@@ -313,14 +314,80 @@ public class GroundStationService extends Service implements AbilityCallback {
     private SardineHelper sardineHelper = new SardineHelper(null);
 
     public void getWebdavFiles(SardineCallBack<List<AudioModel>> callBack) {
-        String path = PathConstants.getPalyPath();
-        sardineHelper.list(path, new SardineCallBack<List<DavResource>>() {
+
+//        sardineHelper.listAllFile(path, new SardineCallBack<List<DavResource>>() {
+//            @Override
+//            public void getResult(List<DavResource> list) {
+//                List<AudioModel> audioModelList = FileInfoUtils.getAllRemoteAudioToAudioModel(list);
+//                callBack.getResult(audioModelList);
+//            }
+//        });
+        ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<List<DavResource>>() {
             @Override
-            public void getResult(List<DavResource> list) {
-                List<AudioModel> audioModelList = FileInfoUtils.getAllRemoteAudioToAudioModel(list);
+            public List<DavResource> doInBackground() throws Throwable {
+                List<DavResource> listAll = new ArrayList<>();
+                List<DavResource> list0 = sardineHelper.getFiles(PathConstants.getPalyWebPath());
+                listAll.addAll(list0);
+
+                List<DavResource> textAudios = sardineHelper.getFiles(PathConstants.getTextAudioWebPath());
+                checkOriAduioFiles(textAudios);
+
+                List<DavResource> loadAudios = sardineHelper.getFiles(PathConstants.getLoadAudioWebPath());
+                checkOriAduioFiles(loadAudios);
+                listAll.addAll(textAudios);
+                Collections.sort(listAll, createDavSort(false));//降序排列
+
+                List<String> list = new ArrayList<>();
+                for (DavResource davResource : listAll) {
+                    list.add(davResource.getModified().getTime() + "");
+                }
+                return listAll;
+            }
+
+            @Override
+            public void onSuccess(List<DavResource> result) {
+                List<AudioModel> audioModelList = FileInfoUtils.getAllRemoteAudioToAudioModel(result);
+
                 callBack.getResult(audioModelList);
             }
         });
+    }
+
+
+    private Comparator createDavSort(boolean up) {
+        return new Comparator<DavResource>() {
+            @Override
+            public int compare(DavResource f1, DavResource f2) {
+                Date t1 = f1.getModified();
+                Date t2 = f2.getModified();
+                if (t1 != null && t2 != null) {
+                    if (up) {
+                        return (t1.getTime() < t2.getTime()) ? 1 : -1;
+                    } else {
+                        return (t1.getTime() > t2.getTime()) ? 1 : -1;
+                    }
+                } else {
+                    return 0;
+                }
+            }
+        };
+    }
+
+    private void checkOriAduioFiles(List<DavResource> textAudios) {
+        if (textAudios.size() > 10) {
+            for (DavResource textAudio : textAudios) {
+                Collections.sort(textAudios, createDavSort(true));
+                List<String> removeList = new ArrayList<>();
+                for (int i = 0; i < textAudios.size(); i++) {
+                    String file = PathConstants.getWebdavRootPath() + textAudios.get(i).getPath();
+                    if (i >= 10) {
+                        removeList.add(file);
+                        textAudios.remove(i--);
+                    }
+                }
+                sardineHelper.delete(removeList);
+            }
+        }
     }
 
     public void getAudioListInfoDelayed(ResultCallback<List<AudioModel>> callBack, int size, long delayed) {
@@ -521,7 +588,6 @@ public class GroundStationService extends Service implements AbilityCallback {
     public void netBpRecoverPlay(int fileIndex) {
         this.sendInstruct(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, fileIndex, SocketConstant.PM.PLAY_BUNCH_RECOVER_PLAY);
     }
-
 
 
     public void sendInstruct(byte msgId2, int... payload) {

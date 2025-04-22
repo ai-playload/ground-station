@@ -3,9 +3,14 @@ package java.com.example.ground_station.presentation.util;
 import android.os.Environment;
 import android.util.Log;
 
+import com.blankj.utilcode.util.ThreadUtils;
+
 import java.com.example.ground_station.data.model.AudioModel;
+import java.com.example.ground_station.presentation.fun.file.PathConstants;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MusicFileUtil {
@@ -18,7 +23,6 @@ public class MusicFileUtil {
      */
     public static List<String> getAllAudioFiles() {
         List<String> audioFiles = new ArrayList<>();
-
         // 获取 Music 目录路径
         File musicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
 
@@ -43,7 +47,78 @@ public class MusicFileUtil {
         } else {
             Log.e(TAG, "Music directory does not exist or is not a directory.");
         }
+        return audioFiles;
+    }
 
+    public static List<File> getAllLoadAudioFiles() {
+        List<File> audioFiles = new ArrayList<>();
+        audioFiles.addAll(getAudioFiles(PathConstants.getMusicDir()));
+        List<File> textAudio = getAudioFiles(PathConstants.getTextAudioDir());
+        checkTextAudio(textAudio);
+        audioFiles.addAll(textAudio);
+        audioFiles.addAll(getAudioFiles(PathConstants.getUploadAudioDir()));
+
+        return audioFiles;
+    }
+
+    public static void checkTextAudio(List<File> files) {
+        if (files.size() > 10) {
+            Collections.sort(files, new Comparator<File>() {
+                @Override
+                public int compare(File f1, File f2) {
+                    return f1.lastModified() < f2.lastModified() ? 1 : -1;
+                }
+            });
+            List<File> removeList = new ArrayList<>();
+            for (int i = 0; i < files.size(); i++) {
+                File file = files.get(i);
+                if (i >= 10) {
+                    removeList.add(file);
+                    files.remove(i--);
+                }
+            }
+
+            ThreadUtils.executeByIo(new ThreadUtils.SimpleTask<Object>() {
+                @Override
+                public Object doInBackground() throws Throwable {
+                    for (File file : removeList) {
+                        file.delete();
+                    }
+                    return null;
+                }
+
+                @Override
+                public void onSuccess(Object result) {
+
+                }
+            });
+        }
+    }
+
+    public static List<File> getAudioFiles(File musicDir) {
+        List<File> audioFiles = new ArrayList<>();
+        // 获取 Music 目录路径
+        // 检查目录是否存在并且是一个目录
+        if (musicDir.exists() && musicDir.isDirectory()) {
+            // 遍历目录中的文件
+            File[] files = musicDir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    // 检查是否是 MP3 或 WAV 文件
+                    if (file.isFile()) {
+                        String fileName = file.getName().toLowerCase();
+                        if (fileName.endsWith(".mp3") || fileName.endsWith(".wav")) {
+                            // 添加 MP3 或 WAV 文件路径到列表中
+                            audioFiles.add(file);
+                        }
+                    }
+                }
+            } else {
+                Log.e(TAG, "Music directory is empty or cannot be read.");
+            }
+        } else {
+            Log.e(TAG, "Music directory does not exist or is not a directory.");
+        }
         return audioFiles;
     }
 

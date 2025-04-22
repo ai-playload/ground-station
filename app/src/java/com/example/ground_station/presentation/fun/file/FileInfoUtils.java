@@ -48,11 +48,11 @@ public class FileInfoUtils {
         for (DavResource davResource : list) {
             String fileName = davResource.getName();
             String filePath = davResource.getPath();
-            String audioShowName = FileInfoUtils.getAudioShowName(fileName);
-            if (!TextUtils.isEmpty(audioShowName)) {
-                audioShowName = "语音内容：" + audioShowName;
-            }
-            audioModelList.add(new AudioModel(fileName, filePath, false, audioShowName));
+//            String audioShowName = FileInfoUtils.getAudioShowName(fileName);
+//            if (!TextUtils.isEmpty(audioShowName)) {
+//                audioShowName = "语音内容：" + audioShowName;
+//            }
+            audioModelList.add(new AudioModel(fileName, filePath, false, fileName));
         }
         return audioModelList;
     }
@@ -153,7 +153,7 @@ public class FileInfoUtils {
     }
 
     public static String getText2AduioFileName(String text) {
-        return text + ".mp3";
+        return "语音内容：" + text + ".mp3";
     }
 
     public static String getAudioShowName(String originFileName) {

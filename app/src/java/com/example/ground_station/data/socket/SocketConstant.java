@@ -75,6 +75,9 @@ public class SocketConstant {
     public static final byte PLAY_REMOTE_AUDIO_BY_NAME = (byte) 0x9e;  //网络点播控制 发送文件名播放音频
     public static final byte PLAY_REMOTE_AUDIO_BY_RECORD_NAME = (byte) 0x9f;  //网络循环播放控制 发送文件名播放音频
 
+    public static final byte PLAY_REMOTE_AUDIO_BY_FILE_NAME = (byte) 0xa0;  //网络循环播放控制 发送文件名播放音频
+    public static final byte PLAY_REMOTE_AUDIO_BY_RECORD_FILE_NAME = (byte) 0xa1;  //网络循环播放控制 发送文件名播放音频
+
 
     public static final byte HEART_BEAT = (byte) 0x50;  // Heartbeat 心跳包
 

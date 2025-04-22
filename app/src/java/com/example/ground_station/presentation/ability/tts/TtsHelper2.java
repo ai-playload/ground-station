@@ -48,7 +48,7 @@ public class TtsHelper2 implements SynthesisCallback, IAudioDataCallback {
     int fileNameIndex = 0;
 
 
-    private static final String TAG = TtsHelper.class.getSimpleName();
+    private static final String TAG = TtsHelper2.class.getSimpleName();
     private String aduidoStr;
 
     public TtsHelper2() {
@@ -110,10 +110,10 @@ public class TtsHelper2 implements SynthesisCallback, IAudioDataCallback {
                     }
                     byte[] data = audioBytes;
                     writeToFile(data);
-                    Log.d("TtsEngine", "fileHandler  writeToFile..."  );
+                    Log.d("TtsEngine", "fileHandler  writeToFile...");
                 } else if (what == 2) {
                     if (fileWriteListener != null) {
-                        Log.d("TtsEngine", "fileHandler == 2"  );
+                        Log.d("TtsEngine", "fileHandler == 2");
                         fileWriteListener.onSuccess(TtsHelper2.this.recordFile, aduidoStr);
                     }
                 }
@@ -132,7 +132,7 @@ public class TtsHelper2 implements SynthesisCallback, IAudioDataCallback {
     public void end() {
         if (fileHandler != null) {
             fileHandler.obtainMessage(2).sendToTarget();
-            Log.d("TtsEngine", "helper2end  fileHandler.obtainMessage(2).sendToTarget();"  );
+            Log.d("TtsEngine", "helper2end  fileHandler.obtainMessage(2).sendToTarget();");
         }
     }
 
@@ -296,7 +296,8 @@ public class TtsHelper2 implements SynthesisCallback, IAudioDataCallback {
     }
 
     @Override
-    public void error() {}
+    public void error() {
+    }
 
     @Override
     public void error(int errorCode) {
@@ -321,8 +322,7 @@ public class TtsHelper2 implements SynthesisCallback, IAudioDataCallback {
 //                    System.currentTimeMillis() + ".wav"
 //            );
 //        }
-
-        String saveFolder = "/sdcard/Music";
+        String saveFolder = "/sdcard/Music/textAudio";
         File musicDir = new File(saveFolder);
         if (!musicDir.exists()) {
             if (!musicDir.mkdirs()) {
@@ -330,19 +330,6 @@ public class TtsHelper2 implements SynthesisCallback, IAudioDataCallback {
                 Log.d(TAG, "无法创建目录: " + saveFolder);
             }
         }
-
-        recordFile = new File(
-                saveFolder,
-                "t1.mp3");
-
-//        recordFile = new File(
-//                saveFolder,
-//                "001.wav"
-//        );
-
-        if (recordFile == null) {
-        }
-        getRecordFile();
         recordFile = new File(saveFolder, this.fileName);
         try {
             PcmUtil.changeWavHead(recordFile);

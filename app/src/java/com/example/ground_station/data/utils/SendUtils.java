@@ -52,4 +52,31 @@ public class SendUtils {
         return fullPacket;
     }
 
+    public static byte[] toData(byte msgId2, byte... payload)  {
+        int len = 2 + payload.length;
+        byte lenByte = (byte) len;
+
+        byte[] packetWithoutChecksum = new byte[len + 2];
+
+        byte header = (byte) 0x8d;
+        byte msgId1 = (byte) 0x01;
+        packetWithoutChecksum[0] = header;
+        packetWithoutChecksum[1] = lenByte;
+        packetWithoutChecksum[2] = msgId1;
+
+        packetWithoutChecksum[3] = msgId2;//指令
+        for (int i = 0; i < payload.length; i++) {//参数
+            int index = i + 4;
+            int value = payload[i];
+            packetWithoutChecksum[index] = (byte) value;//强转byte
+        }
+
+        byte checksum = CRC8Maxim.calculateCRC8(packetWithoutChecksum);
+        byte[] fullPacket = new byte[packetWithoutChecksum.length + 1];
+        System.arraycopy(packetWithoutChecksum, 0, fullPacket, 0, packetWithoutChecksum.length);
+        fullPacket[fullPacket.length - 1] = checksum;
+        Log.d("Send Data", "msgId2=" +msgId2 + " " + payload.toString() );
+        return fullPacket;
+    }
+
 }
