@@ -55,6 +55,12 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
 //                        initConnectStatus(view, UdpClientHelper.getInstance().getClient());
 
                         statusView = view.findViewById(R.id.statusView);
+                        UdpClientHelper.getInstance().getClient().setCallBack(new ResultCallback<byte[]>() {
+                            @Override
+                            public void result(byte[] bytes) {
+                                disCacllBack(bytes);
+                            }
+                        });
 
                         view.findViewById(R.id.open_light_btn).setOnClickListener(v -> {
                             v.setSelected(mSwOpen = !v.isSelected());
@@ -188,18 +194,13 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
 
                         driveWdTv = view.findViewById(R.id.drive_temp_tv);
                         headWdTv = view.findViewById(R.id.lamp_holder_tempe_tv);
-                        UdpClientHelper.getInstance().getClient().setCallBack(new ResultCallback<byte[]>() {
-                            @Override
-                            public void result(byte[] bytes) {
-                                disCacllBack(bytes);
-                            }
-                        });
 
                         View testWdBtn = view.findViewById(R.id.testLightBtn);
                         ViewUtils.setVisibility(testWdBtn, BuildConfig.DEBUG);
                         testWdBtn.setOnClickListener(view1 -> {
                             requestWd();
                         });
+                        requestWd();
                     }
                 })
                 .registerCallbacks(new OnFloatCallbacks() {
@@ -215,7 +216,6 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
 
                     @Override
                     public void show(@NonNull View view) {
-                        requestWd();
                     }
 
                     @Override
