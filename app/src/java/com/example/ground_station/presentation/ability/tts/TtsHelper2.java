@@ -334,7 +334,7 @@ public class TtsHelper2 implements SynthesisCallback, IAudioDataCallback {
         try {
             PcmUtil.changeWavHead(recordFile);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+
         }
     }
 

@@ -97,7 +97,6 @@ public class FileInfoUtils {
             long duration = m.getDuration();// 时长，单位：毫秒
             long fileTime = duration > 0 ? duration / 1000 : 0; // 转换为秒，毫秒不要了，简化处理
         } catch (EncoderException e) {
-            throw new RuntimeException(e);
         }
 
 
