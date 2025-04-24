@@ -52,7 +52,7 @@ public class PathConstants {
             String hz = ".mp3";
             return palyPath + "0" + index + hz;
         } else {
-            return  palyPath + originName;
+            return palyPath + originName;
         }
     }
 
@@ -61,23 +61,44 @@ public class PathConstants {
         return rootPath + "play/";
     }
 
-    public static String getLoadAudioWebPath() {
-        return getPalyWebPath() + "upLoadAudio/";
-    }
 
     public static String getTextAudioWebPath() {
         return getPalyWebPath() + "textAudio/";
     }
 
     public static String creatTextAudioFileName(String str) {
-        return getTextAudioWebPath()  + str ;
+        return getTextAudioWebPath() + str;
+    }
+
+    public static String creatUploadAudioFileName(String str) {
+        return getLoadAudioWebPath() + str;
+    }
+
+    public static String getLoadAudioWebPath() {
+        return getPalyWebPath() + "upLoadAudio/";
     }
 
     public static @NonNull String getWebdavRootPath() {
         ShoutcasterConfig.DeviceInfo mediaInfo = ShoutcasterConfig.getMediaInfo();
         String rootPath = "http://" + mediaInfo.getIp() + ":5000/";
-//        String rootPath = "http://" + mediaInfo.getIp() + "/";
+        //String rootPath = "http://" + mediaInfo.getIp() + "/";
         return rootPath;
+    }
+
+    public static byte[] mapAudioPlayWebPath(String path) {
+        if (path != null) {
+            if (path.startsWith(getWebdavRootPath())) {
+                path = path.substring(getWebdavRootPath().length());
+            }
+            if (path.startsWith("/play")) {
+                path = path.substring("/play".length());
+            }
+            if (path.startsWith("play")) {
+                path = path.substring("play".length());
+            }
+            return path.getBytes();
+        }
+        return new byte[]{};
     }
 
     public static File getMusicDir() {

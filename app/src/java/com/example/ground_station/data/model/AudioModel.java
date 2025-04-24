@@ -1,7 +1,5 @@
 package java.com.example.ground_station.data.model;
 
-import androidx.room.util.StringUtil;
-
 import com.blankj.utilcode.util.StringUtils;
 
 public class AudioModel {

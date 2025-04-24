@@ -356,16 +356,11 @@ public class MainActivity extends AppCompatActivity {
     private void uploadAudioFile(String filePath) {
         File file = new File(filePath);
         String name = file.getName();
-        String palyPath = PathConstants.getUploadAudioPalyPath(name);
+        String palyPath = PathConstants.creatUploadAudioFileName(name);
         String aliasName = name;
 
         SardineHelper sardineHelper = new SardineHelper(null);
-        sardineHelper.upLoad(palyPath, file, aliasName, new SardineCallBack<String>() {
-            @Override
-            public void getResult(String s) {
-
-            }
-        });
+        sardineHelper.upLoad(palyPath, file, aliasName, null);
     }
 
     private void copyAssets() {

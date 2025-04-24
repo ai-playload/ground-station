@@ -22,16 +22,23 @@ import com.lzf.easyfloat.enums.ShowPattern;
 import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.com.example.ground_station.data.model.AudioModel;
+import java.com.example.ground_station.data.model.MediaEvent;
 import java.com.example.ground_station.data.model.ShoutcasterConfig;
 import java.com.example.ground_station.data.socket.ConnectionCallback;
 import java.com.example.ground_station.data.socket.SocketClientHelper;
 import java.com.example.ground_station.data.socket.SocketConstant;
+import java.com.example.ground_station.data.utils.Bus;
 import java.com.example.ground_station.data.view.ConnectStatusView;
 import java.com.example.ground_station.presentation.GstreamerCommandConstant;
 import java.com.example.ground_station.presentation.floating.adapter.AudioAdapter;
+import java.com.example.ground_station.presentation.floating.autdio.FloatingAudioFileHelper2;
 import java.com.example.ground_station.presentation.floating.dialog.FloatingDeleteDialog;
 import java.com.example.ground_station.presentation.fun.file.FileInfoUtils;
+import java.com.example.ground_station.presentation.fun.file.PathConstants;
 import java.com.example.ground_station.presentation.fun.file.SardineCallBack;
 import java.com.example.ground_station.presentation.util.MusicFileUtil;
 import java.com.example.ground_station.presentation.util.ViewUtils;
@@ -73,6 +80,7 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
                 .setDragEnable(true).setTag(tag)
                 .setLayout(R.layout.floating_new_audio_file, view -> {
                     initFloatingView(view, tag, closeCallback);
+                    Bus.regsiter(FloatingNewAudioFileHelper.this);
                     initView(view, activity);
 
                 }).registerCallbacks(new OnFloatCallbacks() {
@@ -112,6 +120,7 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
                                 send(SocketConstant.STREAMER, 2);//停止播放
                             }
                         }
+                        Bus.unRegsiter(FloatingNewAudioFileHelper.this);
                     }
 
                     @Override
@@ -235,7 +244,7 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
                 isRemotePlay = true;
                 groundStationService.cancelGstreamerAudioCommand();
             }
-
+            // 报警声
             if (FileInfoUtils.isBjs(audioModel.getAudioFilePath())) {
                 if ((!isPlaying && !isPlayingPosition) || (isPlaying && isPlayingPosition)) {
                     if (isListLoopStatus) {
@@ -254,12 +263,10 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
 
             if (isBound) {
                 if (!isPlaying && !isPlayingPosition) {
-//                    sendAudioInstruct(audioModel, 1);
                     playRmoteAudio(audioModel);
                 } else if (!isPlaying) {
                     sendAudioInstruct(audioModel, 2);
                 } else if (isPlayingPosition) {
-//                    sendAudioInstruct(audioModel, 1);
                     playRmoteAudio(audioModel);
                 }
             }
@@ -275,51 +282,32 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
         remoteAdapter.submitList(FileInfoUtils.getBjs());
     }
 
+    /**
+     * 播放远程音频
+     * @param audioModel
+     */
     private void playRmoteAudio(AudioModel audioModel) {
         if (isListLoopStatus) {
             //循环播放
-            int payload1 = getAudioPayload(audioModel);
-            if (payload1 >= 0) {
-                helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_RECORD_NAME, payload1);
-            }
+            byte[] audioWebPath = PathConstants.mapAudioPlayWebPath(audioModel.getAudioFilePath());
+            helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_RECORD_FILE_NAME, audioWebPath);
         } else {
             sendAudioInstruct(audioModel, 1);
         }
     }
 
     private void sendAudioInstruct(AudioModel audioModel, int payload2) {
-//        int payload1 = getAudioPayload(audioModel);
-//        if (payload1 >= 0) {
-//            helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_NAME, payload1, payload2);
-//        }
-
-        String audioFilePath = audioModel.getAudioFilePath();
-        if (audioFilePath.startsWith("/play")) {
-            audioFilePath = audioFilePath.substring("/play".length());
-        }
-        byte[] fileNameBytes = audioFilePath.getBytes();
-        byte[] bytes = new byte[fileNameBytes.length + 1];
+        byte[] audioWebPath = PathConstants.mapAudioPlayWebPath(audioModel.getAudioFilePath());
+        byte[] bytes = new byte[audioWebPath.length + 1];
         for (int i = 0; i < bytes.length; i++) {
             if (i == 0) {
                 bytes[0] = (byte) payload2;
             } else {
-                bytes[i] = fileNameBytes[i - 1];
+                bytes[i] = audioWebPath[i - 1];
             }
         }
         helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_FILE_NAME, bytes);
     }
-
-    private int getAudioPayload(AudioModel audioModel) {
-        if (audioModel != null) {
-            String audioFileName = audioModel.getAudioFileName();
-            int payload = FileInfoUtils.file2Payload(audioFileName);
-            if (payload >= 0) {
-                return payload;
-            }
-        }
-        return -1;
-    }
-
 
     private void getRemoteAudioList() {
         groundStationService.getWebdavFiles(new SardineCallBack<List<AudioModel>>() {
@@ -343,7 +331,6 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
 
             if (isBound) {
                 groundStationService.setPlaybackCallback(() -> {
-//                    send(SocketConstant.AMPLIFIER, 2);
                     if (isListLoopStatus) {
                         adapter.playLoopAudio();
                     } else {
@@ -361,7 +348,6 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
                 //0x9b  0x01 创建播放 0x02 停止播放，0x03 暂停播放 ， 0x04 恢复播放
                 if (!isPlaying && !isPlayingPosition || isAudioPlayEnding) {
                     groundStationService.sendMusicCommand(command);
-//                    send(SocketConstant.AMPLIFIER, 1);
                     send(SocketConstant.STREAMER, 1);
                     isAudioPlayEnding = false;
                 } else if (!isPlaying) {
@@ -451,5 +437,17 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
 
     public void send(byte msgId2, int... payload) {
         helper.send(msgId2, payload);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receive(MediaEvent event) {
+        if (event.PM == SocketConstant.UPDATE_AUDIO_LIST) {
+            //更新远程列表（本地不需要更新）
+            getRemoteAudioList();
+        }
+//        else if (event.PM == SocketConstant.PM.PLAY_BUNCH_STOP || event.PM == SocketConstant.PM.PLAY_BUNCH_PAUSE) {
+//            //暂停
+//            adapter.pause();
+//        }
     }
 }

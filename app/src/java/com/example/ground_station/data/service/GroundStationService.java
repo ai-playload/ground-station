@@ -326,21 +326,15 @@ public class GroundStationService extends Service implements AbilityCallback {
             @Override
             public List<DavResource> doInBackground() throws Throwable {
                 List<DavResource> listAll = new ArrayList<>();
-                List<DavResource> list0 = sardineHelper.getFiles(PathConstants.getPalyWebPath());
-                listAll.addAll(list0);
+                listAll.addAll(sardineHelper.getFiles(PathConstants.getPalyWebPath()));
 
-                List<DavResource> textAudios = sardineHelper.getFiles(PathConstants.getTextAudioWebPath());
-                checkOriAduioFiles(textAudios);
+                //获取文字转语音目录的语音文件，并检查数量，超出10个，按时间降序删除
+                listAll.addAll(checkOriAduioFiles(sardineHelper.getFiles(PathConstants.getTextAudioWebPath())));
 
-                List<DavResource> loadAudios = sardineHelper.getFiles(PathConstants.getLoadAudioWebPath());
-                checkOriAduioFiles(loadAudios);
-                listAll.addAll(textAudios);
+                //获取手动上传音频文件目录的文件，并检查数量，超出10个，按时间降序删除
+                listAll.addAll(checkOriAduioFiles(sardineHelper.getFiles(PathConstants.getLoadAudioWebPath())));
+
                 Collections.sort(listAll, createDavSort(false));//降序排列
-
-                List<String> list = new ArrayList<>();
-                for (DavResource davResource : listAll) {
-                    list.add(davResource.getModified().getTime() + "");
-                }
                 return listAll;
             }
 
@@ -361,7 +355,7 @@ public class GroundStationService extends Service implements AbilityCallback {
                 Date t1 = f1.getModified();
                 Date t2 = f2.getModified();
                 if (t1 != null && t2 != null) {
-                    if (up) {
+                    if (!up) {
                         return (t1.getTime() < t2.getTime()) ? 1 : -1;
                     } else {
                         return (t1.getTime() > t2.getTime()) ? 1 : -1;
@@ -373,21 +367,20 @@ public class GroundStationService extends Service implements AbilityCallback {
         };
     }
 
-    private void checkOriAduioFiles(List<DavResource> textAudios) {
+    private List<DavResource> checkOriAduioFiles(List<DavResource> textAudios) {
         if (textAudios.size() > 10) {
-            for (DavResource textAudio : textAudios) {
-                Collections.sort(textAudios, createDavSort(true));
-                List<String> removeList = new ArrayList<>();
-                for (int i = 0; i < textAudios.size(); i++) {
-                    String file = PathConstants.getWebdavRootPath() + textAudios.get(i).getPath();
-                    if (i >= 10) {
-                        removeList.add(file);
-                        textAudios.remove(i--);
-                    }
+            Collections.sort(textAudios, createDavSort(false));
+            List<String> removeList = new ArrayList<>();
+            for (int i = 0; i < textAudios.size(); i++) {
+                String file = PathConstants.getWebdavRootPath() + textAudios.get(i).getPath();
+                if (i >= 10) {
+                    removeList.add(file);
+                    textAudios.remove(i--);
                 }
-                sardineHelper.delete(removeList);
             }
+            sardineHelper.delete(removeList);
         }
+        return textAudios;
     }
 
     public void getAudioListInfoDelayed(ResultCallback<List<AudioModel>> callBack, int size, long delayed) {
@@ -397,31 +390,6 @@ public class GroundStationService extends Service implements AbilityCallback {
     }
 
     private void requestAudioListInfo(ResultCallback<List<AudioModel>> callBack, int size, long delayed, int num) {
-//        ThreadUtils.executeByIoWithDelay(new ThreadUtils.SimpleTask<List<AudioModel>>() {
-//            @Override
-//            public List<AudioModel> doInBackground() throws Throwable {
-//                SocketClient socketClient = socketClientManager.getSocketClient();
-//                socketClient.sendInstruct(SocketConstant.GET_RECORD_LIST, 0);
-//                String response = socketClient.receiveResponse(2048);
-//                List<AudioModel> audioModels = formartAudioModel(response);
-//                return audioModels;
-//            }
-//
-//            @Override
-//            public void onSuccess(List<AudioModel> audioModels) {
-//                Log.d(TAG, "ttkx getAudioListInfoDelayed:  结果 audioModels:" + (audioModels == null ? "null" : String.valueOf(audioModels.size())));
-//                if (audioModels != null && audioModels.size() != size) {
-//                    callBack.result(audioModels);
-//                } else {
-//                    int newNum = num + 1;
-//                    if (newNum >= 4) {
-//                        callBack.result(null);
-//                    } else {
-//                        getAudioListInfoDelayed(callBack, size, delayed);
-//                    }
-//                }
-//            }
-//        }, delayed, TimeUnit.MILLISECONDS);
     }
 
     public void getAudioListInfo(ResultCallback<List<AudioModel>> callBack) {

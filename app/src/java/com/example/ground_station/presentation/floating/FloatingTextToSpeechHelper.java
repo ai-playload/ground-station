@@ -245,20 +245,10 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
             sardineHelper.upLoad(palyPath, file, aduidoStr, new SardineCallBack<String>() {
                 @Override
                 public void getResult(String s) {
-                    playBpFile(palyPath);
+                    byte[] payload = PathConstants.mapAudioPlayWebPath(palyPath);
+                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_RECORD_FILE_NAME, payload);
                 }
             });
-        }
-    }
-
-    private void playBpFile(String palyPath) {
-        int index = palyPath.lastIndexOf("/") + 1;
-        if (index >= 0 && index < palyPath.length()) {
-            String playName = palyPath.substring(index);
-            int payload = FileInfoUtils.file2Payload(playName);
-            if (payload >= 0) {
-                send(SocketConstant.PLAY_REMOTE_AUDIO_BY_RECORD_NAME, payload);
-            }
         }
     }
 

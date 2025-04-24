@@ -71,12 +71,13 @@ public class SardineHelper {
                 }
 
                 String filePath = file.getPath();
-//                String contentType = "application/pdf";
                 FileNameMap fileNameMap = URLConnection.getFileNameMap();
                 String contentType = fileNameMap.getContentTypeFor(file.getName());
                 getSardine().put(path, file, contentType);
 
-                callBack.getResult(filePath);
+                if (callBack != null) {
+                    callBack.getResult(filePath);
+                }
 
                 MediaEvent event = new MediaEvent();
                 event.PM = SocketConstant.UPDATE_AUDIO_LIST;//文件上传成功，更新远程音频列表
