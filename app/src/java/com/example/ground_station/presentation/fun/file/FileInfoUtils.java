@@ -2,6 +2,7 @@ package java.com.example.ground_station.presentation.fun.file;
 
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.core.math.MathUtils;
 
 import com.blankj.utilcode.util.SPUtils;
@@ -153,7 +154,22 @@ public class FileInfoUtils {
     }
 
     public static String getText2AduioFileName(String text) {
-        return "语音内容：" + text + ".mp3";
+        return checkUploadAudioName("语音内容：" + text + ".mp3");
+    }
+
+    /**
+     * 检查并处理上传音频文件名，防止文件名过长
+     * @param text
+     * @return
+     */
+    public static @NonNull String checkUploadAudioName(String text) {
+        int length = text.length();
+        int maxLenght = 50;
+        if (length > maxLenght) {
+            int subNum = maxLenght / 2;
+            text = text.substring(0, subNum) + "..." + text.substring(text.length() - subNum, text.length());
+        }
+        return text;
     }
 
     public static String getAudioShowName(String originFileName) {

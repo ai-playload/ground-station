@@ -51,6 +51,7 @@ import java.com.example.ground_station.data.utils.FunctionManager;
 import java.com.example.ground_station.data.utils.Utils;
 import java.com.example.ground_station.data.utils.ViewUtils;
 import java.com.example.ground_station.presentation.ability.IFlytekAbilityManager;
+import java.com.example.ground_station.presentation.fun.file.FileInfoUtils;
 import java.com.example.ground_station.presentation.fun.file.PathConstants;
 import java.com.example.ground_station.presentation.fun.file.SardineCallBack;
 import java.com.example.ground_station.presentation.fun.file.SardineHelper;
@@ -355,7 +356,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void uploadAudioFile(String filePath) {
         File file = new File(filePath);
-        String name = file.getName();
+        String name = FileInfoUtils.checkUploadAudioName(file.getName());
         String palyPath = PathConstants.creatUploadAudioFileName(name);
         String aliasName = name;
 
