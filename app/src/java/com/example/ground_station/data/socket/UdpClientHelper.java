@@ -131,7 +131,7 @@ class UdpClient implements Clien {
             public void run() {
                 if (datagramSocket != null && isConnected()) {
                     runSend(data);
-                }else {
+                } else {
                     runConnect();
                     runSend(data);
                 }
@@ -146,7 +146,10 @@ class UdpClient implements Clien {
             datagramSocket.send(packet);
             System.out.println("udp数据已发送：" + bytesToHex(data));
             if (BuildConfig.DEBUG) {
-                ToastUtils.showShort("udp 成功发送指令：" + data[3]);
+                if (data[3] == SocketConstant.BRIGHTNESS) {
+                    String str = Integer.toHexString(data[3]) + "   " + Integer.toHexString(data[4]);
+                    ToastUtils.showShort("udp 成功发送指令：" + str);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -154,6 +157,7 @@ class UdpClient implements Clien {
             if (BuildConfig.DEBUG) {
                 ToastUtils.showShort("udp 发送失败- 指令：" + data[3]);
             }
+            runConnect();
         }
     }
 
@@ -235,13 +239,13 @@ class UdpClient implements Clien {
                     } catch (IOException e) {
                         if (isConnected()) {
                             e.printStackTrace();
-                            Log.e("udp读取数据失败IOException: " , e.getMessage());
-                        }else {
-                            Log.e("udp读取数据失败IOException 非连接上: " , e.getMessage());
+                            Log.e("udp读取数据失败IOException: ", e.getMessage());
+                        } else {
+                            Log.e("udp读取数据失败IOException 非连接上: ", e.getMessage());
                         }
                     }
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 Log.e("udp接收数据 Exception", e.getMessage());
             }
         }

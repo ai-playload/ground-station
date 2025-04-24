@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -16,11 +17,11 @@ import androidx.appcompat.widget.AppCompatSeekBar;
 import com.blankj.utilcode.util.ToastUtils;
 import com.example.ground_station.BuildConfig;
 import com.example.ground_station.R;
-import com.iflytek.aikitdemo.tool.SPUtil;
 import com.lzf.easyfloat.EasyFloat;
 import com.lzf.easyfloat.enums.ShowPattern;
 import com.lzf.easyfloat.enums.SidePattern;
 import com.lzf.easyfloat.interfaces.OnFloatCallbacks;
+import com.lzf.easyfloat.utils.InputMethodUtils;
 
 import java.com.example.ground_station.data.service.ResultCallback;
 import java.com.example.ground_station.data.socket.SocketConstant;
@@ -52,9 +53,14 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                 .setLayout(R.layout.floating_new_light, view -> {
                     if (view != null) {
                         initFloatingView(view, tag, closeCallback);
-//                        initConnectStatus(view, UdpClientHelper.getInstance().getClient());
 
                         statusView = view.findViewById(R.id.statusView);
+                        UdpClientHelper.getInstance().getClient().setCallBack(new ResultCallback<byte[]>() {
+                            @Override
+                            public void result(byte[] bytes) {
+                                disCacllBack(bytes);
+                            }
+                        });
 
                         view.findViewById(R.id.open_light_btn).setOnClickListener(v -> {
                             v.setSelected(mSwOpen = !v.isSelected());
@@ -188,19 +194,34 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
 
                         driveWdTv = view.findViewById(R.id.drive_temp_tv);
                         headWdTv = view.findViewById(R.id.lamp_holder_tempe_tv);
-                        UdpClientHelper.getInstance().getClient().setCallBack(new ResultCallback<byte[]>() {
-                            @Override
-                            public void result(byte[] bytes) {
-                                disCacllBack(bytes);
-                            }
-                        });
 
                         View testWdBtn = view.findViewById(R.id.testLightBtn);
                         ViewUtils.setVisibility(testWdBtn, BuildConfig.DEBUG);
                         testWdBtn.setOnClickListener(view1 -> {
                             requestWd();
                         });
+
+                        EditText timeEd = view.findViewById(R.id.time);
+                        EditText numEd = view.findViewById(R.id.num);
+                        View startBtn = view.findViewById(R.id.startBtn);
+                        View endBtn = view.findViewById(R.id.endBtn);
+                        startBtn.setOnClickListener(view1 -> {
+                            int time = Integer.parseInt(timeEd.getText().toString());
+                            int num = Integer.parseInt(numEd.getText().toString());
+                            numRun = 0;
+                            leftRun = true;
+                            runTest(time, num, startBtn);
+                        });
+                        endBtn.setOnClickListener(view1 -> {
+                            int payload = leftRun ? 6 : 8;
+                            UdpClientHelper.getInstance().send(SocketConstant.DIRECTION, payload + 1);
+                            startBtn.removeCallbacks(runnable);
+                        });
+
+                        editDis(timeEd);
+                        editDis(numEd);
                     }
+                    requestWd();
                 })
                 .registerCallbacks(new OnFloatCallbacks() {
                     @Override
@@ -215,7 +236,7 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
 
                     @Override
                     public void show(@NonNull View view) {
-                        requestWd();
+//                        requestWd();
                     }
 
                     @Override
@@ -239,6 +260,52 @@ public class FloatingNewLightHelper extends BaseFloatingHelper {
                 })
                 .show();
     }
+
+    private void editDis(EditText timeEd) {
+        timeEd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InputMethodUtils.openInputMethod(timeEd, tag);
+            }
+        });
+
+        timeEd.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    InputMethodUtils.openInputMethod(timeEd, tag);
+                } else {
+                    InputMethodUtils.closedInputMethod(tag);
+                }
+            }
+        });
+    }
+
+    Runnable runnable;
+
+    private void runTest(int time, int num, View startBtn) {
+        if (numRun < num) {
+            long t = numRun == 0 ? time * 1000 : time * 2000;
+            int payload = leftRun ? 6 : 8;
+            UdpClientHelper.getInstance().send(SocketConstant.DIRECTION, payload);
+            runnable = () -> {
+                UdpClientHelper.getInstance().send(SocketConstant.DIRECTION, payload + 1);
+                numRun++;
+                leftRun = !leftRun;
+
+                startBtn.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        runTest(time, num, startBtn);
+                    }
+                }, 1500);
+            };
+            startBtn.postDelayed(runnable, t);
+        }
+    }
+
+    boolean leftRun = true;
+    int numRun;
 
     private void sendSwitchInstrunt(byte msgid2, boolean open) {
         UdpClientHelper.getInstance().send(msgid2, open ? 1 : 0);
