@@ -222,17 +222,26 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                 .show();
     }
 
-    private void playGstreamerMusic(String aduidoStr) {
+    /**
+     * 播放音频文件
+     * @param fileName 文件名 （示例：语音内容：01.mp3)
+     */
+    private void playGstreamerMusic(String fileName) {
         ShoutcasterConfig.DeviceInfo shoutcasterConfig = ShoutcasterConfig.getShoutcaster();
+        //mp3文件对象
         File recordFile = groundStationService.getAiSoundHelper().getRecordFile();
         if (recordFile != null) {
+            //是否循环播放
             if (!checkBox.isChecked()) {
                 send(SocketConstant.STREAMER, 1);
                 String filePath = recordFile.getPath();
+                //根据mp3文件路径生成gstreamer所需的播放命令
                 String command = String.format(GstreamerCommandConstant.TEXT_TO_SPEECH_COMMAND, filePath, shoutcasterConfig.getIp(), shoutcasterConfig.getPort());
+                //通过gstreamer播放对应的音频文件
                 groundStationService.sendMusicCommand(command);
             } else {
-                uploadAudioFile(recordFile, aduidoStr);
+                //上传文件并循环播放
+                uploadAudioFile(recordFile, fileName);
             }
         }
     }
