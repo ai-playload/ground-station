@@ -223,17 +223,26 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
                 .show();
     }
 
-    private void playGstreamerMusic(String aduidoStr) {
+    /**
+     * 播放音频文件
+     * @param fileName 文件名 （示例：语音内容：01.mp3)
+     */
+    private void playGstreamerMusic(String fileName) {
         ShoutcasterConfig.DeviceInfo shoutcasterConfig = ShoutcasterConfig.getShoutcaster();
+        //mp3文件对象
         File recordFile = groundStationService.getAiSoundHelper().getRecordFile();
         if (recordFile != null) {
+            //是否循环播放
             if (!checkBox.isChecked()) {
                 send(SocketConstant.STREAMER, 1);
                 String filePath = recordFile.getPath();
+                //根据mp3文件路径生成gstreamer所需的播放命令
                 String command = String.format(GstreamerCommandConstant.TEXT_TO_SPEECH_COMMAND, filePath, shoutcasterConfig.getIp(), shoutcasterConfig.getPort());
+                //通过gstreamer播放对应的音频文件
                 groundStationService.sendMusicCommand(command);
             } else {
-                uploadAudioFile(recordFile, aduidoStr);
+                //上传文件并循环播放
+                uploadAudioFile(recordFile, fileName);
             }
         }
     }
@@ -242,7 +251,9 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
         Activity topActivity = ActivityUtils.getTopActivity();
         if (topActivity != null) {
             SardineHelper sardineHelper = new SardineHelper(null);
+            //上传路径
             String palyPath = PathConstants.getText2AudioFileName(aduidoStr);
+            //上传文件
             sardineHelper.upLoad(palyPath, file, aduidoStr, new SardineCallBack<String>() {
                 @Override
                 public void getResult(String s) {
@@ -252,12 +263,17 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
         }
     }
 
+    /**
+     * 循环播放文件
+     * @param palyPath
+     */
     private void playBpFile(String palyPath) {
         int index = palyPath.lastIndexOf("/") + 1;
         if (index >= 0 && index < palyPath.length()) {
             String palyName = palyPath.substring(index);
             int payload = FileInfoUtils.file2Payload(palyName);
             if (payload >= 0) {
+                //发送循环播放指令，
                 send(SocketConstant.PLAY_REMOTE_AUDIO_BY_RECORD_NAME, payload);
             }
         }
