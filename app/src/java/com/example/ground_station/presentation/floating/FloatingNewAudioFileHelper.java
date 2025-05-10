@@ -284,13 +284,23 @@ public class FloatingNewAudioFileHelper extends BaseFloatingHelper {
 
     /**
      * 播放远程音频
+     *
      * @param audioModel
      */
     private void playRmoteAudio(AudioModel audioModel) {
         if (isListLoopStatus) {
             //循环播放
             byte[] audioWebPath = PathConstants.mapAudioPlayWebPath(audioModel.getAudioFilePath());
-            helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_RECORD_FILE_NAME, audioWebPath);
+//            byte[] bytes = new byte[audioWebPath.length + 1];
+//            for (int i = 0; i < bytes.length; i++) {
+//                if (i == 0) {
+//                    bytes[0] = (byte) 0x01;
+//                } else {
+//                    bytes[i] = audioWebPath[i - 1];
+//                }
+//            }
+
+            helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_RECORD_FILE_NAME, (byte) 0x01, audioWebPath);
         } else {
             sendAudioInstruct(audioModel, 1);
         }

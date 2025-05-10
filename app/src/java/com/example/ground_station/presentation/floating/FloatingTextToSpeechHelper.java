@@ -254,8 +254,8 @@ public class FloatingTextToSpeechHelper extends BaseFloatingHelper {
             sardineHelper.upLoad(palyPath, file, aduidoStr, new SardineCallBack<String>() {
                 @Override
                 public void getResult(String s) {
-                    byte[] payload = PathConstants.mapAudioPlayWebPath(palyPath);
-                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_RECORD_FILE_NAME, payload);
+                    byte[] audioWebPath = PathConstants.mapAudioPlayWebPath(palyPath);
+                    helper.send(SocketConstant.PLAY_REMOTE_AUDIO_BY_RECORD_FILE_NAME, (byte) 0x01, audioWebPath);
                 }
             });
         }

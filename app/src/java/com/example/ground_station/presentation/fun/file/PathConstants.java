@@ -96,6 +96,9 @@ public class PathConstants {
             if (path.startsWith("play")) {
                 path = path.substring("play".length());
             }
+            if (path.startsWith("/")) {
+                path = path.substring("/".length());
+            }
             return path.getBytes();
         }
         return new byte[]{};
